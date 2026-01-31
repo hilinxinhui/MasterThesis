@@ -24,6 +24,61 @@ Lin等\cite{9729404}
 
 \subsection{实验设置}
 
+\begin{table}[htbp]
+  \centering
+  \caption{MIT、TRI、TJU与XJTU电池循环老化数据集循环工况与编号概览}\label{tab:dataset_summary}%
+  \scalebox{0.8}
+    {
+      \small
+    \begin{tabular}{llp{13.335em}}
+    \toprule
+    数据集 & 数据子集 (依据充电协议划分) & \multicolumn{1}{l}{电池编号} \\
+    \midrule
+    MIT   & 4.4-5.6-5.2-4.252 & 8, 15, 18, 32, 48 \\
+    TRI   & 5.3C(54\%)-4C & 3, 8, 11, 19, 27, 35, 43, 38 \\
+    TJU   & CY45-05\_1 & 11, 12, 13, 14, 20, 22, 24, 26, 28 \\
+    {XJTU} & {2C} & {1, 2, 3, 4, 5, 6, 7, 8} \\
+    \bottomrule
+    \end{tabular}%
+    }
+\end{table}%
+
+\begin{table}[htbp]
+  \centering
+  \caption{The hyperparameter settings of HSSTT}
+  \scalebox{0.8}
+    {
+      \small
+    \begin{tabular}{clc}
+    \toprule
+    Symbol & \multicolumn{1}{c}{Description} & Value \\
+    \midrule
+    $d_{sensor}$ & number of sensors & 3 \\
+    $T$ & number of charge-discharge cycles & 16 \\
+    $d_{resample}$ & resampling dimension & 64 \\
+    $d_{in}$ & dimension of the input sequence & 192 \\
+    $k_{dilated}$ & size of the kernel in dilated convolution & 2 \\
+    $r_{dilated}$ & dilation rate of the dilated convolution & 2 \\
+    $n_{head}$ & number of heads in Transformer & 2 \\
+    $n_{encoder}$ & number of encoder layers & 1 \\
+    $d_{FFN}$ & FFN forward expansion & 1 \\
+    $d_{emb}$ & attention embedding dimension & 16 \\
+    $\tau_{1}$ & temperature factor for clustered attention & 1 \\
+    $\tau_{2}$ & temperature factor for GSR based attention & 1 \\
+    $n_{centroid}$ & number of centroids for clustered attention & 1 \\
+    $n_{bs\_train}$ & batch size for train and validate dataloader & 16 \\
+    $n_{bs\_test}$ & batch size for test dataloader & 1 \\
+    $n_{epoch}$ & number of training epochs & 100 \\
+    $\eta_{0}$ & initial learning rate & 0.001 \\
+    $\gamma$ & learning rate adjustment multiplier & 0.5 \\
+    $p$     & dropout rate & 0.1 \\
+    $B$     & number of MC sampling during inference & 30 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:hyperparams}%
+    }
+\end{table}%
+
 \subsection{性能对比实验}
 
 \begin{figure}[!htbp]
@@ -33,12 +88,74 @@ Lin等\cite{9729404}
     \label{fig:hsstt_comparison}
 \end{figure}
 
+\begin{table*}[htbp]
+  \centering
+  \caption{The results of HSSTT and the comparative methodologies on trustworthy SOH estimation across four datasets}
+  \scalebox{0.8}
+    {
+      \small
+      \begin{adjustbox}{center}{
+  \begin{threeparttable}    
+      \begin{tabular}{ccccccccccccccccc}
+    \toprule
+    Dataset & \multicolumn{4}{c}{MIT}       & \multicolumn{4}{c}{TRI}       & \multicolumn{4}{c}{TJU} & \multicolumn{4}{c}{{XJTU}} \\
+\cmidrule{2-17}    Metric & MAE   & RMSE  & NLL   & ECE   & MAE   & RMSE  & NLL   & ECE   & MAE   & RMSE  & NLL   & ECE & {MAE}   & {RMSE}  & {NLL}   & {ECE}  \\
+    \midrule
+    MRVR\cite{rvr_rul_9552552}  & 3.479  & 3.910  & 17.345  & 27.960  & 3.204  & 3.756  & 2.323  & 21.875  & 3.369  & 3.471  & -2.362  & 40.523 & {15.676} & {15.811} & {-2.139} & {36.717}  \\
+    GP-ICE\cite{gpr_soh_8263147} & \underline{2.845}  & \underline{3.233}  & -1.829  & 26.162  & \underline{2.327}  & \underline{2.622}  & -2.425  & 25.434  & \underline{0.281}  & \underline{0.368}  & \underline{-4.518}  & 43.074 & {\underline{1.508}} & {\underline{1.893}} & {-1.269} & {48.523}  \\
+    BMNN\cite{bbb_rul_9738999}  & 20.133  & 21.493  & 3.953  & 18.361  & 13.808  & 14.793  & 3.386  & 25.963  & 6.926  & 7.810  & -1.651  & 23.673 & {9.856} & {11.149} & {9.987} & {19.041}  \\
+    SACN\cite{capsnet_rul_li2024sensor}  & 4.522  & 5.438  & 41.902  & 25.777  & 2.905  & 3.441  & 8.765  & 12.808  & 0.528  & 0.649  & -4.135  & 27.733 & {4.349} & {5.397} & {52.220} & {27.355}  \\
+    DeNN\cite{ensemble2_soh_10102497}  & 5.997  & 8.100  & \underline{-2.235} & \underline{14.318}  & 4.993  & 6.690  & \underline{-2.464}  & \underline{12.085}  & 4.045  & 4.811  & 6.606  & 30.406 & {3.168} & {3.798} & {\underline{-2.810}} & {\underline{13.084}}  \\
+    BDAE\cite{mcdropout_autoencoder_10412192}   & 6.882  & 8.647  & -1.055  & 28.743  & 7.123  & 8.974  & -1.170  & 30.854  & 4.922  & 6.227  & -2.028  & \underline{14.481} & {6.746} & {8.597} & {-0.554} & {25.630} \\
+    SNGP\cite{nemani2023uncertainty}  & 4.769  & 5.952  & -1.059  & 21.120  & 4.047  & 4.919  & 1.095  & 19.558  & 0.422  & 0.470  & -4.119  & 29.677 & {7.396} & {8.892} & {25.432} & {34.199} \\
+    HSSTT (ours) & \textbf{2.330} & \textbf{2.914} & \textbf{-2.760} & \textbf{8.554} & \textbf{1.790} & \textbf{2.150} & \textbf{-2.966} & \textbf{12.020} & \textbf{0.277} & \textbf{0.339} & \textbf{-4.783} & \textbf{11.365} & {\textbf{1.285}} & {\textbf{1.638}} & {\textbf{-3.462}} & {\textbf{12.394}} \\
+    \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \item[a] The MAE and RMSE values in this table are the results after multiplying the original values by 100.
+        \item[b] Lower values of MAE, RMSE, NLL, and ECE indicate superior model performance.
+        \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
+        \item[d] The results is averaged from 5 cells (MIT), 8 cells (TRI), 9 cells (TJU), {8 cells (XJTU)}, respectively.
+    \end{tablenotes}
+  \end{threeparttable}}
+\end{adjustbox}
+}
+  \label{tab:main-results}%
+\end{table*}%
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/HSSTT_figures/trans/FIG4_TII-25-2632.pdf}
     \bicaption{HSSTT~架构图}{Diagram of the HSSTT framework}
     \label{fig:hsstt_efficiency}
 \end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{The results of computational efficiency comparison}
+\scalebox{0.8}
+    {
+      \small
+  \begin{tabular}{cccc}
+  \toprule
+        Model & \multicolumn{1}{l}{\makecell{Inference \\ latency (s)}} & \multicolumn{1}{l}{\makecell{Memory \\ usage (MB)}} & \multicolumn{1}{l}{\makecell{Averaged \\ RMSE}}\\
+  \midrule
+  MRVR  & 0.0149 & 1.2 & 0.067 \\
+  GP-ICE & 0.0025 & 1.5 & 0.020 \\
+  BMNN  & 0.0113 & 35.27 & 0.138 \\
+  SACN  & 0.024 & 23.3 & 0.037 \\
+  DeNN  & 0.0296 & 250 & 0.058 \\
+  BDAE  & 0.0536 & 73.4 & 0.081 \\
+  SNGP  & 0.0702 & 56.5 & 0.051 \\
+  MCDT & 0.0316 & 35.3 & 0.138 \\
+  VIT & 0.0124 & 20.3 & 0.026 \\
+  GSRT & 0.0106 & 20.5 & 0.057 \\
+  HSSTT & 0.0139 & 21.5 & 0.018 \\
+  \bottomrule
+  \end{tabular}%
+    }
+\label{tab:efficiency}%
+\end{table}
 
 \subsection{消融实验}
 
@@ -48,6 +165,78 @@ Lin等\cite{9729404}
     \bicaption{HSSTT~架构图}{Diagram of the HSSTT framework}
     \label{fig:hsstt_ablation}
 \end{figure}
+
+
+\begin{table}[!t]
+    \centering
+    \caption{The results of ablation studies of HSSTT}
+    \resizebox{\linewidth}{!}
+      {
+      % \scalebox{0.8}
+      % {
+      %   \small
+    \begin{threeparttable}
+      
+        \begin{tabular}{ccccccccc}
+      \toprule
+      Dataset & \multicolumn{2}{c}{MIT} & \multicolumn{2}{c}{TRI} & \multicolumn{2}{c}{TJU} & \multicolumn{2}{c}{{XJTU}} \\
+      \cmidrule{2-9} Metric & RMSE  & NLL   & RMSE  & NLL   & RMSE  & NLL & {RMSE}  & {NLL} \\
+      \midrule
+      MCDT\tnote{a} & 0.181  & 6.176  & 0.168  & 4.904  & 0.019  & 1.212 & {0.186} & {185.139} \\
+      GSRT\tnote{b} & 0.062 & 1.188 & 0.065 & -0.767 & 0.011 & -3.158 & {0.088} & {3.731} \\
+      {VIT\tnote{c}} & {0.040} & {4.723} & {0.033} & {4.736} & {0.004} & {3.868} & {0.028} & {14.713} \\
+      {MCDL\tnote{d}} & {0.042} & {-1.093} & {0.046} & {1.604} & {0.009} & {-4.062} & {0.085} & {8.292}  \\
+      {MCDACL\tnote{e}} & {0.045} & {70.386} & {0.036} & {43.768} & {0.007} & {-0.306} & {0.065} & {16.140} \\
+      {MCDG\tnote{f}} & {0.056} & {10.118} & {0.031} & {4.662} & {0.009} & {-1.907} & {0.071} & {5.602} \\
+      w/o S\tnote{{g}} & 0.041  & -0.883  & 0.032  & 1.659  & 0.005  & -4.311 & {0.031} & {-2.386} \\
+      w/o T\tnote{{h}} & 0.038  & -1.444  & 0.031  & 0.483  & 0.004  & -4.461 & {0.035} & {-2.351}  \\
+      HSSTT  & \textbf{0.029} & \textbf{-2.760} & \textbf{0.022} & \textbf{-2.966} & \textbf{0.003} & \textbf{-4.783} & {\textbf{0.016}} & {\textbf{-3.462}} \\
+      \bottomrule
+      \end{tabular}
+      
+      \begin{tablenotes}
+        \item[{a, b, c}] {Stochastic Transformer based on Monte Carlo dropout (MCD) \cite{20164903082858}, Gumbel-Softmax reparameterization (GSR) \cite{20193407356730}, and Variational inference(VI) \cite{20191806851746}.}
+        \item[{d, e}] {Vanilla LSTM \cite{sak2014long} and Auto-CNN-LSTM \cite{9137406} based on MCD.}
+        \item[{f}] {CL-GraphSAGE \cite{YAO2023106437} based on MCD.}
+        \item[{g, h}] Removal of attention clustering (temporal-uncertainty-unaware) and reweighted dilated convolution (spatial-uncertainty-unaware).
+    \end{tablenotes}
+    
+  \end{threeparttable}
+  }
+    \label{tab:ablation_study_1}%
+  \end{table}%
+
+
+\begin{table}[h]
+  \centering
+  % \caption{Evaluation of the Before-and-After ECE of HSSTT}
+  \caption{The expected calibration error (ECE) of HSSTT before and after uncertainty calibration}
+  \resizebox{\linewidth}{!}
+    {
+    % \scalebox{0.75}
+    % {
+    %   \small
+      \begin{tabular}{ccccccccc}
+    \toprule
+    Dataset & \multicolumn{2}{c}{MIT} & \multicolumn{2}{c}{TRI} & \multicolumn{2}{c}{TJU} & \multicolumn{2}{c}{XJTU} \\
+\cmidrule{2-9}    Cell No. & before & after & before & after & before & after & before & after \\
+    \midrule
+    1     & 14.599  & 7.648  & 29.990  & 11.252  & 20.634  & 18.533 & {37.259} & {6.625} \\
+    2     & 33.470  & 3.000  & 35.485  & 14.635  & 11.581  & 3.933 & {38.051} & {8.310} \\
+    3     & 28.117  & 13.658  & 26.886  & 11.297  & 29.622  & 17.762 & {36.083} & {12.198} \\
+    4     & 22.686  & 11.815  & 22.819  & 14.271  & 41.214  & 6.136 & {39.084} & {15.253} \\
+    5     & 32.069  & 6.650  & 30.502  & 10.614  & 36.668  & 14.158 & {40.430} & {15.020} \\
+    6     & $\backslash$ & $\backslash$ & 23.887  & 12.210  & 41.497  & 13.941 & {40.292}  & {10.961} \\
+    7     & $\backslash$ & $\backslash$ & 17.439  & 12.814  & 41.342  & 7.945 & {36.645} &  {13.172} \\
+    8     & $\backslash$ & $\backslash$ & 41.527  & 9.065  & 40.247  & 9.318 & {29.393} &  {17.611} \\
+    9     & $\backslash$ & $\backslash$ & $\backslash$ & $\backslash$ & 25.020  & 10.555 & {$\backslash$} & {$\backslash$} \\
+    \midrule
+    Avg.  & \multicolumn{2}{c}{26.188 $\to$ 8.554} & \multicolumn{2}{c}{28.567 $\to$ 12.020} & \multicolumn{2}{c}{31.980 $\to$ 11.365} & \multicolumn{2}{c}{{37.155 $\to$ 12.394}} \\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:ablation_study_2}%
+\end{table}%
 
 \subsection{超参数敏感性分析}
 
@@ -80,6 +269,38 @@ Lin等\cite{9729404}
 \end{figure}
 
 \subsection{分布内外退化模式辨识实验}
+
+
+\begin{table}[htbp]
+    \centering
+    % \caption{HSSTT's predictive uncertainty for ID and OOD samples}
+    \caption{The predictive uncertainty of HSSTT for in-distribution (ID) and out-of-distribution (OOD) samples}
+    \scalebox{0.8}
+    {
+      \small
+    \begin{threeparttable}
+      \begin{tabular}{ccccc}
+      \toprule
+      Dataset & \multicolumn{2}{c}{In-Distribution \tnote{a}} & \multicolumn{2}{c}{Out-of-Distribution \tnote{b}} \\
+  \cmidrule{2-5} Cell No. & Sharpness & NLL   & Sharpness & NLL \\
+      \midrule
+      1     & 0.021  & -2.047 & 0.059  & 5.180    \\
+      2     & 0.024  & -3.421 & 0.047  & -1.752   \\
+      3       & 0.023  & -3.010 & 0.053  & 11.448 \\
+      4     & 0.028  & -1.862 & 0.062  & 2.787   \\
+      5       & 0.023  & -3.463  & 0.048  & 17.378\\
+      \midrule
+      Avg.   & 0.024 & -2.760 & 0.054  & 7.008  \\
+      \bottomrule
+      \end{tabular}%
+      \begin{tablenotes}
+          \item[a] MIT $\to$ MIT
+          \item[b] TRI $\to$ MIT
+      \end{tablenotes}
+      \end{threeparttable}
+    \label{tab:id_ood}
+    }
+  \end{table}%
 
 \begin{figure}[!htbp]
     \centering
