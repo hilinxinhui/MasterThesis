@@ -22,9 +22,245 @@
 
 \subsection{实验设置}
 
+% 数据集描述
+\begin{table*}[hb]
+    \centering
+    \caption{Dataset Overview.}
+    \scalebox{0.8}
+    {
+    \small
+    \begin{threeparttable}
+      \begin{tabular}{cccccc}
+      \toprule
+      数据集 & 数据子集 & 正极材料\tnote{a} & 额定容量 & 电池数量 & 样本数量 \\
+      \midrule
+      MATR \cite{severson2019data, attia2020closed}  & batch\{1, 2, 3, 9\tnote{b} \} & \ce{LiFePO_{4}} & 1100 mAh  & 144   & 115416 \\
+      \midrule
+      \makecell{Tongji \cite{zhu2022data}} & \makecell{NCA, NCM\tnote{c}} & \makecell{\ce{Li_{0.86}Ni_{0.86}Co_{0.11}Al_{0.03}O_2(NCA)} \\ \ce{Li_{0.84}Ni_{0.83}Co_{0.11}Mn_{0.07}O_2}(NCM)} & 3500 mAh  & \makecell{116} & \makecell{41963} \\
+      \midrule
+      HUST \cite{D2EE01676A}  & $\backslash$ & \ce{LiFePO_{4}} & 1100 mAh  & 77    & 114366 \\
+      \midrule
+      XJTU \cite{wang2024physics} & Batch-\{1, 2, 4\} & \ce{LiNi_{0.5}Co_{0.2}Mn_{0.3}O_2} & 2000 mAh  & 31    & 11182 \\
+      \bottomrule
+      \end{tabular}%
+      \begin{tablenotes}
+        \item[a] The anode material in all batteries is graphite.
+        \item[b] Only the cells in batch 9 with the protocols `3.6-6-5.6-4.755', `4.8-5.2-5.2-4.16', `6-5.6-4.4-3.834', and `8-4.4-4.4-3.94' are used.
+        \item[c] Cell {CY35-05\_1-\#3} from NCA subset and cells {CY35-05\_\#\{1, 2, 3, 4\}} from NCM subset are excluded.
+    \end{tablenotes}
+  \end{threeparttable}
+    }
+    \label{tab:dataset}%
+  \end{table*}%
+
 Wang等\cite{wang2023feature}
 
+% 域泛化任务划分
+  \begin{table*}[h]
+    \scriptsize
+      \centering
+      \caption{The designed OOD degradation pattern generalization tasks.}
+      \scalebox{0.8}
+      {
+        \small
+      \begin{threeparttable}
+        % \resizebox{\linewidth}{!}{
+        \begin{tabularx}{\textwidth}{ccXX}
+        \toprule
+        任务 & 数据集 & 源域电池编号 (\textbf{源域数量}) & 目标域电池编号 (\textbf{目标域数量}) \\
+        \midrule
+        1     & MATR  & 8C(35\%)-3.6C\_\{47,48\}, \newline 8C(25\%)-3.6C\_\{45,46\}, \newline
+        8C(15\%)-3.6C\_\{43,44\}, \newline 7C(40\%)-3C\_\{37,38\}, \newline
+        7C(40\%)-3.6C\_\{41,42\}, \newline 7C(30\%)-3.6C\_\{39,40\}, \newline
+        6C(50\%)-3.6C\_\{35,36\}, \newline 6C(40\%)-3C\_\{25,26\}, \newline
+        6C(40\%)-3.6C\_\{33,34\}, \newline 6C(4\%)-4.75C\_46, \newline
+        等. (\textbf{52})
+        % 6C(30\%)-3.6C\_32, 5C(67\%)-4C\_\{10,18,2,34,42,47\}, \newline
+        % 5.9C(60\%)-3.1C\_\{32,40\}, 5.9C(15\%)-4.6C\_\{24,39\}, \newline
+        % 5.6C(5\%)-4.75C\_41, 5.6C(38\%)-4.25C\_38, \newline
+        % 5.6C(36\%)-4.3C\_\{13,15,21,23,29,37,45,5\}, \newline 
+        % 5.4C(70\%)-3C\_\{17,18\}, 5.4C(60\%)-3C\_\{15,16\}, \newline
+        % 5.4C(50\%)-3C\_14, 5.4C(40\%)-3.6C\_20, \newline
+        % 5.3C(54\%)-4C\_\{11,19,27,35,3,43,48,8\}, \newline
+        % 5.2C(58\%)-4C\_34, 5.2C(50\%)-4.25C\_33, \newline
+        % 5.2C(37\%)-4.5C\_32, 5.2C(10\%)-4.75C\_31, \newline
+        % 4C(80\%)-4C\_\{5,6\}, 4C(40\%)-6C\_29, \newline
+        % 4C(4\%)-4.85C\_30, 4.9C(69\%)-4.25C\_26, \newline
+        % 4.9C(61\%)-4.5C\_25, 4.65C(44\%)-5C\_22, \newline
+        % 4.65C(19\%)-4.85C\_21, 4.4C(80\%)-4.4C\_7, \newline
+        % 4.4C(47\%)-5.5C\_18, 4.4C(24\%)-5C\_17, \newline
+        % 3.7C(31\%)-5.9C\_\{16,30,38\}, 3.6C(9\%)-5C\_16, \newline
+        % 3.6C(80\%)-3.6C\_\{1,2,3\}, 3.6C(30\%)-6C\_15, \newline
+        % 5.4C(60\%)-3.6C\_\{23,24\}, 4.4C(8\%)-4.85C\_20, \newline
+        % 5.2C(66\%)-3.5C\_35, 3.6C(2\%)-4.85C\_14, \newline
+        % 5.6C(19\%)-4.6C\_\{14,20,22,28,36,44,4\}, \newline
+        % 4.8C(80\%)-4.8C\_\{17,1,25,9,10,4,7,8,9\}, \newline
+        % 4C(13\%)-5C\_27, 5.4C(80\%)-5.4C\_\{11,12\}, \newline
+        % 4.65C(69\%)-6C\_23, 6C(60\%)-3C\_\{29,30,48\}, \newline
+        % 6C(50\%)-3C\_\{27,28\}, 5.6C(25\%)-4.5C\_37\tnote{a} (\textbf{52})
+        & 6C(52\%)-3.5C\_47, \newline
+        6C(40\%)-4C\_45, \newline
+        6C(31\%)-4.25C\_44, \newline
+        6C(20\%)-4.5C\_43, \newline
+        5.6C(65\%)-3C\_42, \newline
+        5.6C(58\%)-3.5C\_40, \newline
+        5.6C(47\%)-4C\_39, \newline
+        5.2C(71\%)-3C\_36, \newline
+        4C(31\%)-5C\_28, \newline
+        4.9C(27\%)-4.75C\_24, \newline
+        4.4C(55\%)-6C\_19, \newline
+        3.6C(22\%)-5.5C\_13, \newline
+        2C(7\%)-5.5C\_12, \newline
+        2C(2\%)-5C\_11, \newline
+        2C(10\%)-6C\_10, \newline
+        1C(4\%)-6C\_9 (\textbf{16}) \\
+        \midrule
+        2     & MATR  & M-batch9-1\_\{1,10,2,42,20\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-4\_\{11,12,27,29,38\} (\textbf{1}) \\
+        \midrule
+        3     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-1\_\{1,2,10,20,42\} (\textbf{1}) \\
+        \midrule
+        4     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-2\_\{21,22,31,36,9\} (\textbf{1}) \\
+        \midrule
+        5     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-2\_\{21,22,31,36,9\} (\textbf{3}) & M-batch9-3\_\{13,16,23,47,24\} (\textbf{1}) \\
+        \midrule
+        6     & Tongji & CY25-1\_1-\#\{6,1,9,3,7,2,8\}, \newline
+        CY25-05\_1-\#\{14,11,6,\newline 1,2,19,13,7,17,4,16,10,15\}, \newline
+        CY45-05\_1-\#\{28,17,5,2,\newline 21,7,9,19,22,14,16,8,23,24,12,\newline 10,20,26,13,27\}, \newline CY25-025\_1-\#\{3,5,4,6\}, \newline
+        CY35-05\_1-\#2 (\textbf{5}) & CY25-1\_1-\#\{4,5\}, \newline
+        CY25-05\_1-\#\{3,5,12,18\}, \newline CY25-025\_1-\#7, CY35-05\_1-\#1, \newline CY45-05\_1-\#\{1,11,15,18,25\} (\textbf{5}) \\
+        \midrule
+        7     & Tongji & CY25-05\_1-\#\{6,5,13,15,18,7,3,9,1,\newline
+        16,17,4,14,2,12,10,19,11,8\}, \newline CY25-025\_1-\#\{6,7,4,1,2,3,5\}, \newline CY45-05\_1-\#\{15,4,14,28,13,1,3, 26,19,9,18,16,11,12,27,5,10, \newline 22,8,7,21,6,17,24,20,2,25,23\} (\textbf{3}) & CY25-05\_1-\#\{6,23,5,13,15,18,7,3,9,1,\newline 16,17,4,14,21,2,20,12,10,19,11,8,22\}, \newline CY45-05\_1-\#\{23,15,4,14,28,13,1,3,\newline 2,25,26,19,9,18,16,11,12,17,24,20,\newline 27,5,10,22,8,7,21,6\} (\textbf{2}) \\
+        \midrule
+        8     & HUST  & 9-1,2-2,4-7,9-7,1-8,4-6,2-7,8-4,\newline
+        7-2,10-3,2-4,7-4,3-4,5-4,8-7,7-7, \newline 4-4,1-3,7-1,5-2,6-4,9-8,9-5,6-3,10-8,1-6,3-5,2-6,3-8,3-6,4-8,7-8, \newline 5-1,2-8,8-2,1-5,7-3,10-2,5-5,9-2,5-6,1-7,8-3,4-1,4-2,1-4,6-5,4-3, \newline 5-7,3-3,2-3,9-3,10-5,3-2,3-7 (\textbf{55}) & 9-6,4-5,1-2,10-7,1-1,6-1,6-6,9-4,\newline 10-4,8-5,5-3,10-6,2-5,6-2,3-1,8-8,\newline 8-1,8-6,7-6,6-8,7-5,10-1 (\textbf{22}) \\
+        \midrule
+        9     & XJTU  & X-Batch2-\{1 -- 15\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch1-\{1 -- 8\} (\textbf{1}) \\
+        \midrule
+        10    & XJTU  & X-Batch1-\{1 -- 8\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch2-\{1 -- 15\} (\textbf{1}) \\
+        \midrule
+        11    & XJTU  & X-Batch1-\{1 -- 8\}, \newline X-Batch2-\{1 -- 15\} (\textbf{2}) & X-Batch4-\{1 -- 8\} (\textbf{1}) \\
+        \bottomrule
+        \end{tabularx}%
+      %   \begin{tablenotes}
+      %     \item[a] Refer to \cite{TAN2024103725} for full details.
+      %     \item[b] This ellipsis mark indicates consecutive cell IDs.
+      % \end{tablenotes}
+      \end{threeparttable}
+      }
+      \label{tab:tasks}%
+      \end{table*}%
+
+\begin{table}[htbp]
+\centering
+\caption{Hyperparameter Settings.}
+\scalebox{0.8}
+{
+    \small
+\begin{threeparttable}
+    \begin{tabular}{rll}
+    \toprule
+    \multicolumn{1}{l}{Symbol} & Description & Value \\
+    \midrule
+    \multicolumn{1}{l}{$E$} & Number of consecutive charge-discharge cycles & $1$ \\
+    \multicolumn{1}{l}{$H (d_{model})$} & Hidden state dimension & $16$ \\
+    \multicolumn{1}{l}{$n_{enc}$} & Number of Mmaba residual block & $1$ \\
+    \multicolumn{1}{l}{$n_{exp}$} & Expansion factor of Mamba & $4$ \\
+    \multicolumn{1}{l}{$r_{\Delta}$} & Rank of discretization factor of Mamba & $1$ \\
+    \multicolumn{1}{l}{$d_{convs}$} & Kernel size of convolution module in Mamba & $4$ \\
+    \multicolumn{1}{l}{$N$} & Dimension of parameter matrices in Mamba & $1024$ \\
+    \multicolumn{1}{l}{$p_{0}$} & Activation threshold of UDFA & $0.5$ \\
+    \multicolumn{1}{l}{$\mathcal{B}$} & Number of bins of LARR & $100$ \\
+    \multicolumn{1}{l}{$\gamma$} & Coefficient of Gaussian kernel of LARR & $0.5$ \\
+    \multicolumn{1}{l}{$l$} & Gaussian kernel size of LARR & $9$ \\
+    \multicolumn{1}{l}{$\alpha$} & Update momentum of LARR & $0.9$ \\
+    \multicolumn{1}{l}{$n_{bs}$} & Batch size & $32$ \\
+    \multicolumn{1}{l}{$n_{epochs}$} & Maximum training epochs & $100$ \\
+    \multicolumn{1}{l}{$\eta_{0}$} & Initial learning rate & $1 \times 10^{-4}$ \\
+    \multicolumn{1}{l}{$p_{dropout}$} & Dropout rate & $0.01$ \\
+    \bottomrule
+    \end{tabular}%
+\end{threeparttable}
+}
+\label{tab:hyperparameters_setting}%
+\end{table}%
+
 \subsection{性能对比试验}
+
+% SOH对比实验
+\begin{table*}[htbp]
+    \vspace{-1.5em}
+    \centering
+    \caption{Comparison experimental results for the OOD SOH estimation tasks on the MATR, Tongji, HUST, and XJTU datasets.}
+    % \resizebox{\linewidth}{!}{
+    \scalebox{0.6}{
+    \small
+    \begin{threeparttable}
+    \begin{tabular}{lccccccccccc}
+    \toprule
+    任务  & \multicolumn{2}{c}{任务1} & \multicolumn{2}{c}{任务2} & \multicolumn{2}{c}{任务3} & \multicolumn{2}{c}{任务4} & \multicolumn{2}{c}{任务5} & \multicolumn{1}{l}{任务6} \\
+\cmidrule{2-12}    性能指标 & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
+    \midrule
+    iTransformer \cite{liu2024itransformer} & 5.9093  & 0.5257  & 1.1315  & 0.0350  & 1.3424  & 0.0317  & 1.0941  & 0.0218  & 2.7314  & 0.1079  & 21.3182  \\
+    iTransformer+ \cite{liu2024itransformer} & 0.7803  & 0.0134  & 0.7618  & 0.0167  & 0.4686  & 0.0067  & 0.4534  & 0.0051  & 0.7615  & 0.0183  & 2.1108  \\
+    PatchTST \cite{nie2023a} & \underline{1.1228}  & 0.0311  & 4.1024  & \underline{0.3776}  & 0.7981  & 0.0145  & 4.2731  & 0.4299  & 2.8899  & 0.1764  & 9.5076  \\
+    PatchTST+ \cite{nie2023a} & 0.6310  & 0.0098  & 0.6937  & 0.0136  & 0.4426  & 0.0071  & 0.4094  & 0.0046  & 0.8018  & 0.0183  & 3.6897  \\
+    TSMixer \cite{chen2023tsmixer} & 16.2029  & 3.4749  & 2.5634  & 0.1033  & 5.1793  & 0.3115  & 2.9573  & 0.0980  & 3.1299  & 0.1231  & 35.9175  \\
+    TSMixer+ \cite{chen2023tsmixer} & 0.8600  & 0.0172  & 0.7558  & 0.0160  & 0.5797  & 0.0082  & 0.4818  & 0.0046  & 0.8081  & 0.0184  & 2.9360  \\
+    PINN \cite{wang2024physics}  & 1.3596  & 0.0403  & 2.2216  & 0.0844  & 1.4187  & 0.0511  & 1.1438  & 0.0227  & 1.7547  & 0.0556  & 20.7705  \\
+    PINN+ \cite{wang2024physics} & 0.5748  & 0.0061  & 1.3991  & 0.0361  & 1.3524  & 0.0269  & 0.7226  & 0.0107  & 1.0708  & 0.0207  & 8.9555  \\
+    DR-Net \cite{WANG2023108897} & 4.2229  & 0.3324  & 2.6507  & 0.1112  & 3.4879  & 0.1749  & 3.6984  & 0.2049  & 3.4467  & 0.1925  & 16.0808  \\
+    CRNN \cite{D2EE01676A}  & 0.8260  & 0.0168  & 0.5589  & 0.0058  & 0.5295  & 0.0060  & 0.5508  & 0.0082  & 0.8301  & 0.0184  & 7.6085  \\
+    MAGNet \cite{TAN2024103725} & 1.2410  & \underline{0.0244}  & 0.9305  & 0.0146  & 1.1954  & 0.0233  & 0.9216  & 0.0196  & 1.8908  & 0.0526  & 6.9453  \\
+    DeNN-bagging \cite{10102497} & 1.7015  & 0.0658  & 2.1448  & 0.1194  & 2.1157  & 0.1141  & 2.1386  & 0.1330  & 2.8398  & 0.1719  & 10.3293  \\
+    DeNN-fusion \cite{10102497} & 1.5901  & 0.0542  & 2.2918  & 0.1403  & 2.1127  & 0.1162  & 2.3360  & 0.1544  & 4.0800  & 0.2782  & 10.3575  \\
+    DeNN-voting \cite{10102497} & 1.6199  & 0.0577  & 2.1824  & 0.1217  & 2.0499  & 0.1055  & 2.1529  & 0.1109  & 2.8789  & 0.1806  & 10.1680  \\
+    MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 1.2177  & 0.0338  & \underline{0.4801}  & 0.0038  & \underline{0.4002}  & \underline{0.0031}  & \underline{0.4162}  & \underline{0.0035}  & \underline{0.9160}  & \underline{0.0258}  & \underline{5.5906}  \\
+    LSTM-DA \cite{HAN2022230823} & 3.0477  & 0.1140  & 2.8469  & 0.0945  & 3.1725  & 0.1164  & 3.4704  & 0.1360  & 3.4921  & 0.1370  & 12.8066  \\
+    ConvMMD \cite{9788003} & 2.2734  & 0.0891  & 2.2941  & 0.0809  & 2.4317  & 0.0862  & 2.6367  & 0.0943  & 2.5047  & 0.0807  & 10.7025  \\
+    DKTL \cite{10029904}  & 2.2029  & 0.0889  & 2.4482  & 0.1134  & 2.6035  & 0.1153  & 2.8678  & 0.1272  & 2.7184  & 0.1135  & 10.5311  \\
+    DDAN \cite{9560040}  & 2.2708  & 0.0667  & 1.7973  & 0.0378  & 2.0361  & 0.0485  & 2.3470  & 0.0611  & 2.4232  & 0.0648  & 12.1931  \\
+    RODTNet-LT++ {(ours)} & 1.1934  & 0.0484  & 0.9942  & 0.0367  & 0.9038  & 0.0330  & 2.4697  & 0.3593  & 3.1390  & 0.4989  & 9.6180  \\
+    RODTNet-LT (ours) & \textbf{1.0384} & \textbf{0.0208} & \textbf{0.4476} & \textbf{0.0030} & \textbf{0.3630} & \textbf{0.0020} & \textbf{0.2885} & \textbf{0.0014} & \textbf{0.4435} & \textbf{0.0032} & \textbf{4.0520} \\
+    \midrule
+    \multicolumn{12}{c}{} \\
+    \midrule
+            & \multicolumn{1}{l}{任务6} & \multicolumn{2}{c}{任务7} & \multicolumn{2}{c}{任务8} & \multicolumn{2}{c}{任务9} & \multicolumn{2}{c}{任务10} & \multicolumn{2}{c}{任务11} \\
+\cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+    \midrule
+    iTransformer \cite{liu2024itransformer} & 8.5517  & 10.6146  & 1.6506  & 9.1256  & 1.5742  & 21.2702  & 8.0010  & 40.3827  & 20.7572  & 19.2927  & 4.6340  \\
+    iTransformer+ \cite{liu2024itransformer} & 0.1204  & 8.8424  & 1.4328  & 1.3233  & 0.0277  & 2.9985  & 0.1737  & 2.8956  & 0.1635  & 2.8476  & 0.1570  \\
+    PatchTST \cite{nie2023a} & 1.8668  & 16.9823  & 5.4530  & 9.2243  & 1.6822  & 14.7543  & 4.8261  & 48.1532  & 28.1815  & 15.8620  & 4.5693  \\
+    PatchTST+ \cite{nie2023a} & 0.5973  & 10.1355  & 1.8044  & 6.8517  & 0.9185  & 3.3279  & 0.1986  & 4.6602  & 0.3933  & 5.0112  & 0.4733  \\
+    TSMixer \cite{chen2023tsmixer} & 15.7721  & 8.1766  & 1.0106  & 14.3296  & 2.9821  & 51.0444  & 26.6658  & 44.3269  & 22.9838  & 58.9715  & 35.8934  \\
+    TSMixer+ \cite{chen2023tsmixer} & 0.1595  & 9.3981  & 1.4881  & 1.6831  & 0.0443  & 2.7117  & 0.1365  & 4.0151  & 0.2957  & 3.7528  & 0.2954  \\
+    PINN \cite{wang2024physics}  & 6.2435  & 25.2663  & 9.1038  & 5.9623  & 0.7837  & 7.9811  & 1.9312  & 22.6493  & 7.5184  & 13.4784  & 3.3358  \\
+    PINN+ \cite{wang2024physics} & 2.2297  & 8.1476  & 1.3071  & 1.3870  & 0.0357  & 3.9588  & 0.4028  & 5.6329  & 0.9141  & 3.6541  & 0.3709  \\
+    DR-Net \cite{WANG2023108897} & 3.9837  & 19.8591  & 5.6675  & 40.7034  & 21.2569  & 13.3021  & 3.0780  & 10.6609  & 2.0293  & 10.4743  & 1.7780  \\
+    CRNN \cite{D2EE01676A}  & 1.6485  & 4.5716  & 0.4770  & 3.3587  & 0.3612  & 5.8487  & 0.8072  & 11.0377  & 3.0051  & 6.9622  & 1.2084  \\
+    MAGNet \cite{TAN2024103725} & 1.2605  & \underline{3.6287}  & \textbf{0.2369} & 3.2225  & 0.2692  & \underline{3.4654}  & \underline{0.2234}  & 7.5763  & 1.7185  & \underline{4.1481}  & \underline{0.4131}  \\
+    DeNN-bagging \cite{10102497} & 1.9811  & 7.1896  & 0.8327  & 5.6580  & 0.7403  & 7.6599  & 1.1013  & 12.8670  & 3.4043  & 8.8430  & 1.6496  \\
+    DeNN-fusion \cite{10102497} & 1.9799  & 8.5083  & 1.0813  & 5.9468  & 0.7503  & 8.3443  & 1.3646  & 12.5343  & 3.2910  & 8.9251  & 1.7611  \\
+    DeNN-voting \cite{10102497} & 1.9101  & 7.4300  & 0.8838  & 5.5938  & 0.7390  & 7.7196  & 1.1244  & 12.7772  & 3.4203  & 8.9074  & 1.6948  \\
+    MambaLithium \cite{shi2024mambalithiumselectivestatespace} & \underline{0.7132}  & 6.7626  & 0.8283  & 4.8486  & 0.6418  & 7.0512  & 1.2408  & 8.7161  & 2.1239  & 5.8056  & 0.8398  \\
+    LSTM-DA \cite{HAN2022230823} & 2.8925  & 8.3498  & 1.0564  & 7.9172  & 1.3040  & 6.0889  & 0.6520  & 10.2645  & 2.3890  & 7.8039  & 1.1160  \\
+    ConvMMD \cite{9788003} & 2.0985  & 7.8693  & 0.9537  & 6.7908  & 0.9026  & 5.9231  & 0.6199  & 11.1645  & 2.6587  & 7.6832  & 1.2462  \\
+    DKTL \cite{10029904}  & 2.1718  & 7.5353  & 0.8587  & 6.7470  & 0.9272  & 4.9570  & 0.5125  & 10.8147  & 2.5730  & 6.9723  & 1.1317  \\
+    DDAN \cite{9560040}  & 2.7491  & 8.1399  & 1.1031  & 7.3573  & 1.1792  & 5.9360  & 0.8296  & 9.0353  & 2.1172  & 5.9290  & 0.8442  \\
+    RODTNet-LT++ {(ours)} & 2.0079  & 4.2455  & 0.4090  & \underline{1.7140}  & \underline{0.0635}  & \textbf{3.0794} & \textbf{0.2118} & \textbf{3.3261} & \textbf{0.2229} & \textbf{3.6471} & 0.8305  \\
+    RODTNet-LT (ours) & \textbf{0.3946} & \textbf{3.5394} & \underline{0.3020}  & \textbf{1.0781} & \textbf{0.0195} & 4.5385  & 0.3831  & \underline{5.0415}  & \underline{0.3875}  & 4.3266  & \textbf{0.3424} \\
+    \bottomrule
+    \end{tabular}%}
+      \begin{tablenotes}
+        \item[a] + indicates finetuning on the target domain.
+        \item[b] ++ indicates training directly on the target domain.
+        \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best
+        \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
+    \end{tablenotes}
+\end{threeparttable}
+}
+    \label{tab:soh_results}%
+\end{table*}%
 
 \subsection{消融实验}
 
