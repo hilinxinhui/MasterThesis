@@ -1,6 +1,6 @@
-\chapter{}
+\chapter{}\label{chap:HSSTT}
 
-\section{引言}
+\section{引言}\label{sec:HSSTT_introduction}
 
 \begin{figure}[!htbp]
     \centering
@@ -9,7 +9,7 @@
     \label{fig:hsstt_challenges}
 \end{figure}
 
-\section{锂离子电池健康状态估计方法}
+\section{锂离子电池健康状态估计方法}\label{sec:HSSTT_methodology}
 
 \begin{figure}[!htbp]
     \centering
@@ -20,9 +20,47 @@
 
 Lin等\cite{9729404}
 
-\section{实验评估}
+\subsection{}\label{subsec:stochastic_self_attention}
 
-\subsection{实验设置}
+\subsection{}\label{subsec:HSSTT_framework}
+
+\subsection{}\label{subsec:well_calibrated_HSSTT}
+
+\subsection{}\label{subsec:trustworthy_SOH_estimation}
+
+\section{实验评估}\label{sec:HSSTT_experiment}
+
+\subsection{实验设置}\label{subsec:HSSTT_experimental_setup}
+
+% 这里应该补充一张各个数据集上电池退化轨迹的图片
+% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
+% \begin{figure}[!htbp]
+%     \centering
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_a}
+%       \caption{}
+%       \label{fig:oaspl_a}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_b}
+%       \caption{}
+%       \label{fig:oaspl_b}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_c}
+%       \caption{}
+%       \label{fig:oaspl_c}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_d}
+%       \caption{}
+%       \label{fig:oaspl_d}
+%     \end{subfigure}
+%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
+%     \label{fig:oaspl}
+% \end{figure}
 
 \begin{table}[htbp]
   \centering
@@ -79,8 +117,9 @@ Lin等\cite{9729404}
     }
 \end{table}%
 
-\subsection{性能对比实验}
+\subsection{性能对比实验}\label{subsec:HSSTT_comparison_experiment}
 
+% 这张图改成2x4的形式，子图放大
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/HSSTT_figures/trans/FIG3_TII-25-2632.pdf}
@@ -120,9 +159,45 @@ Lin等\cite{9729404}
   \end{threeparttable}}
 \end{adjustbox}
 }
-  \label{tab:main-results}%
+  \label{tab:HSSTT_main_results_MIT_TRI}%
 \end{table*}%
 
+\begin{table*}[htbp]
+  \centering
+  \caption{The results of HSSTT and the comparative methodologies on trustworthy SOH estimation across four datasets}
+  \scalebox{0.8}
+    {
+      \small
+      \begin{adjustbox}{center}{
+  \begin{threeparttable}    
+      \begin{tabular}{ccccccccccccccccc}
+    \toprule
+    Dataset & \multicolumn{4}{c}{MIT}       & \multicolumn{4}{c}{TRI}       & \multicolumn{4}{c}{TJU} & \multicolumn{4}{c}{{XJTU}} \\
+\cmidrule{2-17}    Metric & MAE   & RMSE  & NLL   & ECE   & MAE   & RMSE  & NLL   & ECE   & MAE   & RMSE  & NLL   & ECE & {MAE}   & {RMSE}  & {NLL}   & {ECE}  \\
+    \midrule
+    MRVR\cite{rvr_rul_9552552}  & 3.479  & 3.910  & 17.345  & 27.960  & 3.204  & 3.756  & 2.323  & 21.875  & 3.369  & 3.471  & -2.362  & 40.523 & {15.676} & {15.811} & {-2.139} & {36.717}  \\
+    GP-ICE\cite{gpr_soh_8263147} & \underline{2.845}  & \underline{3.233}  & -1.829  & 26.162  & \underline{2.327}  & \underline{2.622}  & -2.425  & 25.434  & \underline{0.281}  & \underline{0.368}  & \underline{-4.518}  & 43.074 & {\underline{1.508}} & {\underline{1.893}} & {-1.269} & {48.523}  \\
+    BMNN\cite{bbb_rul_9738999}  & 20.133  & 21.493  & 3.953  & 18.361  & 13.808  & 14.793  & 3.386  & 25.963  & 6.926  & 7.810  & -1.651  & 23.673 & {9.856} & {11.149} & {9.987} & {19.041}  \\
+    SACN\cite{capsnet_rul_li2024sensor}  & 4.522  & 5.438  & 41.902  & 25.777  & 2.905  & 3.441  & 8.765  & 12.808  & 0.528  & 0.649  & -4.135  & 27.733 & {4.349} & {5.397} & {52.220} & {27.355}  \\
+    DeNN\cite{ensemble2_soh_10102497}  & 5.997  & 8.100  & \underline{-2.235} & \underline{14.318}  & 4.993  & 6.690  & \underline{-2.464}  & \underline{12.085}  & 4.045  & 4.811  & 6.606  & 30.406 & {3.168} & {3.798} & {\underline{-2.810}} & {\underline{13.084}}  \\
+    BDAE\cite{mcdropout_autoencoder_10412192}   & 6.882  & 8.647  & -1.055  & 28.743  & 7.123  & 8.974  & -1.170  & 30.854  & 4.922  & 6.227  & -2.028  & \underline{14.481} & {6.746} & {8.597} & {-0.554} & {25.630} \\
+    SNGP\cite{nemani2023uncertainty}  & 4.769  & 5.952  & -1.059  & 21.120  & 4.047  & 4.919  & 1.095  & 19.558  & 0.422  & 0.470  & -4.119  & 29.677 & {7.396} & {8.892} & {25.432} & {34.199} \\
+    HSSTT (ours) & \textbf{2.330} & \textbf{2.914} & \textbf{-2.760} & \textbf{8.554} & \textbf{1.790} & \textbf{2.150} & \textbf{-2.966} & \textbf{12.020} & \textbf{0.277} & \textbf{0.339} & \textbf{-4.783} & \textbf{11.365} & {\textbf{1.285}} & {\textbf{1.638}} & {\textbf{-3.462}} & {\textbf{12.394}} \\
+    \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \item[a] The MAE and RMSE values in this table are the results after multiplying the original values by 100.
+        \item[b] Lower values of MAE, RMSE, NLL, and ECE indicate superior model performance.
+        \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
+        \item[d] The results is averaged from 5 cells (MIT), 8 cells (TRI), 9 cells (TJU), {8 cells (XJTU)}, respectively.
+    \end{tablenotes}
+  \end{threeparttable}}
+\end{adjustbox}
+}
+  \label{tab:HSSTT_main_results_TJU_XJTU}%
+\end{table*}%
+
+% 这张图可以分成两张图展示
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/HSSTT_figures/trans/FIG4_TII-25-2632.pdf}
@@ -154,10 +229,10 @@ Lin等\cite{9729404}
   \bottomrule
   \end{tabular}%
     }
-\label{tab:efficiency}%
+\label{tab:HSSTT_efficiency}%
 \end{table}
 
-\subsection{消融实验}
+\subsection{消融实验}\label{subsec:HSSTT_ablation_study}
 
 \begin{figure}[!htbp]
     \centering
@@ -238,7 +313,7 @@ Lin等\cite{9729404}
   \label{tab:ablation_study_2}%
 \end{table}%
 
-\subsection{超参数敏感性分析}
+\subsection{超参数敏感性分析}\label{subsec:HSSTT_sensitivity_analysis}
 
 \begin{figure}[!htbp]
     \centering
@@ -268,8 +343,7 @@ Lin等\cite{9729404}
     \label{fig:hsstt_sensitivity_tf}
 \end{figure}
 
-\subsection{分布内外退化模式辨识实验}
-
+\subsection{分布内外退化模式辨识实验}\label{subsec:HSSTT_id_ood_identification}
 
 \begin{table}[htbp]
     \centering
@@ -309,4 +383,4 @@ Lin等\cite{9729404}
     \label{fig:hsstt_sensitivity_ood}
 \end{figure}
 
-\section{本章小结}
+\section{本章小结}\label{sec:HSSTT_conclusion}

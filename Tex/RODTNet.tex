@@ -1,6 +1,6 @@
-\chapter{}
+\chapter{}\label{chap:RODTNet}
 
-\section{引言}
+\section{引言}\label{sec:RODTNet_introduction}
 
 \begin{figure}[!htbp]
     \centering
@@ -9,7 +9,7 @@
     \label{fig:rodtnet_challenges}
 \end{figure}
 
-\section{锂离子电池退化建模方法}
+\section{锂离子电池退化建模方法}\label{sec:RODTNet_methodology}
 
 \begin{figure}[!htbp]
     \centering
@@ -18,9 +18,48 @@
     \label{fig:rodtnet_framework}
 \end{figure}
 
-\section{实验评估}
+\subsection{}\label{subsec:RODTNet_MCRDR}
 
-\subsection{实验设置}
+\subsection{}\label{subsec:RODTNet_UDFS}
+
+\subsection{}\label{subsec:RODTNet_LARR}
+
+\section{实验评估}\label{sec:RODTNet_experiment}
+
+\subsection{实验设置}\label{subsec:RODTNet_experimental_setup}
+
+% 2行3列展示退化轨迹
+
+% 2行3列展示长尾分布
+
+% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
+% \begin{figure}[!htbp]
+%     \centering
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_a}
+%       \caption{}
+%       \label{fig:oaspl_a}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_b}
+%       \caption{}
+%       \label{fig:oaspl_b}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_c}
+%       \caption{}
+%       \label{fig:oaspl_c}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_d}
+%       \caption{}
+%       \label{fig:oaspl_d}
+%     \end{subfigure}
+%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
+%     \label{fig:oaspl}
+% \end{figure}
 
 % 数据集描述
 \begin{table*}[hb]
@@ -185,7 +224,42 @@ Wang等\cite{wang2023feature}
 \label{tab:hyperparameters_setting}%
 \end{table}%
 
-\subsection{性能对比试验}
+\subsection{性能对比试验}\label{subsec:RODTNet_comparison_experiment}
+
+% 4行2列展示包含RODTNet在内的方法的实验结果
+
+% 4行2列展示部分对比实验结果
+
+% 2行2列展示剩下的部分对比实验结果：iTransformer+、PatchTST+、TSMixer+和PINN+，这里视情况加入RODTNet直接在目标域上训练的结果
+
+% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
+% \begin{figure}[!htbp]
+%     \centering
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_a}
+%       \caption{}
+%       \label{fig:oaspl_a}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_b}
+%       \caption{}
+%       \label{fig:oaspl_b}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_c}
+%       \caption{}
+%       \label{fig:oaspl_c}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_d}
+%       \caption{}
+%       \label{fig:oaspl_d}
+%     \end{subfigure}
+%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
+%     \label{fig:oaspl}
+% \end{figure}
 
 % SOH对比实验
 \begin{table*}[htbp]
@@ -262,9 +336,9 @@ Wang等\cite{wang2023feature}
     \label{tab:soh_results}%
 \end{table*}%
 
-\subsection{消融实验}
+\subsection{消融实验}\label{subsec:RODTNet_ablation_study}
 
-\subsection{超参数敏感性分析}
+\subsection{超参数敏感性分析}\label{subsec:RODTNet_sensitivity_analysis}
 
 \begin{figure}[!htbp]
     \centering
@@ -273,4 +347,37 @@ Wang等\cite{wang2023feature}
     \label{fig:rodtnet_sensitivity}
 \end{figure}
 
-\section{本章小结}
+\subsection{退化流形可视化分析}\label{subsec:RODTNet_manifold_analysis}
+
+% 最好是三张图，分别展示3D、2D和1D的RODTNet和对比实验的流行可视化结果
+
+% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
+% \begin{figure}[!htbp]
+%     \centering
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_a}
+%       \caption{}
+%       \label{fig:oaspl_a}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_b}
+%       \caption{}
+%       \label{fig:oaspl_b}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_c}
+%       \caption{}
+%       \label{fig:oaspl_c}
+%     \end{subfigure}%
+%     ~%add desired spacing
+%     \begin{subfigure}[b]{0.35\textwidth}
+%       \includegraphics[width=\textwidth]{oaspl_d}
+%       \caption{}
+%       \label{fig:oaspl_d}
+%     \end{subfigure}
+%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
+%     \label{fig:oaspl}
+% \end{figure}
+
+\section{本章小结}\label{sec:RODTNet_conclusion}
