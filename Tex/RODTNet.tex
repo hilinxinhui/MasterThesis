@@ -26,6 +26,11 @@
 
 \section{实验评估}\label{sec:RODTNet_experiment}
 
+In this section, we present a comprehensive evaluation of the performance of our proposed models, RODTNet and RODTNet-LT, by comparing them with 14 baseline methods and their 20 variants across 11 generalization tasks derived from 4 datasets.
+We first compare the performance of RODTNet, RODTNet-LT, and baseline methods across diverse datasets and generalization tasks.
+Next, we conduct ablation studies to demonstrate the effectiveness of each key component within RODTNet, and to evaluate the specific contribution of the LARR module in RODTNet-LT.
+Finally, we investigate the sensitivity of our proposed model's performance to variations in hyperparameter settings.
+
 \subsection{实验设置}\label{subsec:RODTNet_experimental_setup}
 
 % 2行3列展示退化轨迹
@@ -224,6 +229,41 @@ Wang等\cite{wang2023feature}
 \label{tab:hyperparameters_setting}%
 \end{table}%
 
+
+We evaluate our framework using 4 large-scale datasets, MATR \cite{severson2019data, attia2020closed}, Tongji \cite{zhu2022data}, HUST \cite{D2EE01676A}, and XJTU \cite{wang2024physics} through 11 OOD generalization tasks.
+% Table~\ref{tab:dataset} summarizes datasets characteristics, including material compositions, electrical specifications, and statistical details, while Fig.~\ref{fig:degradation_trajectory} illustrates the degradation trajectories and the corresponding distribution densities of batteries across different domains from different datasets.
+Fig.~\ref{fig:degradation_trajectory} illustrates the degradation trajectories and the corresponding distribution densities of batteries across different domains from different datasets.
+Domain division criteria encompass charging/discharging protocols, electrode materials, and depth of discharge. Tasks 1-5 \cite{TAN2024103725,10522981} systematically examine fast-charging protocol robustness. Task 6 adapts \cite{TAN2024103725}'s configuration to evaluate rare degradation pattern adaptation (0.9\% shared cycles between domains), while Task 7 extends this framework to assess electrode material generalization under OOD conditions. Task 8 (\cite{D2EE01676A}) evaluates model's robustness to multi-stage discharge protocol variations. Building upon MATR dataset baselines, Tasks 9-11 investigate coupled domain shifts arising from charging protocol-discharge protocol-depth of discharge interactions. % Full domain splits appear in Table~\ref{tab:tasks}. Battery degradation is quantified through RUL and SOH, characterizing instantaneous performance and full lifecycle evolution respectively.
+
+% Following established methodologies in \cite{10251604,wang2024physics}, we implement our heuristic input reconstruction strategy through signal transformations. Dataset-specific reconstruction protocols are implemented to rigorously verify the general applicability of our strategy. For MATR dataset (5 tasks involved), 8-dimensional vectors encode electrochemical descriptors including quadratic coefficients and bias terms derived from differential capacity curve fittings within the voltage range of 2.7–3.3 V, as well as the maximum value, minimum value, variance, cycle-average temperature, internal resistance, and charging time. Other datasets (6 tasks involved) employ 16-dimensional representations to capture multi-phase cycle characteristics. The 16-dimensional feature set is divided into two categories. The first category encompasses statistical metrics, including mean, standard deviation, kurtosis, skewness, curve slope, and curve entropy, extracted from voltage and current signals within specified operational ranges (current: 0.1–0.5 A; voltage: 4.0–4.2 V for the Tongji and XJTU datasets, and 3.4–3.6 V for the HUST dataset). The second category consists of duration and cumulative charge measurements derived from the constant-current and constant-voltage charging phases.
+Following established methodologies in \cite{10251604,wang2024physics}, we implement our heuristic input reconstruction strategy through signal transformations. Dataset-specific reconstruction protocols are implemented to rigorously verify the general applicability of our strategy. For MATR dataset, 8-dimensional vectors encode electrochemical descriptors including quadratic coefficients and bias terms derived from differential capacity curve fittings within the predefined voltage range, as well as the maximum value, minimum value, variance, cycle-average temperature, internal resistance, and charging time. Other datasets employ 16-dimensional representations to capture multi-phase cycle characteristics. The feature set is divided into two categories. The first encompasses statistical metrics, including mean, standard deviation, kurtosis, skewness, curve slope, and curve entropy, extracted from voltage and current signals within specified operational ranges. The second consists of duration and cumulative charge measurements derived from the constant-current and constant-voltage charging phases.
+
+
+We conducte a comprehensive comparison across 5 categories of methods, summarized as follows:
+% 
+(1) state-of-the-art prognostic methods, including DeNN \cite{10102497} (with 3 aggregation strategies), PINN \cite{wang2024physics}, and MambaLithium \cite{shi2024mambalithiumselectivestatespace};
+(2) pretrain-finetune-based methods, including CRNN \cite{D2EE01676A} and PINN+ \cite{wang2024physics};
+(3) domain adaptation-based methods, including ConvMMD \cite{9788003}, LSTM-DA \cite{HAN2022230823}, DTKL \cite{10029904}, DDAN \cite{9560040}, and DR-Net \cite{WANG2023108897};
+(4) domain generalization-based methods, including MAGNet \cite{TAN2024103725}, iTransformer \cite{liu2024itransformer}, PatchTST \cite{nie2023a}, and TSMixer \cite{chen2023tsmixer};
+(5) target-trained RODTNet and RODTNet-LT, referred to as RODTNet+ and RODTNet-LT+, respectively.
+% 
+We also examine the fine-tuned variants of general-purpose series modeling methods, denoted as iTransformer+, PatchTST+, and TSMixer+.
+
+We conduct all the experiments on a server equipped with an Intel Core i9-13900KF CPU and an NVIDIA 4090 GPU (PyTorch 2.3.1 with CUDA 11.8).
+All cycling data undergo min-max normalization to the range between 0 and 1. SOH labels follow dataset-specific scaling protocols, where the MATR dataset utilizes definition-based [0.8-1] scaling while other datasets adopted min-max [0, 1] normalization. RUL labels are normalized during training and denormalized during evaluation.
+% 
+% Details of domain splits are summarized in Table~\ref{tab:tasks}.
+% 
+Domain generalization-based methods follow a rigorous validation protocol \cite{9847099}, where validation sets are constructed exclusively from source-domain batteries with training-to-validation ratios of 3:1 (MATR batches 1–3, Tongji, XJTU), 4:1 (MATR batch 9), and 6:1 (HUST). All target-domain batteries are reserved for testing. 
+% 
+To facilitate domain alignment in domain adaptation-based methods, the target domain is further divided into a test subset, which includes batteries designated for degradation modeling, and a training subset comprising the remaining batteries. Both subsets ensure that the labels of degradation samples in the target domain remain completely inaccessible in model training phases.
+% 
+Models following the pretraining-finetuning paradigm mirror domain generalization protocols during pretraining, utilize identical test sets as domain adaptation methods, and further partition remaining target-domain batteries into 9:1 training-validation splits for finetuning.
+% 
+Details of sample construction, model architecture, and hyperparameters are provided in Table~\ref{tab:hyperparameters_setting}. The MSE loss function in conjunction with the Adam optimizer are used for model parameters optimization. The training process is conducted for a maximum of 100 epochs, with early stopping implemented.
+
+We employ four metrics, namely Mean Absolute Error (MAE), Mean Square Error (MSE), Root Mean Square Error (RMSE), and Coefficient of Determination ($R^{2}$), to evaluate the model's generalization capability for OOD degradation patterns. Specifically, lower values of MAE, MSE, and RMSE signify improved generalization performance, whereas higher values of $R^{2}$ indicate stronger generalization ability.
+
 \subsection{性能对比试验}\label{subsec:RODTNet_comparison_experiment}
 
 % 4行2列展示包含RODTNet在内的方法的实验结果
@@ -260,6 +300,167 @@ Wang等\cite{wang2023feature}
 %     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
 %     \label{fig:oaspl}
 % \end{figure}
+
+\begin{figure*}[h]
+\vspace{-2em}
+\captionsetup[subfloat]{font=scriptsize}
+\centering
+% --- Row 1 ---
+\subfloat[iTransformer]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/iTransformer.png}%
+    \label{fig:rul_itransformer}} % Optional label for subfigure
+% \hfill % Distribute space horizontally
+\subfloat[PatchTST]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/PatchTST.png}%
+    \label{fig:rul_patchtst}}
+% \hfill
+\subfloat[TSMixer]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/TSMixer.png}%
+    \label{fig:rul_tsmixer}}
+% \hfill
+\subfloat[MambaLithium]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/MambaLithium.png}%
+    \label{fig:rul_mamba}}
+% \hfill
+\subfloat[PINN]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/PINN.png}%
+    \label{fig:rul_pinn}}
+
+% --- Row 2 ---
+\subfloat[iTransformer+]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/iTransformer+.png}%
+    \label{fig:rul_itransformer_plus}}
+% \hfill
+\subfloat[PatchTST+]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/PatchTST+.png}%
+    \label{fig:rul_patchtst_plus}}
+% \hfill
+\subfloat[TSMixer+]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/TSMixer+.png}%
+    \label{fig:rul_tsmixer_plus}}
+% \hfill
+\subfloat[CRNN]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/CRNN.png}%
+    \label{fig:rul_crnn}}
+% \hfill
+\subfloat[PINN+]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/PINN+.png}%
+    \label{fig:rul_pinn_plus}}
+
+% --- Row 3 ---
+\subfloat[DeNN-bagging]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/bagging.png}%
+    \label{fig:rul_bagging}}
+% \hfill
+\subfloat[DeNN-fusion]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/fusion.png}%
+    \label{fig:rul_fusion}}
+% \hfill
+\subfloat[DeNN-voting]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/voting.png}%
+    \label{fig:rul_voting}}
+% \hfill
+\subfloat[ConvMMD]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/ConvMMD.png}%
+    \label{fig:rul_convmmd}}
+% \hfill
+\subfloat[DRNet]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/DRNet.png}%
+    \label{fig:rul_drnet}}
+
+% --- Row 4 ---
+\subfloat[DDAN]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/DDAN.png}%
+    \label{fig:rul_ddan}}
+\subfloat[DKTL]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/DKTL.png}%
+    \label{fig:rul_dktl}}
+\subfloat[LSTM-DA]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/LSTM-DA.png}%
+    \label{fig:rul_lstmda}}
+\subfloat[MAGNet]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/MAGNet.png}%
+    \label{fig:rul_magnet}}
+% Consider changing 'OURS' to your actual model name, e.g., 'RODTNet'
+\subfloat[RODTNet]{\includegraphics[width=1.35in, height=1.137in]{figures/rul_results/RODTNet.png}%
+    \label{fig:rul_ours}}
+
+\caption{Comparison of RUL prediction performance between the proposed RODTNet and comparison models on OOD generalization Task 1. In each panel, Predicted RUL (y-axis) is plotted against True RUL (x-axis). The dashed line serves as the ideal reference, and points represent individual predictions for the respective method. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner.}
+\label{fig:rul} % Overall figure label
+\end{figure*}
+
+\begin{figure*}[b!]
+\vspace{0.8em}
+\captionsetup[subfloat]{font=scriptsize}
+\centering
+\subfloat[Generalization Performance Comparison \label{fig:soh}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{figures/soh_results/soh_revised.png}}}
+\hspace{0.05\textwidth}
+\subfloat[Generalization Efficiency Comparison \label{fig:comp}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{figures/soh_results/b_combine_new.eps}}}
+\caption{Comparative analysis of the proposed RODTNet-LT model against baseline methods for SOH estimation.
+(a) Radar chart comparing the performance of RODTNet-LT and baseline models across 11 different SOH estimation generalization tasks.
+(b) Comparison of model performance (MSE), inference speed (s), and parameter count on the OOD SOH estimation generalization task.}
+\label{fig:soh_efficiency}
+\end{figure*}
+
+% RUL对比实验
+\begin{table*}[htbp]
+    \vspace{-1.5em}
+    \footnotesize
+    \centering
+    \caption{Comparison experimental results for the OOD RUL prediction tasks on the MATR, Tongji, HUST, and XJTU datasets.}
+    % \resizebox{\linewidth}{!}{
+    \scalebox{0.8}{
+    \small
+    \begin{adjustbox}{center}{
+    \begin{threeparttable}
+        \begin{tabular}{lccccccccccc}
+        \toprule
+        Task  & \multicolumn{2}{c}{Task1} & \multicolumn{2}{c}{Task2} & \multicolumn{2}{c}{Task3} & \multicolumn{2}{c}{Task4} & \multicolumn{2}{c}{Task5} & Task6 \\
+    \cmidrule{2-12}    Metric & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
+        \midrule
+        iTransformer \cite{liu2024itransformer} & 99.78  & 15290.60  & 78.56  & 12430.67  & 153.83  & 34106.78  & 94.88  & 15629.50  & 93.21  & 16692.93  & 46.35  \\
+        iTransformer+\tnote{a} \cite{liu2024itransformer} & 12.16  & 290.75  & 44.35  & 5100.32  & 40.20  & 4450.44  & 29.83  & 3284.53  & 40.36  & 5311.12  & 9.80  \\
+        PatchTST \cite{nie2023a} & 30.86  & 2147.96  & 141.59  & 40006.27  & 89.28  & 13432.70  & 149.46  & 36100.57  & 75.57  & 12738.93  & 29.58  \\
+        PatchTST+ \cite{nie2023a} & 12.82  & 393.49  & 42.24  & 4470.77  & 51.99  & 6520.95  & 38.72  & 3993.89  & 49.47  & 6372.25  & 30.24  \\
+        TSMixer \cite{chen2023tsmixer} & 261.39  & 95673.01  & 95.70  & 17312.12  & 159.98  & 42316.82  & 125.36  & 27480.27  & 92.97  & 17272.87  & 115.18  \\
+        TSMixer+ \cite{chen2023tsmixer} & 16.77  & 584.11  & 52.31  & 5986.63  & 80.59  & 12311.22  & 75.14  & 12132.82  & 66.54  & 9945.74  & 19.64  \\
+        PINN \cite{wang2024physics}  & 27.07  & 1345.26  & 29.33  & 1948.74  & 46.42  & 5144.30  & 46.24  & 4323.02  & 48.57  & 3539.95  & 43.84  \\
+        PINN+ \cite{wang2024physics} & 6.04  & 77.55  & 8.38  & 213.91  & 12.02  & 266.98  & 12.27  & 408.44  & 9.74  & 195.91  & 9.74  \\
+        DR-Net \cite{WANG2023108897} & 11.61  & 284.32  & 42.50  & 5231.99  & 49.33  & 5978.47  & 42.87  & 5410.01  & 45.92  & 8061.80  & 8.91  \\
+        CRNN \cite{D2EE01676A}  & 13.66  & 378.74  & 18.16  & 708.65  & 14.40  & 535.36  & 13.86  & 579.07  & 12.73  & 365.98  & 8.34  \\
+        MAGNet \cite{TAN2024103725} & 13.51  & 347.84  & 15.08  & 492.65  & 16.03  & \underline{455.34}  & \underline{14.75}  & \underline{394.57}  & 13.37  & \underline{313.13}  & 8.98  \\
+        DeNN-bagging \cite{10102497} & 23.40  & 1014.55  & 46.38  & 4144.07  & 68.88  & 8058.54  & 93.65  & 14047.69  & 57.23  & 5960.93  & 16.73  \\
+        DeNN-fusion \cite{10102497} & 24.34  & 1010.97  & 49.15  & 4672.25  & 74.74  & 9549.55  & 95.93  & 16148.70  & 76.95  & 10290.79  & 16.80  \\
+        DeNN-voting \cite{10102497} & 22.90  & 939.58  & 45.83  & 4074.09  & 71.58  & 8787.72  & 93.89  & 13623.54  & 57.07  & 6028.56  & 16.38  \\
+        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 13.19  & 368.84  & 20.32  & 818.35  & 19.99  & 923.46  & 17.47  & 672.48  & 13.55  & 385.23  & 7.28  \\
+        LSTM-DA \cite{HAN2022230823} & 20.36  & 713.70  & 30.14  & 1484.85  & 30.15  & 1701.16  & 31.45  & 1644.90  & 20.28  & 769.22  & 18.70  \\
+        ConvMMD \cite{9788003} & 23.95  & 989.20  & 36.96  & 2619.11  & 46.70  & 4542.61  & 57.68  & 6594.72  & 28.70  & 1960.54  & 17.03  \\
+        DKTL \cite{10029904}  & 23.77  & 1005.67  & 38.93  & 3220.22  & 51.40  & 5403.52  & 62.88  & 7711.63  & 30.94  & 2252.70  & 15.71  \\
+        DDAN \cite{9560040}  & 19.35  & 622.24  & 26.90  & 1206.61  & 25.29  & 1267.76  & 26.25  & 1252.40  & 17.79  & 541.77  & 14.07  \\
+        RODTNet++\tnote{b} {(ours)} & \underline{2.13}  & \underline{20.29}  & \underline{12.01}  & \underline{380.16}  & \underline{10.49}  & 577.50  & 25.63  & 3137.51  & \underline{12.83}  & 481.95  & \underline{4.06}  \\
+        RODTNet (ours) & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} \\
+    \midrule
+        \multicolumn{12}{c}{} \\
+    \midrule
+            & Task6 & \multicolumn{2}{c}{Task7} & \multicolumn{2}{c}{Task8} & \multicolumn{2}{c}{Task9} & \multicolumn{2}{c}{Task10} & \multicolumn{2}{c}{Task11} \\
+    \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+        \midrule
+        iTransformer \cite{liu2024itransformer} & 3348.46  & 79.31  & 11828.38  & 285.14  & 134288.68  & 97.72  & 12857.57  & 115.28  & 16008.10  & 86.33  & 9092.28  \\
+        iTransformer+ \cite{liu2024itransformer} & 451.88  & 19.96  & 690.05  & 25.39  & 1232.29  & 12.37  & 255.54  & 5.93  & 50.74  & 21.45  & 746.27  \\
+        PatchTST \cite{nie2023a} & 1881.96  & 156.53  & 55065.22  & 171.01  & 70146.16  & 80.18  & 8273.63  & 78.84  & 8451.20  & 108.02  & 16314.58  \\
+        PatchTST+ \cite{nie2023a} & 2642.04  & 21.09  & 803.19  & 107.18  & 20704.56  & 13.70  & 298.71  & 7.34  & 81.72  & 25.52  & 1018.20  \\
+        TSMixer \cite{chen2023tsmixer} & 21255.96  & 102.14  & 18803.24  & 363.95  & 183759.79  & 343.38  & 119826.16  & 97.57  & 12165.74  & 356.55  & 134948.97  \\
+        TSMixer+ \cite{chen2023tsmixer} & 844.83  & 20.28  & 700.89  & 45.71  & 3708.16  & 17.68  & 530.08  & 7.90  & 105.46  & 35.20  & 2180.88  \\
+        PINN \cite{wang2024physics}  & 4496.71  & 81.96  & 18077.43  & 126.97  & 25586.95  & 53.12  & 5147.91  & 55.81  & 4744.68  & 111.30  & 22690.40  \\
+        PINN+ \cite{wang2024physics} & 195.91  & 16.70  & 610.41  & 24.96  & 1203.36  & 10.54  & 251.13  & 9.83  & 261.32  & 9.83  & 177.17  \\
+        DR-Net \cite{WANG2023108897} & 180.23  & 15.77  & 482.02  & 30.98  & 1763.16  & 17.30  & 532.24  & 17.40  & 669.82  & 24.64  & 1306.43  \\
+        CRNN \cite{D2EE01676A}  & 138.99  & 13.79  & 365.50  & 39.02  & 3541.77  & 29.13  & 1250.78  & 26.57  & 1346.65  & 35.58  & 3191.76  \\
+        MAGNet \cite{TAN2024103725} & 146.94  & 15.79  & 428.60  & 44.58  & 4499.43  & 27.53  & 1183.21  & 24.84  & 1321.13  & 38.51  & 2961.67  \\
+        DeNN-bagging \cite{10102497} & 607.03  & 28.97  & 1520.12  & 85.31  & 15854.20  & 40.39  & 2688.63  & 36.51  & 2682.08  & 61.02  & 7199.04  \\
+        DeNN-fusion \cite{10102497} & 625.23  & 31.39  & 1769.45  & 92.75  & 17801.56  & 41.68  & 2863.98  & 36.61  & 2652.09  & 62.20  & 7491.24  \\
+        DeNN-voting \cite{10102497} & 586.70  & 30.15  & 1646.72  & 86.36  & 16175.97  & 40.83  & 2692.80  & 36.85  & 2739.17  & 61.56  & 7397.65  \\
+        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 105.15  & 21.18  & 752.52  & 71.95  & 12473.49  & 45.07  & 3804.16  & 28.68  & 1469.89  & 41.50  & 3260.10  \\
+        LSTM-DA \cite{HAN2022230823} & 639.52  & 32.55  & 1741.70  & 121.14  & 24930.62  & 31.85  & 1526.07  & 24.87  & 1151.76  & 44.07  & 3391.50  \\
+        ConvMMD \cite{9788003} & 544.12  & 37.69  & 2722.93  & 108.81  & 21251.08  & 20.64  & 668.67  & 28.49  & 1531.89  & 50.73  & 5750.57  \\
+        DKTL \cite{10029904}  & 465.40  & 36.85  & 2282.25  & 104.67  & 19313.69  & 28.27  & 1281.96  & 27.02  & 1456.52  & 54.55  & 6445.32  \\
+        DDAN \cite{9560040}  & 357.74  & 29.73  & 1478.19  & 117.50  & 24882.38  & 34.05  & 1859.57  & 24.13  & 1211.62  & 42.90  & 3599.68  \\
+        RODTNet++ {(ours)} & \underline{36.10}  & \textbf{0.40} & \textbf{0.30} & \underline{1.51}  & \underline{6.89}  & \underline{7.62}  & \underline{127.05}  & \underline{3.86}  & \textbf{36.87} & \textbf{8.39} & \underline{419.11}  \\
+        RODTNet (ours) & \textbf{0.68} & \underline{0.78}  & \underline{1.18}  & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} & \textbf{3.50} & \underline{70.76}  & \underline{14.03}  & \textbf{395.27} \\
+        \bottomrule
+        \end{tabular}%}
+    \begin{tablenotes}
+    \item[a] + indicates finetuning on the target domain.
+    \item[b] ++ indicates training directly on the target domain.
+    \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
+    \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
+    \item[e] Notation and experimental settings described here also apply to Table~\ref{tab:soh_results}.
+\end{tablenotes}
+\end{threeparttable}}
+\end{adjustbox}
+}
+\label{tab:rul_results}%
+\end{table*}%
 
 % SOH对比实验
 \begin{table*}[htbp]
@@ -336,7 +537,43 @@ Wang等\cite{wang2023feature}
     \label{tab:soh_results}%
 \end{table*}%
 
+To evaluate the OOD generalization capability of our proposed RODTNet and RODTNet-LT, we conduct comprehensive experiments across 11 tasks using MAE and MSE as evaluation metrics. For RUL prediction tasks, Table~\ref{tab:rul_results} demonstrates that RODTNet achieves state-of-the-art performance in 9 tasks and ranks second in the remaining 2 tasks, surpassed only by its target-domain-adapted variant. In SOH estimation tasks, RODTNet-LT attains optimal performance in 9 scenarios as shown in Table~\ref{tab:soh_results}, while exhibiting marginal performance gaps against its target-domain counterpart and MAGNet in 2 cases.
+% 
+Quantitatively, in OOD RUL prediction tasks, RODTNet reduces prediction errors by 40.76\% MAE and 28.65\% MSE compared to suboptimal baselines. Similarly, in OOD SOH estimation tasks, RODTNet-LT achieves 5.03\% MAE and 22.22\% MSE improvements over existing benchmarks. These average percentage improvements are calculated by comparing our method's performance against the second-best baseline when it is optimal for a given task, or against the best-performing baseline otherwise (with negative values denoting underperformance relative to the best), and then averaging these relative differences across all 11 generalization tasks. These enhancements validate the proposed method's robustness against domain shifts induced by heterogeneous degradation mechanisms.
+% 
+% In contrast, existing baselines demonstrate limited capability in extracting domain-invariant degradation patterns, even under target domain finetuning/adaptation with partial data access. Notably, both RODTNet and RODTNet-LT outperform their target-domain-trained variants, which can be attributed to the enhanced pattern comprehensiveness achieved through multi-source domain integration.
+% 
+% Visual evidence further corroborates these findings.
+% Fig.~\ref{fig:rul} assesses RODTNet's generalization against baselines using scatter plots (actual vs. predicted life) and error distributions histograms. Each subplot also presents the $R^{2}$ score in the top-left corner, further quantifying the goodness of fit. RODTNet's predictions cluster densely around the ideal line with a significantly narrower error distribution, demonstrating its effectiveness in capturing OOD degradation patterns. Furthermore, as shown by the radar charts in Fig.~\ref{fig:soh_efficiency}(a) for SOH estimation, the performance polygon for RODTNet-LT consistently extends closer to the outer edges of the chart across multiple metrics, reflecting its superior and more comprehensive generalization performance.
+Visual evidence, as demonstrated by the tightly clustered RUL prediction scatter plots in Fig.\ref{fig:rul} and the superior SOH generalization performance polygon in the radar charts of Fig.\ref{fig:soh_efficiency}(a), further corroborates these findings.
+
 \subsection{消融实验}\label{subsec:RODTNet_ablation_study}
+
+We conduct ablation studies to evaluate the effectiveness of each components in RODTNet and RODTNet-LT. Table~\ref{tab:ablation_1} reports the MAE and MSE results for RUL prediction using RODTNet variants across 4 datasets. Correspondingly, Table~\ref{tab:ablation_study_2} presents these metrics for the SOH estimation task using both RODTNet and RODTNet-LT on the same datasets.
+
+\subsubsection{Baseline}
+
+We establish the baseline model using a fully linear backbone with downsampled raw cyclic signals as input.
+
+\subsubsection{DGBL}
+
+We obtain the DGBL model by adding UDFS strategy to the baseline. We observe an improvement in generalization performance, which proves the effectiveness of our proposed UDFS in expanding the distribution boundary and fitting OOD degradation patterns.
+
+\subsubsection{LMCRDR}
+
+We create the LMCRDR model by replacing the baseline's raw input with reconstructed input using the heuristic manifold contraction strategy. We observe an improvement in performance, demonstrating the good adaptability of our manifold contraction approach to the backbone and its superiority in generalizing degradation patterns.
+
+\subsubsection{MCRDR}
+
+We then develop the MCRDR model by replacing the linear backbone of LMCRDR with Mamba. We observed a further improvement in prognostic accuracy, indicating that Mamba effectively extracts domain-invariant features.
+
+\subsubsection{LRODTNet}
+
+We combine LMCRDR with the UDFS while retaining a linear backbone to form LRODTNet. We observe that the addition of UDFS improved performance over LMCRDR, thus proving that our propose feature synthesis strategy can extend the boundary of learned degradation representations possessing low intrinsic dimensions.
+
+\subsubsection{RODTNet-LT}
+
+For the task of SOH estimation involving long-tailed distributions, we obtained the RODTNet-LT variant by the adding LARR strategy. We observe that RODTNet-LT achieved lower generalization error compared to RODTNet, proving the effectiveness of LARR in removing head bias.
 
 \subsection{超参数敏感性分析}\label{subsec:RODTNet_sensitivity_analysis}
 
@@ -346,6 +583,26 @@ Wang等\cite{wang2023feature}
     \bicaption{}{}
     \label{fig:rodtnet_sensitivity}
 \end{figure}
+
+We conduct a sensitivity analysis across 4 datasets to evaluate the model's performance sensitivity to variations in batch size, encoder hidden dimension, number of encoder layers, and the UDFS activation threshold, using target domain RMSE as the evaluation metric.
+
+\subsubsection{Batch Size}
+
+We investigate batch size's impact on performance, testing \{32, 64, 128, 256, 512\}. Fig.~\ref{fig:sensitivity}(a) demonstrates that a size of 32 typically yields optimal performance in general scenarios. However, on MATR tasks, larger batches decrease error, suggesting sufficient samples allow approximation of domain shift, whereas smaller batches better capture degradation patterns in other tasks.
+
+\subsubsection{Encoder Hidden Dimension}
+
+We assess how encoder hidden dimension affects generalization, testing \{16, 32, 64, 128, 256\}. Fig.~\ref{fig:sensitivity}(b) reveals improved performance on Tongji and HUST tasks with larger dimensions, reflecting scalability. Conversely, performance degrades on MATR and XJTU, suggesting potential overfitting from excessive model scale.
+
+\subsubsection{Number of Encoder Layers}
+
+We analyze the number of encoder layers' influence on model scale and generalization, testing \{1, 2, 3, 4, 5\}. Fig.~\ref{fig:sensitivity}(c) indicates effects generally consistent with hidden dimension, where increasing layers appear more susceptible to overfitting bottlenecks.
+
+\subsubsection{UDFS Activation Threshold}
+
+We evaluate sensitivity to the UDFS activation threshold, which affects the real/generated data ratio, testing \{0.0008, 0.004, 0.02, 0.1, 0.5\}. Fig.~\ref{fig:sensitivity}(d) shows generalization improves across all datasets as the threshold increases, highlighting the importance of real source domain data for modeling OOD patterns.
+
+We observe RODTNet is generally insensitive to hyperparameters, except for the complex XJTU task. For consistent comparisons, we fix parameters across tasks using the frequently optimal batch size of 32, along with hidden dimension 16 and 1 encoder layer for computational efficiency. Notably, RODTNet maintains strong performance even with these efficiency-prioritized parameters. We select a UDFS threshold of 0.5, effectively balancing minimal generalization error with reduced training overhead.
 
 \subsection{退化流形可视化分析}\label{subsec:RODTNet_manifold_analysis}
 
@@ -380,4 +637,72 @@ Wang等\cite{wang2023feature}
 %     \label{fig:oaspl}
 % \end{figure}
 
+\begin{figure*}[htbp]
+\vspace{-1.5em}
+\centering
+\subfloat{
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_ours_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_ours_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_ours_hust.png}
+    \hfill
+    \hspace{15pt} % 左侧间距加大
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in); % 缩短高度并上下留空
+    \end{tikzpicture}}
+    \hspace{15pt} % 右侧间距加大
+    \hfill
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_others_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_others_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures/rul_manifold_others_hust.png}
+}
+\hfil
+\subfloat{
+    \includegraphics[width=1in]{figures/manifold_figures_ours_2d/rul_manifold_ours_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures_ours_2d/rul_manifold_ours_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures_ours_2d/rul_manifold_ours_hust.png}
+    \hfill
+    \hspace{15pt}
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
+    \end{tikzpicture}}
+    \hspace{15pt}
+    \hfill
+    \includegraphics[width=1in]{figures/manifold_figures_others_2d/rul_manifold_others_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures_others_2d/rul_manifold_others_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures_others_2d/rul_manifold_others_hust.png}
+}
+\hfil
+\subfloat{
+    \includegraphics[width=1in]{figures/manifold_figures_ours_1d/rul_manifold_ours_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures_ours_1d/rul_manifold_ours_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures_ours_1d/rul_manifold_ours_hust.png}
+    \hfill
+    \hspace{15pt}
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
+    \end{tikzpicture}}
+    \hspace{15pt}
+    \hfill
+    \includegraphics[width=1in]{figures/manifold_figures_others_1d/rul_manifold_others_tri.png}
+    \includegraphics[width=1in]{figures/manifold_figures_others_1d/rul_manifold_others_tongji.png}
+    \includegraphics[width=1in]{figures/manifold_figures_others_1d/rul_manifold_others_hust.png}
+}
+\caption{Comparison of feature distributions obtained from RODTNet (left) and TSMixer (right). Features are visualized via PCA dimensionality reduction to 3D (top row), 2D (middle row), and 1D (bottom row) and points are colored based on ground truth labels.}
+\label{fig:Performance_Comparison_2}
+\end{figure*}
+
+To investigate the topology of degradation representations, we apply PCA for dimensionality reduction to three, two, and one dimensions to visualize feature maps from the RODTNet encoder, coloring points by labels. As depicted in Fig.~\ref{fig:Performance_Comparison_2}, the manifold obtained with the MCRDR strategy on the left exhibits a continuous distribution, well-preserved across dimensions, facilitating high-precision generalization. Conversely, the manifold without MCRDR, shown on the right, displays discontinuities appearing as holes and suffers from significant feature overlap between degradation stages upon dimensionality reduction, hindering such generalization.
+
 \section{本章小结}\label{sec:RODTNet_conclusion}
+
+In this paper, we have presented RODTNet, a novel method for robust OOD battery degradation modeling, along with its long-tail-optimized variant RODTNet-LT.
+% 
+First, we have proposed a manifold contraction-based robust degradation representation extraction strategy. It achieves pattern continuity and compresses the feature manifold by combining heuristic signal reconstruction with latent dynamics generated via the Mamba mechanism.
+% 
+Second, we have developed an uncertainty-driven feature synthesis approach to address domain shifts. This method correlates feature statistics uncertainty with domain variations using probabilistic modeling, steering the creation of domain-invariant features and diverse OOD examples.
+% 
+Finally, we have designed a long-tail-aware adaptive rebalancing refinement technique based on feature distribution smoothing. By exploiting feature-label correlations, it alleviates head-bias in the synthesized features, improving the handling of imbalanced trajectories.
+% 
+Comprehensive experimental results across 11 OOD generalization tasks using 4 LIB aging datasets demonstrate the significant advantages of the proposed RODTNet and RODTNet-LT over 14 baselines and their 20 variants, underscoring the applicability and effectiveness of our proposed method in real-world battery management systems.
+
+% Despite advancements, real-world battery operation necessitates continuous adaptation as degradation dynamics evolve throughout the lifespan, posing demands beyond initial OOD robustness. Exploring temporal domain adaptation thus presents a promising future direction, aiming to equip models with dynamic online update capabilities for sustained prognostic performance over time.
