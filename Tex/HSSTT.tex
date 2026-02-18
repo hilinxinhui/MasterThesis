@@ -30,7 +30,11 @@ Lin等\cite{9729404}
 
 \section{实验评估}\label{sec:HSSTT_experiment}
 
+In this section, we conduct extensive experiments to evaluate the performance of HSSTT. Initially, HSSTT is compared with baseline models regarding prediction accuracy and uncertainty quantification quality. Subsequently, ablation studies are performed to assess the impacts of the proposed components. Lastly, an experimental study is undertaken to compare ID and OOD SOH estimation, empirically verifying HSSTT's capability in distinguishing ID and OOD samples.
+
 \subsection{实验设置}\label{subsec:HSSTT_experimental_setup}
+
+Our benchmark encompasses four publicly available LIB degradation datasets, denoted as MIT\cite{mit_dataset_attia2020closed}, TRI\cite{tri_dataset_severson2019data}, TJU\cite{tongji_dataset_zhu2022data}, and XJTU\cite{WANG2024109884}, respectively. The data subset and the serial numbers of batteries \cite{WANG2024110325} that we used in this study are summarized in Table~\ref{tab:dataset_summary}. We evaluate HSSTT against seven baseline models, including MRVR\cite{rvr_rul_9552552}, GP-ICE\cite{gpr_soh_8263147}, BMNN\cite{bbb_rul_9738999}, SACN\cite{capsnet_rul_li2024sensor}, DeNN\cite{ensemble2_soh_10102497}, BDAE\cite{mcdropout_autoencoder_10412192}, and SNGP\cite{nemani2023uncertainty}. To ensure comparability, all baselines are reproduced to take direct cyclic signals as input and estimate SOH.
 
 % 这里应该补充一张各个数据集上电池退化轨迹的图片
 % 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
@@ -78,6 +82,7 @@ Lin等\cite{9729404}
     {XJTU} & {2C} & {1, 2, 3, 4, 5, 6, 7, 8} \\
     \bottomrule
     \end{tabular}%
+    \label{tab:HSSTT_dataset_summary}%
     }
 \end{table}%
 
@@ -113,9 +118,18 @@ Lin等\cite{9729404}
     $B$     & number of MC sampling during inference & 30 \\
     \bottomrule
     \end{tabular}%
-  \label{tab:hyperparams}%
+  \label{tab:HSSTT_hyperparams}%
     }
 \end{table}%
+
+We construct the sample inputs using directly measured data from $T$ consecutive cycles. Each cycle's data comprises three sequences from physical sensors: current, voltage, and relative sampling time. Initially, a min-max normalization is performed on all collected signals. Subsequently, these signals are downsampled to standardize their dimensions, and the resampled time series are horizontally stacked to form sample $X$. A dilated convolution is then applied to $X$ to extract cross-sensor dependencies. The resulting feature map is flattened into a column vector to create timestep-wise embeddings.
+
+We conduct all the experiments on a server equipped with an Intel Core i9-13900KF CPU and an NVIDIA 4090 GPU (PyTorch 2.1.0 with CUDA 11.8). A leave-one-out cross-validation protocol is implemented, sequentially excluding individual batteries as test sets and dividing the remaining samples into training (90\%) and validation (10\%) subsets.
+This cycle continues until every battery is used as the test set, guaranteeing comprehensive evaluation while maintaining strict separation between training, validation, and test phases.
+% 
+MSE serves as the loss function, and model optimization is achieved through the Adam optimizer. The model training is limited to 100 epochs, with early stopping triggered by validation loss to prevent overfitting. \newtext{The key hyperparameters for HSSTT, optimized via the sensitivity analysis in Section IV-D, are detailed in Table~\ref{tab:hyperparams}.}
+
+The accuracy of the SOH estimates is evaluated using mean absolute error (MAE) and root mean square error (RMSE). Additionally, negative log-likelihood (NLL) is utilized to gauge the quality of fit and predictive uncertainty of HSSTT. Expected calibration error (ECE) is introduced as a diagnostic tool for calibration assessment\cite{kuleshov2018accurate, nemani2023uncertainty}. Visualization results of SOH estimation, uncertainty quantification, and calibration supplement the quantitative metrics.
 
 \subsection{性能对比实验}\label{subsec:HSSTT_comparison_experiment}
 
@@ -232,6 +246,19 @@ Lin等\cite{9729404}
 \label{tab:HSSTT_efficiency}%
 \end{table}
 
+% The averaged SOH estimation, uncertainty quantification and calibration results for the proposed HSSTT and other baseline models are presented in Table~\ref{tab:main-results}. Overall, HSSTT outperforms compared models in all aspects and this superior performance is consistently observed across all datasets. The improvements on previous SOTA results are noteworthy. Taking the MIT dataset as an example, the average reductions in MAE, RMSE, NLL, and ECE are 18.10\%, 9.88\%, 23.48\%, and 40.26\%, respectively. 
+% % Specifically, although MRVR and GP-ICE achieve relatively high estimation accuracy, they are limited by model capacity and the incorrect inductive bias towards data distribution. Their estimation results are susceptible to noise and show strong inconsistency, indicating severe model miscalibration, which does not meet the requirements for trustworthiness. DeNN has alleviated this issue to some extent, but the ensemble strategy results in significant overhead for both training and deployment, which hinders its application in real-world scenarios. Similarly, the BBB strategy used by BMNN also results in substantial computational overhead. This approach, which tightly couples SOH estimation with uncertainty quantification, is greatly affected by the sparsity of the input feature distribution, severely hindering accurate SOH estimation. Conversely, SNGP requires a single forward propagations to estimate the statistics of the output posterior distribution. Similarly affected by the sparsity of input information, SNGP is prone to providing inaccurate SOH estimates and unreliable uncertainty quantification results. BDAE implements uncertainty quantification based on MCD. These methods are sensitive to hyperparameter settings and thus relies on a tedious parameter search process. All the aforementioned methods only focus on the temporal correlations during the degradation process, ignoring the spatial correlations exist among sensor signals. SACN addresses this by utilizing capsule networks to extract spatio-temporal information. However, this approach still struggles to cope with the sparsity challenges and fails to accomplish trustworthy SOH estimation. HSSTT fully considers and addresses these drawbacks, achieving trustworthy battery prognoses. 
+% % To further elucidate the trustworthiness of HSSTT, we have given the qualitative results of HSSTT against other baselines for the three data sets in Fig.~\ref{fig:main_results}.
+% we also provide qualitative results for demonstration in Fig.~\ref{}.
+
+% The results for averaged SOH estimation and uncertainty quantification and calibration for the proposed HSSTT and baseline models are detailed in Table~\ref{tab:main-results}. HSSTT consistently outperforms compared models across all metrics and datasets, demonstrating superior performance. Notably, the enhancements over previous state-of-the-art SOTA results are significant. For instance, with the MIT dataset, the reductions in MAE, RMSE, NLL, and ECE are 18.10\%, 9.88\%, 23.48\%, and 40.26\%, respectively. Additionally, qualitative results are shown in Fig.~\ref{fig:main_results} for further demonstration.
+
+The results of the average SOH estimation and the uncertainty quantification and calibration for the proposed HSSTT and baseline models are detailed in Table~\ref{tab:main-results}. HSSTT consistently outperforms the compared models on all metrics and datasets, demonstrating superior performance. Notably, the enhancements over the previous state-of-the-art SOTA results are significant. For instance, with the MIT dataset, the reductions in MAE, RMSE, NLL, and ECE are 18.10\%, 9.88\%, 23.48\%, and 40.26\%, respectively. Additionally, qualitative results are shown in Fig.~\ref{fig:main_results} for further demonstration.
+
+Furthermore, efficiency comparisons among various models are conducted. MCDT\cite{20164903082858}, VIT\cite{20191806851746}, and GSRT\cite{20193407356730} represent three distinct stochastic attention mechanisms using different strategies. The inference time and storage utilization for both HSSTT and baseline models are illustrated in Table~\ref{tab:efficiency}. HSSTT demonstrates not only superior estimation accuracy and uncertainty quantification quality, but also achieves remarkable computational efficiency, collectively endowing it with strong practical applicability in industrial systems.
+
+\newtext{To validate the clustered attention module that is crucial to HSSTT's efficiency, we therefore analyze its impacts on latency and the module's internal mechanism. As shown in Fig.\ref{fig:clustered_attention}(a), the module substantially reduces inference latency compared to a standard attention baseline. This improvement stems from its ability to perform sparse feature extraction by projecting the original high-dimensional keys onto a compact, low-dimensional manifold defined by learned centroids, a process visualized in Fig.~\ref{fig:clustered_attention}(b).}
+
 \subsection{消融实验}\label{subsec:HSSTT_ablation_study}
 
 \begin{figure}[!htbp]
@@ -313,6 +340,11 @@ Lin等\cite{9729404}
   \label{tab:ablation_study_2}%
 \end{table}%
 
+% An ablation study is performed to address the following concerns: the distinctions between the GSR and MCD strategies, the effects of spatio-temporal degradation feature representation, and the influence of hierarchical self-attention. HSSTT variants without particular components are detailed in Table~\ref{tab:ablation_study_1}.
+An ablation study is performed to address the following concerns: the distinctions between the GSR and alternative stochastic self-attention construction strategies, the effects of spatio-temporal degradation feature representation, and the influence of hierarchical self-attention. HSSTT variants without particular components are detailed in Table~\ref{tab:ablation_study_1}.
+% Firstly, we observe a significant decrease in RMSE and NLL after replacing the GSR-based stochastic Transformer with the MCD-based stochastic Transformer, which proves the superiority of GSR-based strategy over MCD-based strategy in terms of SOH estimation accuracy and uncertainty quantification capability. Furthermore, by separately removing the hierarchical attention mechanism and the spatio-temporal feature extractor from HSSTT, the prognostic accuracies and uncertainty quantification qualities also reduce, demonstrating that the hierarchical spatio-temporal feature extractor enhances model's ability to represent low-rank MTS signals.
+Furthermore, we explore the calibration's impact on the model, utilizing ECE and calibration curves for both quantitative and qualitative assessment of calibration effects. As indicated in Table~\ref{tab:ablation_study_2} and Fig.~\ref{fig:calibration}, the calibrated HSSTT's average ECE reduction of 64.1\% demonstrates the effectiveness of the proposed calibration strategy. This improvement is further corroborated by the calibration plot, where the after-calibration curve is close to the ideal, significantly mitigating the issues of under-confident or over-confident.
+
 \subsection{超参数敏感性分析}\label{subsec:HSSTT_sensitivity_analysis}
 
 \begin{figure}[!htbp]
@@ -342,6 +374,10 @@ Lin等\cite{9729404}
     \bicaption{HSSTT~架构图}{Diagram of the HSSTT framework}
     \label{fig:hsstt_sensitivity_tf}
 \end{figure}
+
+We conduct a sensitivity analysis to evaluate the influence of hyperparameters on the performance of HSSTT. These hyperparameters include the number of encoder layers $n_{encoder}$, the number of MHA heads $n_{head}$, the dimension of attention embedding $d_{emb}$, and the attention temperature factor $\tau$ (simplified by setting $\tau_{1} = \tau_{2} = \tau$). Specifically, we set the value ranges for each hyperparameter as follows: $n_{encoder} \in \{1, 2, 3, 4, 5\}$, $n_{head} \in \{1, 2, 4, 8, 16\}$, $d_{emb} \in \{8, 16, 32, 64, 128\}$, and $\tau \in \{0.6, 0.7, 0.8, 0.9, 1.0\}$. The analysis is conducted across all four datasets, with RMSE used as the evaluation metric.
+
+As illustrated in Fig.~\ref{fig:hyperparameter}, when $n_{encoder} = 1$, the HSSTT model achieves the optimal alignment between its parameter size and the problem scale. Similarly, setting $n_{head} = 2$ yields the best number of subspace mapping degradation modes, while $d_{emb} = 16$ provides the ideal trade-off between performance and computational efficiency. Furthermore, $\tau = 1$ enables smoother attention scores in the HSSTT model, enhancing adaptability to spatio-temporal degradation patterns.
 
 \subsection{分布内外退化模式辨识实验}\label{subsec:HSSTT_id_ood_identification}
 
@@ -383,4 +419,16 @@ Lin等\cite{9729404}
     \label{fig:hsstt_sensitivity_ood}
 \end{figure}
 
+In this subsection, we conduct two tasks to evaluate the performance of HSSTT on OOD detection. In \textit{Task I}, both training and test samples are from the MIT dataset, classifying the test samples as ID. Conversely, in \textit{Task II}, HSSTT is trained on the TRI dataset and tested on the MIT dataset, rendering the MIT samples as OOD in this context. We evaluate HSSTT's predictive uncertainty using sharpness—defined as the average output uncertainty—and NLL. The results, presented in Table~\ref{tab:id_ood}, demonstrate that HSSTT consistently shows lower uncertainty for ID samples and higher uncertainty for OOD samples, indicating its capability to effectively identify OOD samples based on predictive uncertainty, which is a critical aspect of trustworthy SOH estimation.
+
+To clearly illustrate the setup of the ID-OOD experiments on two datasets, we present the kernel density estimation (KDE) curves of the voltage and current signals, as shown in Figs.~\ref{fig:ood}(a) and (b). These curves highlight the variance in feature distributions, a result of differing charging and discharging protocols. Subsequently, Figs.~\ref{fig:ood}(c) and (d) depict the SOH estimation outcomes. Notably, the estimation intervals for the OOD samples are substantially broader than those for the ID samples, aligning with the previously stated conclusions.
+
 \section{本章小结}\label{sec:HSSTT_conclusion}
+
+In this paper, we have proposed HSSTT for trustworthy SOH estimation. First, we have designed Gumbel-Softmax representation-based stochastic self-attention for uncertainty-aware modeling. 
+% 
+Second, we have developed a hierarchical token-distance-sensitive Transformer encoder and integrated it with cross-sensor-dependency-aware timestep-wise convolution. This enables the capture of spatial-temporal dynamics within cyclic data and the identification of degradation-related characteristics.
+% 
+Third, we have proposed a principled regressor to correct potentially miscalibrated uncertainty, ensuring trustworthy SOH estimation for LIBs. Comprehensive experimental results have shown that HSSTT is superior to existing methods in trustworthiness, underscoring its superiority.
+
+\newtext{Despite its promising performance, the modern industrial environment increasingly demands trustworthy prognostic systems that can operate both effectively and efficiently without relying on large volumes of independent and identically distributed data during calibration. Therefore, our future work will proceed along two complementary paths. First, we will focus on the deployment, testing, and optimization of the proposed framework in real-world industrial scenarios to rigorously validate its practical effectiveness and robustness. Second, to address the aforementioned data dependency, our research will delve deeper into the inherent challenges of uncertainty-based source-free domain adaptation.}
