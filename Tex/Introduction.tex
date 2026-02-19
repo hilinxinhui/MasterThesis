@@ -4,11 +4,152 @@
 
 \section{国内外研究现状}\label{sec:Intro_literature_review}
 
+In this section, we review methodologies relevant to uncertainty-aware prognosis, categorizing them into two paradigms: physics-based models and data-driven models.
+
+In this section, we review methods related to robust battery degradation modeling, including methods based on (1) pretraining-finetuning paradigm, (2) domain adaptation paradigm, and (3) domain generalization paradigm.
+% (1) pretraining-finetuning requiring full target-domain labels,
+% (2) domain adaptation aligning feature distributions with unlabeled target data,
+% (3) domain generalization operating without target-domain supervision.
+
+% In this section, we review the related methods including CDLMs and LLMs for mitigating statistical bias, CDLMs and LLMs for rejecting undesired data, and LLMs for detecting sequence-level hallucinations.
+In this section, we review the related methods including (1) CDLMs and LLMs for mitigating statistical bias, (2) CDLMs and LLMs for rejecting undesired inputs, and (3) LLMs for detecting sequence-level hallucinations.
+
 \subsection{计及不确定性的健康状态估计方法研究现状}\label{subsec:SOH_estimation}
+
+\subsection{Uncertainty-aware Physics-based Prognostic Models}\label{subsec:physics-based_models}
+
+Physics-based prognostic models derive uncertainty-aware predictions by integrating degradation mechanisms with filtering techniques for state estimation and parameter updating. The employed filters—predominantly Kalman filters and particle filters—leverage inherent Bayesian frameworks to quantify uncertainty through probabilistic inference over system states and noise distributions\cite{chen2003bayesian}, enabling dynamic confidence bounds on predictive results.
+% 2016
+Bressel \emph{et al.}\cite{7386653} propose an extended Kalman filter-based algorithm integrated with the inverse first-order reliability method for SOH and RUL prediction, along with the corresponding confidence intervals.
+% 2021
+Kim \emph{et al.}\cite{9032349} propose a prognostic model utilizing a dynamic particle filter which quantifies the uncertainty associated with the battery's end-of-life and adaptively adjusts the parameters of the degradation model.
+% 2021
+Haque and Choi \cite{9113648} propose a prognostic model utilizing a sparse kernel ridge regression-assisted particle filter and quantifie abrupt changes in degradation trajectories by accounting for noise uncertainty.
+% 2022
+Ahwiadi and Wang \cite{AHWIADI2022110817} propose an enhanced particle filter model based on evolutionary fuzzy predictors to mitigate sample degeneracy and impoverishment issues while achieving high-precision remaining useful life interval estimation.
+% 2023
+Rezaei \emph{et al.}\cite{REZAEI2023107883} develope a fuzzy robust two-stage unscented Kalman filter to estimate cycle capacity and quantify uncertainty in a phased manner using the noise covariance matrix.
+% 2024
+Cui \emph{et al.}\cite{10385053} design a prognostic model based on dual unscented particle filters to address uncertainties in dynamic degradation trajectories and achieve robust prediction.
+% 2024
+Wang \emph{et al.}\cite{10672556} propose a zonotopic Kalman filter-based method with physics constraints to achieve online capacity interval estimation.
+
+\subsection{Uncertainty-aware Data-driven Prognostic Models}\label{subsec:data-driven_models}
+
+Uncertainty-aware data-driven prognostic models can be classified into statistical learning-based methods \cite{van2021bayesian, gruber2025sourcesuncertaintysupervisedmachine} and deep learning-based methods \cite{ABDAR2021243}. Statistical learning approaches rely on explicit probabilistic models for analytical or approximate inference. In contrast, deep learning methods address uncertainty by leveraging the statistical properties of randomized parameter spaces or output distributions.
+% 
+Wang \emph{et al.}\cite{rvr_rul_9552552} introduce a prognostic method based on relevance vector regression (RVR), while 
+Richardson \emph{et al.}\cite{gpr_soh_8263147} employ Gaussian process regression (GPR) for SOH estimation.
+% 
+Zhang \emph{et al.}\cite{bbb_rul_9738999} develop a Bayesian mixture neural network (BMNN) to capture the distribution of prediction results. 
+%
+Li \emph{et al.}\cite{capsnet_rul_li2024sensor} propose a dropout-based remaining useful life (RUL) prediction framework named SACN.
+%
+Zhang \emph{et al.}\cite{ensemble2_soh_10102497} combine a multi-model fusion method and a deep ensemble neural network to quantify SOH estimation uncertainty, known as DeNN.
+%
+Zhou \emph{et al.}\cite{mcdropout_autoencoder_10412192} design a Bayesian deep autoencoder (BDAE) with Monte Carlo dropout (MCD) and variational inference to measure the uncertainty in SOH estimates.
+%
+Nemani \emph{et al.}\cite{nemani2023uncertainty} propose a strategy focusing on the spectral-normalized neural Gaussian process (SNGP) for deterministic uncertainty quantification.
+%
+Lin and Li\cite{9729404} introduce a Bayesian neural networks (BNN) framework utilizing Concrete Dropout for RUL prediction, in which an iterative calibration is integrated by combining isotonic regression with standard deviation (STD) scaling.
+%
+Ke \emph{et al.}\cite{10217044} develop a MCD-based BNN model for LIBs' knee capacity prediction and also used the STD scaling method for uncertainty calibration.
+%
+Jiang \emph{et al.}\cite{10391265} present a neural network based on Bayes-by-Backprop strategy with uncertainty calibration to estimate SOH of second-life batteries.
+
+Though advancements, there remains several open issues in delivering prognostic results that are both highly accurate and free from bias.
+% 
+First, the physics-based models mainly focus on noise-caused uncertainties, leading to insufficient representation of model confidence and inconsistent outcomes. Conversely, those in data-driven models lack granularity and structural adaptability, impeding the effective extraction of degradation patterns.
+% 
+Second, the existing methods that focus on model uncertainty in predicting SOH often neglect spatial-temporal uncertainties in the data. This can lead to the use of irrelevant or incorrect data segments in degradation modeling, consequently diminishing the prognostic accuracy.
+% 
+Third, due to their approximate nature, uncertainty-aware prognostic models may inadequately represent the actual distribution of cyclic data. They exhibit small uncertainty even when their estimates substantially deviate from actual values, thus failing to differentiate between ID and OOD samples.
+% 
+To address the aforementioned issues, we propose HSSTT, a method for trustworthy SOH estimation that leverages uncertainty modeling and incorporates a calibration process to enhance both attention aggregation and the extraction of spatial-temporal degradation dependencies.
 
 \subsection{面向分布漂移的退化建模方法研究现状}\label{subsec:degradation_modeling}
 
+\subsection{Pretraining-finetuning-based Degradation Modeling}
+
+% In \cite{LI2021116410}, Li \emph{et al.} propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
+In \cite{9343713}, Che \emph{et al.} introduce an online self-calibrating model for RUL prediction using Gaussian process regression, long short-term memory neural network (LSTM), and a pretraining-finetuning strategy.
+In \cite{LIU2025115347}, Liu \emph{et al.} fine-tune a bidirectional LSTM-Mamba2 model with differential voltage features to achieve SOH estimation across batteries with different operating conditions and electrode materials.
+In \cite{D2EE01676A}, Ma \emph{et al.} propose a real-time personalized battery degradation modeling framework named CRNN, achieving joint prediction of SOH and RUL across operating conditions.
+In \cite{wang2024physics}, Wang \emph{et al.} propose a physics-informed neural network (PINN) for battery degradation modeling and achieve cross-dataset battery health state prediction using the pretraining-finetuning paradigm.
+
+\subsection{Domain Adaptation-based Degradation Modeling}
+
+In \cite{9788003}, Ma \emph{et al.} propose a method named ConvMMD that aligns source and target domains by minimizing the maximum mean discrepancy of lower-order moments between them.
+In \cite{HAN2022230823}, Han \emph{et al.} present a model requiring only a few target samples, achieved by incorporating a domain adaptation layer into LSTM, known as LSTM-DA.
+In \cite{9560040}, Ye \emph{et al.} design a method named DDAN that realizes unsupervised degradation feature alignment via adversarial training across domains.
+In \cite{10029904}, Lu \emph{et al.} develop a two-stage prognostic framework named DKTL, which combines degradation mechanisms and achieves knowledge transfer of degradation patterns from synthetic data to real data.
+In \cite{WANG2023108897}, Wang \emph{et al.} develope a model with a domain invariant-specific feature decoupling strategy and a degradation trend preservation strategy to align degradation patterns, known as DR-Net.
+
+\subsection{Domain Generalization-based Degradation Modeling}
+
+Domain generalization paradigm involves three main categories, namely data manipulation, representation learning, and specific learning strategy \cite{9782500}.
+% In \cite{CHEN2024234696}, Chen \emph{et al.} develop a dual-branch feature extractor to process domain samples with mixed and separated sources. By leveraging a domain discriminator and a health state estimator, their approach enables domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
+In \cite{CHEN2024234696}, Chen \emph{et al.} develop a dual-branch network, a domain discriminator and a health state estimator to learn domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
+In \cite{TAN2024103725}, Tan \emph{et al.} design a meta learning-based domain generalization method named MAGNet. It couples a two-phase meta-optimization strategy with RUL-driven health prediction, enforcing domain-invariant representation learning through task-aligned gradient synchronization. % promoting the learning of cross-domain consistent representations.
+In \cite{liu2024itransformer}, Liu \emph{et al.} propose a method designed to obtain robust representations against OOD temporal patterns through the inclusion of a transposed attention module and a feed-forward module, known as iTransformer.
+In \cite{nie2023a}, Nie \emph{et al.} present a sequence modeling framework resistant to pattern drift known as PatchTST.
+% The model employs subsequence segmentation and channel-independent modeling to enhance its adaptability to dynamic temporal patterns.
+In \cite{chen2023tsmixer}, Chen \emph{et al.} develop a linear model capable of efficiently extracting spatio-temporal dependencies without relying on task-specific prior knowledge, known as TSMixer.
+
+Due to dependency on target domain data, pretraining-finetuning and domain adaptation paradigms face deployment constraints in scenarios with dynamic operating conditions and partial observability.
+% Representation learning and meta-learning strategies eliminate the need for target domain samples but often rely on precise domain labels or complex pretext tasks, limiting their effectiveness in intricate transportation environments.
+While the representation learning-based and meta learning-based methods enable target-free modeling, their dependence on degradation priors, including auxiliary metadata or pretext tasks, limits scalability and generalization performance.
+% 
+% These limitations inspire the exploration of methods driven by the relatively understudied data manipulation strategy, particularly the feature manipulation strategy.
+Though promising, data manipulation-based method faces open issues in robust battery prognosis, including scarce spatiotemporal degradation information, statistics uncertainty in feature spaces due to domain shifts, and the long-tail degradation distributions across multi-source domains.
+To address these issues, we propose RODTNet, a novel model for OOD degradation pattern generalization. It generates continuous degradation patterns within a low-complexity latent feature space through heuristic feature reconstruction and probabilistic feature statistics generation. Furthermore, we propose RODTNet-LT, an enhanced variant of RODTNet, which incorporates statistical feature correction to specifically address the long-tail distribution challenge.
+
 \subsection{幻觉鲁棒的故障诊断方法研究现状}\label{subsec:fault_diagnosis}
+
+
+\subsection{CDLMs and LLMs for Mitigating Statistical Bias}
+In \cite{Peng_Liu_Du_Gao_Wang_2025}, H. Peng \emph{et al.} design a cross-dataset diagnostic LLM, termed BearLLM.
+In \cite{VGCDM}, X. Liu \emph{et al.} introduce pulse-voltage embeddings into the diffusion process for controllable vibration synthesis.
+In \cite{DCGAN}, K. Zhou \emph{et al.} develop a balanced generator-discriminator architecture to diagnose gear defects, termed DCGAN.
+In \cite{WOS:000688310200005}, T. Han \emph{et al.} propose a hybrid network that combines class constraints with adversarial domain regularization to capture transferable features.
+In \cite{10478558}, M. Vu \emph{et al.} propose a dual-branch diagnostic framework that enhances fault classification accuracy in sparse-label scenarios.
+In \cite{QSCGAN}, W. Wan \emph{et al.} embed self-attention and spectral normalization within generator-discriminator architectures to augment rocket bearing data, termed QSCGAN.
+In \cite{VQVAE}, Q. Zheng \emph{et al.} combine degradation stage partitioning and vector quantized augmentation to enrich degradation features, termed VQVAE.
+
+
+
+\subsection{CDLMs and LLMs for Rejecting Undesired Inputs}
+%MDCC=DSRC+马氏距离
+%WDSN=DANN+马氏距离
+In \cite{ZHAO2022108672}, C. Zhao \emph{et al.} employ a triplet loss and a boundary adaptation method to learn compact features and optimal class boundaries.
+In \cite{10262196}, Z. Zhu \emph{et al.} develop an adversarially trained open-set classifier to identify unknown classes and out-of-domain samples.
+In \cite{10214410}, J. Long \emph{et al.} develop a domain-generalized unseen fault diagnosis method by fusing a meta-learning block with the Mahalanobis metric, termed MLMM.
+In \cite{ZHANG2023109518}, X. Zhang \emph{et al.} introduce a domain-adaptive approach that disentangles private and shared features to diagnose unseen faults, termed WDSN.
+In \cite{10382502}, B. Lu \emph{et al.} design a contrastive embedding-based diagnostic strategy that jointly preserves domain-specific and domain-invariant features, termed MDCC.
+In \cite{20242516270368}, B. Liu \emph{et al.} benchmark LLaMA-series LLMs for undesired input detection and design a cosine distance-based detector using isotropic embeddings, termed LLM-OOD.
+
+
+\subsection{LLMs for Detecting Sequence-Level Hallucinations}
+%请检查LLM-check中具体用到的特征，确保与实验一致。
+%请检查\cite{azaria-mitchell-2023-internal}是否是秒杀级对比算法 <- 这篇论文没开源
+%请检查这篇论文Detecting Hallucinations in Large Language Model Generation: A Token Probability Approach，参考文献中有好多利用中间层信息进行幻觉检测的文献。
+%请检查Unsupervised Real-Time Hallucination Detection based on the Internal States of Large Language Models是否是秒杀级对比算法 <- 使用LLM-Check-HiddenScore实现
+In \cite{20251218102787}, G. Sriramanan \emph{et al.} design a compute-efficient detector that leverages the model's internal attention maps, termed LLM-Check.
+In \cite{20243917091282}, J. Duan \emph{et al.} develop a hallucination quantification approach by reweighting token- and sequence-level relevance.
+In \cite{20240715556058}, T. Zhang \emph{et al.} introduce a retrieval-free detector that quantifies hallucinations through token-level uncertainty.
+In \cite{selfcheckgpt}, P. Manakul \emph{et al.} propose SelfCheckGPT, which assesses hallucinations by sampling multiple black-box LLM responses and measuring their mutual consistency.
+% In \cite{azaria-mitchell-2023-internal}, A. Azaria \emph{et al.} design a hallucination classifier using LLM hidden activations.
+In \cite{su-etal-2024-unsupervised}, W. Su \emph{et al.} propose a real-time and annotation-free hallucination detection framework using the internal states of LLMs, termed MIND.
+In \cite{10.1007/978-3-031-86623-4_13}, E. Quevedo \emph{et al.} propose a supervised approach that utilizes an auxiliary detector trained on resource-efficient numerical features, termed SHalluDetect.
+% In \cite{20242516270368}, B. Liu \emph{et al.} highlight the isotropic nature of LLMs and design a cosine distance-based hallucination detector, termed LLM-OOD.
+In \cite{li-etal-2023-halueval}, J. Li \emph{et al.} develop a benchmark via sampling-then-filtering and annotation for hallucination analysis.
+
+However, several open issues remain in improving the performance of diagnostic LLMs.
+First, existing models overlook the compound statistical bias caused by inter-dataset discrepancies and class imbalance, often mistaking domain-specific features for stochastic noise.
+Simple perturbation-based augmentation further aggravates this issue by generating strongly correlated samples that do not effectively enrich minority classes.
+Second, CDLMs and LLMs tend to underestimate the predictive uncertainty associated with undesired inputs that share high-level semantics with the training data, thereby degrading diagnostic accuracy.
+Third, due to semantic redundancy in generated text and the model's overconfidence, existing detectors frequently fail to identify hallucinated content.
+To tackle these issues, we propose DA-TMLLM, which detects and mitigates LLM hallucinations by effectively augmenting the training data and accurately quantifying the uncertainty of generated answers.
 
 \section{研究目标与关键研究挑战}\label{sec:Intro_research_objectives_and_challenges}
 
