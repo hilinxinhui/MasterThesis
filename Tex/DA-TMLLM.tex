@@ -11,32 +11,401 @@
     \label{fig:da-tmllm_framework}
 \end{figure}
 
-\subsection{}\label{subsec:DA-TMLLM_DA}
+The overall framework of the proposed DA-TMLLM is shown in Fig. \ref{fig:da-tmllm_framework}.
+First, we introduce the designed ControlNet-guided cross-dataset conditional diffusion model (CGCDM) to alleviate hallucinations induced by statistical bias.
+Second, we introduce the trustworthy multimodal LLM, including details of fine-tuning, key token targeting, and a key token-driven uncertainty reweighting strategy.
+Third, we introduce the hallucination-resilient scheme based on DA-TMLLM.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/ControlNet.eps}
-    \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
-    \label{fig:controlnet}
+To mitigate inter-dataset discrepancies, we propose a cross-dataset standardization method by applying fixed-duration segmentation, length alignment, and scale normalization.
+Then, we develop the architecture of the conditional diffusion model (CDM) to synthesize vibration signals.
+Finally, we design a ControlNet to inject controllable semantic guidance into the reverse diffusion phase.
+
+\subsubsection{Cross-Dataset Standardization Method for Data Preprocessing}
+Since sensor sampling rates, collection conditions, and bearing types vary substantially across different bearing datasets, collected signals exhibit differences on characteristic fault frequency and amplitude.
+When these heterogeneous signals are fed directly to a diffusion model, the model tends to treat the inter-dataset discrepancies as random noise, hindering its ability to learn an effective joint distribution.
+To address this issue, we propose a cross-dataset standardization method.
+
+In conventional data preprocessing methods, the raw time-domain signal is typically partitioned into fixed-length samples containing an identical number of data points.
+Because vibration signals are collected at different sampling rates, the fixed-length partition method shifts the characteristic fault frequencies and thus enlarges inter-dataset discrepancies.
+To mitigate this problem, we introduce a fixed-duration segmentation method, and the $m$-th segment is formulated as
+\begin{equation}
+\bm{x}_o = \bigl\{\, \bm{x}_r[i] \bigm| i = m\nu,\, m\nu+1,\, \dots,\; (m+1)\nu - 1 \bigr\},
+\end{equation}
+where $\nu$ is the dataset-specific sampling rate, and $\bm{x}_r$ is the raw signal.
+After the fixed-duration segmentation, the resulting segments from different datasets should be further aligned in length and amplitude to serve as suitable network inputs.
+This is accomplished by successively applying the discrete Fourier cosine transform and scale normalization, denoted as $\operatorname{DFCT}(\cdot)$ and $\operatorname{SNorm}(\cdot)$, respectively.
+The $\operatorname{DFCT}(\cdot)$ transforms the time-domain segment into its frequency spectrum, after which only the first $L_{f}$ spectral bins are retained, where $L_{f}$ is a predefined length. To accommodate variations in sampling rate, spectra containing fewer than $L_{f}$ bins are zero-padded, whereas those containing more are truncated.
+The amplitude of the resulting spectrum is then mapped to the interval $\left[-1,1\right]$ by $\operatorname{SNorm}(\cdot)$.
+% The successive preprocessing process is expressed as
+This preprocessing process is expressed as
+\begin{equation}
+	\label{eq:dcn}
+	\bm{x}_v =
+	\begin{cases}
+		\operatorname{SNorm}\bigl(\operatorname{DFCT}(\bm{x}_o)[0:L_{f}]\bigr),      & \ell \ge L_{f},\\[4pt]
+		\operatorname{SNorm}\bigl(\operatorname{Concat}(\operatorname{DFCT}(\bm{x}_o),\bm{0}_{\,L_{f}-\ell})\bigr), & \ell < L_{f},
+	\end{cases}
+\end{equation}
+where $\ell$ is the actual number of spectral bins, and $\operatorname{SNorm}(\cdot)$ is formulated as
+\begin{equation}
+	\label{eq:scalenorm}
+	\operatorname{SNorm}(\bm{x})=g\,\frac{\bm{x}}{\lVert \bm{x}\rVert_{2}},
+\end{equation}
+where $g=\rho\sqrt{L_{f}}$, and $\rho$ is a predefined scaling factor.
+
+\subsubsection{ControlNet-Guided Conditional Diffusion}
+
+We employ a diffusion-based augmentation model that simultaneously promotes training stability and sample diversity, which is composed of a forward diffusion phase and a reverse diffusion phase.
+To enhance semantic consistency during generation, we design a ControlNet that injects high-level semantic features into the latent features at every reverse diffusion step.
+
+During the forward diffusion, the preprocessed $\bm{x}_v$ is progressively added with noise through a length-$S$ Markov chain, where isotropic Gaussian noise is incrementally added at each step $s \in \{1,\dots ,S\}$.
+The adding noise process at step $s$ is expressed as
+\begin{equation}
+q(\bm{x}_v^{(s)} \mid \bm{x}_v^{(s-1)}) = \mathcal{N}\!\bigl(\sqrt{\alpha^{(s)}}\,\bm{x}_v^{(s-1)},\, (1-\alpha^{(s)})\bm{I}\bigr),
+\end{equation}
+where $\bm{I}$ is the identity matrix, $\alpha^{(s)}$ is a noise scaling factor, $\alpha^{(s)} = 1 - \beta^{(s)}$, and  $\beta^{(s)}$ is specified by a predefined variance schedule $\zeta$.
+After $S$ steps, $\bm{x}_v^{(S)}$ approaches a pure Gaussian sample distribution.
+Using the closed-form accumulation, the whole forward diffusion process can be expressed as
+\begin{equation}
+q(\bm{x}_v^{(S)} \mid \bm{x}_v^{(0)}) = \mathcal{N}\!\bigl(\sqrt{\hat{\alpha}^{(S)}}\,\bm{x}_v^{(0)},\,(1-\hat{\alpha}^{(S)})\bm{I}\bigr),
+\end{equation}
+where $\hat{\alpha}^{(S)} = \prod_{s=1}^{S} {\alpha}^{(s)}$.
+$\bm{x}_v^{(S)}$ serves as the input for the subsequent reverse diffusion phase.
+
+During the reverse diffusion phase, the initial latent
+$\bm{x}_v^{(S)} \sim \mathcal{N}(0,\bm{I})$ is iteratively refined by a step-aware denoiser $\epsilon_{\bm{\theta}_\mathrm{d}}(\cdot)$.
+At each diffusion step $s$, the UNet-based noise prediction network receives the triplet
+$(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c})$, estimates the added Gaussian perturbation, and computes the posterior mean
+\begin{equation}
+	\mu_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c}\bigr)
+	= \frac{\bar{\bm{x}}_v^{(s)} - \sigma^{(s)} \epsilon_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)}, s, \bm{c}\bigr)}
+	{\sqrt{\bar{\alpha}^{(s)}}},
+\end{equation}
+where $\bar{\alpha}^{(s)} = 1-\bar{\beta}^{(s)}$, $\sigma^{(s)} = \sqrt{1-\bar{\alpha}^{(s)}}$, and $\bm{c}$ is an external condition vector.
+$\bm{c}$ supplies a controllable guidance throughout the entire reverse diffusion phase by injecting auxiliary information into the noise prediction network.
+A new latent $\bar{\bm{x}}_v^{(s-1)}$ is then sampled from $\mathcal{N} \bigl(
+\mu_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c}\bigr), \bigl(\sigma^{(s)}\bigr)^{2}\bm{I}\bigr).$
+Repeating this stochastic reconstruction for all
+$s = S,\ldots,1$ progressively suppresses the injected noise, and the final output $\bar{\bm{x}}_v^{(0)}$ converges to the learned data distribution, thereby yielding a genuinely synthesized sample.
+
+To inject controllable semantic guidance into the reverse diffusion phase, we design a ControlNet that embeds auxiliary knowledge as a low-dimensional external condition vector $\bm{c}$.
+Specifically, the designed ControlNet is first pre-trained on labeled vibration signals and optimized to map each raw signal to a class-discriminative latent representation.
+To build an external condition vector robust to inter-dataset discrepancies, we adopt a triplet input $\bm{H}_{v} = \bigl[\bm{x}_{v},\;\tilde{\bm{x}}_{v},\;\bm{x}_{vr}\bigr]\in\mathbb{R}^{3 \times L_{f}}$, where $\bm{x}_{v}$ is a query sample generated, $\tilde{\bm{x}}_{v}$ is a fault-free signal sample, $\bm{x}_{vr}=\bm{x}_{v}-\tilde{\bm{x}}_{v}$ is a residual sample that amplifies fault-related deviations.
+As shown in Fig.~\ref{fig_controlnet}, the encoder of ControlNet consists of three large-kernel convolutional channels followed by three cross-channel attention blocks (CCAB) that fuse features across scales.
+Then, the output of encoder is fed into a two-layer fully connected classifier, and the ControlNet is trained by categorical cross-entropy loss.
+During diffusion model training, the ControlNet's encoder and classifier weights, denoted as $\bm{\theta}_\mathrm{enc}$ and $\bm{\theta}_\mathrm{cla}$, are kept frozen.
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.3in]{Img/DA-TMLLM_figures/trans/ControlNet.eps}
+	\caption{The architecture of ControlNet.}
+	\label{fig_controlnet}
 \end{figure}
+
+During the reverse diffusion phase, the external condition vector $\bm{c}$ is integrated through a multi-head attention mechanism to ensure semantic consistency in the generated samples.
+At the $s$-th reverse diffusion step, the query ($\bm{Q}^{(s)}$), key ($\bm{K}^{(s)}$), and value ($\bm{V}^{(s)}$) representations are computed as
+\begin{equation}
+	\bm{Q}^{(s)} = \bm{W}_{Q}\bar{\bm{x}}_{v}^{(s)},
+	\bm{K}^{(s)} = \bm{W}_{K}{\tau}{(\bm{c})},
+	\bm{V}^{(s)} = \bm{W}_{V}{\tau}{(\bm{c})},
+\end{equation}
+where $\bm{W}_{Q}$, $\bm{W}_{K}$, and $\bm{W}_{V}$ are learnable linear projection matrices, and ${\tau}{(\cdot)}$ denotes an encoder that projects $\bm{c}$ and $\bar{\bm{x}}_{v}^{(s)}$ into the same dimensional feature space.
+The attention output is then computed as
+\begin{equation}
+	\bm{A}^{(s)} = \operatorname{Softmax} \Bigl(\frac{\bm{Q}^{(s)}\bigl({\bm{K}}^{(s)}\bigr)^{\!\top}}{\sqrt{d_{k}}}\Bigr){\bm{V}}^{(s)},
+\end{equation}
+where $d_k$ is the dimensionality of the keys.
+In the multi-head attention framework, the attention process is independently applied across multiple heads.
+The outputs from each head are then concatenated and projected through a linear transformation to yield the final output, which is formulated as
+\begin{equation}
+	\operatorname{MHA}\bigl(\bar{\bm{x}}_{v}^{(s)},\bm{c}\bigr)=
+	\bm{W}_{o}\bigl[\bm{A}^{(s)}_{1};\dots;\bm{A}^{(s)}_{N_h}\bigr],
+\end{equation}
+where $\bm{W}_{o}$ is the output projection matrix and $N_h$ denotes the number of attention heads.
+By integrating the external condition vector $\bm{c}$ in this manner, we effectively inject semantic context into each step of the reverse diffusion process.
+
+The loss function of the designed ControlNet-guided cross-dataset conditional diffusion model can be formulated as
+\begin{equation}
+	L^{(s)}=\mathbb{E}_{\substack{s\sim[1,S],\bm{x}_v^{(s)},\epsilon^{(s)}}}
+	\Bigl[\operatorname{Huber}\bigl(\lVert r^{(s)} \bigr)\rVert\bigr)\Bigr],
+\end{equation}
+where $r^{(s)} = \bigl\lVert\epsilon^{(s)} - \epsilon_{{\theta}_\mathrm{d}}\!\bigl(\bar{\bm{x}}_{v}^{(s)},s,\bm{c}\bigr)\bigr\rVert$, and $\operatorname{Huber}(\cdot)$ is Huber loss.
+Huber loss attenuates the influence of large point-wise residuals and is therefore more robust to the phase offsets that may exist between signal samples, which is expanded as
+\begin{equation}
+	\operatorname{Huber}\bigl(r^{(s)}\bigr)=
+	\begin{cases}
+		\dfrac{1}{2}\, \bigl(r^{(s)}\bigr)^{2},          & r^{(s)} < \lambda ,\\[4pt]
+		\lambda\,\bigl(r^{(s)}-\dfrac{\lambda}{2}\bigr),   & \text{otherwise},
+	\end{cases}
+	\label{eq:huber}
+\end{equation}
+where $\lambda$ is the transition threshold of $\operatorname{Huber}(\cdot)$.
+
 
 \subsection{}\label{subsec:DA-TMLLM_TMLLM}
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/correlation.eps}
-    \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
-    \label{fig:correlation}
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/correlation.eps}
+%     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
+%     \label{fig:correlation}
+% \end{figure}
+
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
+%     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
+%     \label{fig:strategy}
+% \end{figure}
+
+
+%符号后续还需要统一细化
+TMLLM aims to provide trustworthy diagnostic results and analysis across multiple datasets.
+In TMLLM, a multimodal LLM is developed by fine-tuning a pre-trained LLM on text-signal pairs.
+To derive trustworthy answers, we target a key token of which energy decreases abnormally by computing point-biserial correlation coefficient and conducting a significance test.
+Furthermore, we design a key token-driven uncertainty reweighting strategy to quantify the uncertainty in LLM answer.
+
+\subsubsection{Fine-Tuning LLM on Text-Signal Pairs}
+Since recent pre-trained LLMs are optimized for discrete textual tokens and cannot natively process vibration signals, we introduce a dual-branch tokenizer-encoder block, which converts vibration signal samples and corresponding textual descriptions into signal-specific and token-specific features.
+The modality-specific features are subsequently aligned by a text-signal alignment block, and the whole model is fine-tuned to maximize cross-modal alignment.
+
+In the developed dual-branch tokenizer-encoder block, the encoder shares the weight $\bm{\theta}_\mathrm{enc}$ with ControlNet.
+Let $\bm{x}_{g}$ be a synthesized sample, the input of the encoder branch can be formulated as
+$\bm{H}_{g} = \bigl[\bm{x}_{g},\;\tilde{\bm{x}}_{g},\;\bm{x}_{gr}\bigr] \in \mathbb{R}^{3 \times L_{f}}$, where $\bm{x}_{g}$ is a query sample, $\tilde{\bm{x}}_{g}$ is a fault-free signal sample, and $\bm{x}_{gr}=\bm{x}_{g}-\tilde{\bm{x}}_{g}$ is a residual sample that amplifies fault-related deviations.
+This encoder produces signal-specific features for each input.
+Let $\bm{D}=\{k_{1},\dots,k_{N_c}\}$ be a collection of short textual fault descriptions, one description per fault category, where $N_c$ denotes the number of categories.
+Furthermore, the multimodal input to the TMLLM is obtained by fusing $\bm{H}_{g}$ and $\bm{T}$, and is denoted as $\bm{M}_{g}=\{\bm{H}_{g},\bm{T}\}$.
+In the tokenizer branch, we feed $\bm{D}$ through the LLM's native tokenizer $\operatorname{Tok}(\cdot)$ and embedding layer $\operatorname{Emb}(\cdot)$ to obtain a sequence of token-specific features, denoted as $\bm{E}=\operatorname{Emb}(\operatorname{Tok}(\bm{D})) \in \mathbb{R}^{\gamma\times N_c\times h}$, where $h$ is the hidden size of $\operatorname{Emb}(\cdot)$, $\gamma$ is the maximum length of token-specific features.
+As illustrated in Fig. \ref{fig_framework}, the weights of the dual-branch tokenizer-encoder block are kept frozen throughout LLM fine-tuning.
+
+To bridge the gap between the signal-specific/token-specific features and LLMs, we develop a trainable text-signal alignment block that fuses signal-specific and token-specific features into language tokens suitable for input to LLMs.
+The alignment block is implemented as a three-layer linear multilayer perceptron.
+We initialize this alignment module using a combination of the ControlNet's prior weights and token-specific features.
+In particular, the weights of the first two linear layers, denoted $\bm{\theta}_\mathrm{l_{1}}$ and $\bm{\theta}_\mathrm{l_{2}}$, are initialized with the weights $\bm{\theta}_\mathrm{cla}$ of the ControlNet's pre-trained classifier.
+Furthermore, we flatten the last two dimensions of $\bm{E}$ and use the resulting matrix as the weight of $l_{3}$, formulated
+$\boldsymbol{\theta}_{l_{3}} =\operatorname{reshape}\bigl(\bm{E},(\gamma,N_c h)\bigr)
+\in\mathbb{R}^{\gamma\times N_c h}$.
+In this way, the $i$-th row of $\boldsymbol{\theta}_{l_{3}}$ encodes the token-level embedding of the $i$-th fault description, providing a semantic projection from the signal-specific features to the language tokens.
+Finally, the text-signal alignment block embeds the language tokens into a predefined prompt template and outputs $\bm{x}_{pt}$ as the LLM's input.
+The weight of text-signal alignment block is denoted as $\boldsymbol{\theta}_\mathrm{ts}=\{\bm{\theta}_\mathrm{l_{1}}, \bm{\theta}_\mathrm{l_{2}}, \bm{\theta}_\mathrm{l_{3}}\}$, and the weight of the pre-trained LLM is denoted as $\boldsymbol{\theta}_\mathrm{llm}$.
+To fine-tune the weights of text-signal alignment block and LLM on downstream tasks, we adopt a parameter-efficient approach using low-rank adaptation (LoRA) \cite{20231213775448}.
+
+\subsubsection{Key Token Targeting}
+To solve the issue of hiddenness of sequence-level hallucinations, we jointly consider the autoregressive generation rule and diagnosis-specific characteristics.
+% We hypothesize that key tokens exist that act as sentinel positions that expose imminent uncertainty.
+We hypothesize that certain key tokens act as sentinels, signaling imminent uncertainty.
+Then, we carry out a point-biserial correlation computation on a held-out corpus to evaluate the hypothesis, comparing the energy of tokens that precede hallucinated answers against matched tokens in factual answers.
+Finally, we perform a significance test to show that the decrease in energy is caused by the undesired input rather than by random fluctuation.
+The significance test returns $p=3.2779\times10^{-28}$, rejecting the null that low energy tokens occur at random.
+
+When generating diagnostic answers, LLMs autoregressively generate answers by predicting one token at a time and produce a probability distribution over the vocabulary for the next token, which can be formulated as
+\begin{equation}
+	P\bigl(\mathit{Token}_{k} = w \;\big|\; \mathit{Token}_{<k}\bigr)
+	\;=\;
+	\frac{\exp\bigl(\operatorname{Proj}(\bm{a}_{k})_{\,w}\bigr)}
+	{\displaystyle \sum_{w' \in \mathcal{V}} 
+		\exp\bigl(\operatorname{Proj}(\bm{a}_{k})_{\,w'}\bigr)},
+\end{equation}
+where $\mathit{Token}_{k}$ is the output token at generation step $k$, $\mathit{Token}_{<k}$ is the entire diagnostic answer of tokens generated before $k$, $\mathcal{V}$ is the LLM's native vocabulary set, $w$ is a single token drawn from $\mathcal{V}$, $\bm{a}_{k}$ is the hidden state vector at $k$, $\operatorname{Proj}(\cdot)$ is a learnable linear transformation function, and $\sum_{w\in \mathcal{V}} P\bigl(\mathit{Token}_{k} = w \mid \mathit{Token}_{<k}\bigr) = 1$.
+When many tokens have lower probabilities, it indicates higher uncertainty in the next-token prediction.
+Furthermore, the negative log-likelihood (NLL) of a token can be interpreted as the  token-level energy, which is formulated as
+\begin{equation}
+	\operatorname{NLL}{(\mathit{Token}_{k}=w)}
+	=
+	-\,\log
+	\frac{\exp\bigl(\operatorname{Proj}(\bm{a}_{k})_{\,w}\bigr)}
+	{\displaystyle\sum_{w' \in \mathcal{V}}
+		\exp\bigl(\operatorname{Proj}(\bm{a}_{k})_{\,w'}\bigr)},
+\end{equation}
+where $\operatorname{NLL}{(\cdot)}$ is the token energy function.
+A low NLL means the model assigns a high probability to that token, whereas a high NLL means that the LLM is ambiguous when generating this token.
+
+Based on this analysis, our hypothesis is that when LLM outputs an incorrect fault classification result for the first time, the token energy changes abnormally around the incorrect classification tokens.
+This hypothesis is based on two facts.
+First, when the model outputs an incorrect fault category in its answer, it is a serious hallucination.
+Second, the above analysis about the relationship between hallucination and energy shows that local hallucinations are often accompanied by an unusual change in token energy near the error.
+%加一句话阐述什么时候升高什么时候降低
+
+To validate our hypothesis, we first construct a held-out corpus. We use samples from the MBHM dataset \cite{Peng_Liu_Du_Gao_Wang_2025} as normal inputs, use samples from the MaFaulDa dataset \cite{MaFaulDa_dataset} as undesired inputs, and use the Qwen-2 1.5B model \cite{QWEN} as the LLM.
+% For normal inputs and undesired input, we generate $N_\mathrm{nor}$ and $N_\mathrm{un}$ answers, respectively.
+We generate $N_\mathrm{nor}$ answers for normal inputs and $N_\mathrm{un}$ for undesired inputs.
+Moreover, token energies are calculated within a $\pm L_{\mathrm{win}}$ token window centered on the token at which the first misclassification occurs, denoted as $\mathit{Token}_{{\delta}}$.
+Then, the point-biserial correlation coefficient, denoted $r_\mathrm{pb}$, is calculated to examine how the token energy relates to the corresponding input.
+The point-biserial correlation is the Pearson correlation that fits the special case, quantifying the correlation between binary input type and the continuous token energy.
+$r_\mathrm{pb}$ is formulated as
+\begin{equation}
+	r_\mathrm{{pb}}=
+	\frac{\mu_\mathrm{nor} - \mu_\mathrm{un}}{\sigma_\mathrm{total}}
+	\sqrt{\frac{N_\mathrm{nor}\,N_\mathrm{un}}{(N_\mathrm{nor}+N_\mathrm{un})^2}},
+\end{equation}
+where $\mu_\mathrm{nor}$ is the mean token energy for the answers of the normal input, and $\sigma_\mathrm{total}$ is the standard deviation of token energy across all answers.
+Finally, we conduct a significance test to evaluate the results of $r_\mathrm{pb}$ to show that the rise in energy is caused by the undesired input rather than by random fluctuation.
+The coefficient $r_{pb}$ is converted to a $t$-statistic, which is formulated as
+\begin{equation}
+	t=r_\mathrm{pb}\sqrt{\frac{(N_\mathrm{nor}+N_\mathrm{un}) - 2}{1 - r_\mathrm{pb}^2}},\,\mathrm{df} = (N_\mathrm{nor}+N_\mathrm{un}) - 2, 
+\end{equation}
+where $\mathrm{df}$ is the degrees of freedom.
+Furthermore, the two-sided $p$-value, denoted as $p_{\text{two-sided}}$, is then obtained from the cumulative distribution function (CDF) of the student-$t$ distribution, which is formulated as
+\begin{equation}
+	p_{\text{two-sided}} = 2\bigl[1-F_{t_{\mathrm{df}}}(|t|)\bigr]
+	= 2P\bigl(T_{\mathrm{df}}\ge |t|\bigr),
+	\label{eq:p_value}
+\end{equation}
+where $F_{t_{\mathrm{df}}}(\cdot)$ is the CDF of the Student-$t$ distribution with $\mathrm{df}$, and $T_{\mathrm{df}}$ is a random variable following this distribution.
+
+
+As illustrated in Fig. \ref{fig_correlation}, we compute $r_{\mathrm{pb}}$ and $p_{\text{two-sided}}$ between the binary input type and the token-energy sequence within $\pm L_{\mathrm{win}}=3$ centered on $\mathit{Token}_{\delta}$.
+At the token $\mathit{Token}_{\delta-1}$, a large effect size is observed, where $|r_{\mathrm{pb}}| > 0.5$ and $r_{\mathrm{pb}} < -0.5$.
+The observation indicates that an anomalous decrease in token energy is highly predictive of an undesired input.
+Additionally, the significance test returns $p=3\times10^{-28}$, rejecting the null that low energy tokens occur at random.
+From a theoretical standpoint, undesired inputs tend to induce localized energy distortions around $\mathit{Token}_{\delta}$.
+Because ${\delta}-1$ lies immediately adjacent to ${\delta}$, it is intrinsically more responsive to the earliest signs of undesired inputs, aligning with the statistical evidence.
+Accordingly, we adopt $\mathit{Token}_{\delta-1}$ as our key token for undesired input detection, while omitting $\mathit{Token}_{\delta+2}$ despite its higher correlation.
+
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.5in]{Img/DA-TMLLM_figures/trans/correlation.eps}
+	\caption{The point-biserial correlation coefficient $r_{\mathrm{pb}}$ and two-sided $p$-value $p_{\text{two-sided}}$ between the binary input type and the token-energy sequence within $\pm L_{\mathrm{win}}$ centered on $\mathit{Token}_{\delta}$. Based on the combined theoretical basis and statistical evidence, $\mathit{Token}_{\delta-1}$ is selected as the key token for undesired input detection.}
+	\label{fig_correlation}
 \end{figure}
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
-    \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
-    \label{fig:strategy}
+
+
+\subsubsection{Key Token-Driven Uncertainty Reweighting Strategy}
+To quantify the uncertainty in LLM outputs and to construct a TMLLM, we propose a key token-driven uncertainty reweighting strategy (KTURS).
+The proposed strategy employs token-level energy as an uncertainty quantification metric and assigns greater weights to tokens that exhibit stronger correlation with the designated key token.
+
+
+For an LLM output $\bm{\hat y}_{g}$ regarding a multimodal input $\bm{x}_{pt}$, denoted as $\bm{\hat y}_{g}=\{\mathit{Token}_{1},\mathit{Token}_{2},\dots,\mathit{Token}_{N_t}\}$, where $N_t$ is the length of output.
+We first compute the normalized energy score for each token $\mathit{Token}_{k} (1\leq k\leq N_t)$, which is formulated as
+\begin{equation}
+	\label{equa:normalized_energy_score}
+	\begin{split}
+		{\operatorname{\tilde{NLL}}}(\mathit{Token}_k)
+		= \,\frac{{\operatorname{NLL}}(\mathit{Token}_k)}
+		{\sum_{j=1}^{N_t}{{\operatorname{NLL}}(\mathit{Token}_j)}\,}\,.
+	\end{split}
+\end{equation}
+Then, we derive the token-level uncertainty by enlarging the weight of the key token according to $r_\mathrm{pb}$, denoted as
+\begin{equation}
+	\label{equa:token_level_uncertainty}
+	\begin{split}
+		&\operatorname{UT}(\mathit{Token}_k;\omega,r_{\mathrm{pb}})\\
+		&= \bigl[1 + (\omega r_{\mathrm{pb}} - 1)\bm{1}_{\{k=\delta-1\}}\bigr]
+		\tilde{\operatorname{NLL}}(\mathit{Token}_k),
+	\end{split}
+\end{equation}
+where $\bm{1}_{\{k=\delta-1\}}$ equals 1 when the token index $k=\delta-1$ and 0 otherwise, and $\omega$ is a coefficient to calibrate the degree of token-level uncertainty.
+Finally, the uncertainty for the LLM output can be formulated as
+\begin{equation}
+	\label{equa:overall_uncertainty}
+	\operatorname{UA}(\bm{\hat y}_{g})
+	= \sum_{k=1}^{N_t}
+	\bigl[\,1 + (\omega\,r_{\mathrm{pb}} - 1)\,\bm{1}_{\{k=\delta-1\}}\bigr]\;\tilde{\operatorname{NLL}}(\mathit{Token}_k)\,.
+\end{equation}
+
+
+As shown in Fig. \ref{fig_strategy}, the raw energy scores are first normalized into the uncertainty distribution
+$\tilde{\operatorname{NLL}}(\mathit{Token}_k)$, then the uncertainty of the key token $\mathit{Token}_{\delta}$ is amplified by the factor $\omega$, and finally the sequence-level uncertainty $\operatorname{UT}(\mathit{Token}_k;\omega,r_{\mathrm{pb}})$ is obtained by summing the token-level uncertainties over all $N_t$ tokens.
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=3.5in]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
+	\caption{Illustration of the key token-driven uncertainty reweighting strategy.}
+	\label{fig_strategy}
 \end{figure}
 
-\subsection{}\label{subsec:DA-TMLLM_inference}
+% \subsection{}\label{subsec:DA-TMLLM_inference}
+
+\subsection{Hallucination-resilient scheme based on DA-TMLLM}
+\label{sec:scheme}
+To alleviate and detect LLM hallucinations, the proposed hallucination-resilient scheme integrates the diffusion-based augmentation and the trustworthy multimodal LLM into a unified pipeline.
+
+To alleviate statistical bias-induced hallucinations, the ControlNet-guided cross-dataset conditional diffusion model is designed to produce balanced and semantically aligned synthetic data.
+The original and synthetic samples are then fused and used to fine-tune a trustworthy multimodal large language model.  
+The pipeline in the training stage is summarized in Algorithm~\ref{alg:training}.
+Before any test sample is input, we evaluate the mean and variance of the uncertainty scores on the validation set comprising only normal samples, denoted as $\mu_\mathrm{val}$ and $\sigma_\mathrm{val}$. 
+This allows us to define the lower and upper bounds of our uncertainty threshold, $\psi_{lower}=\mu_\mathrm{val} - \sigma_\mathrm{val}$ and $\psi_{upper}=\mu_\mathrm{val} + \sigma_\mathrm{val}$, which together form the decision interval $[\psi_{lower}, \psi_{upper}]$.
+Furthermore, we target the key token and design a key token-driven uncertainty reweighting strategy.
+The pipeline in the inference stage is summarized in Algorithm~\ref{alg:inference}.
+
+\begin{algorithm}[t]
+	\caption{Training Pipeline of Diffusion-Augmented Trustworthy Multimodal LLM}
+	\label{alg:training}
+	\centering
+	\begin{algorithmic}[1]
+		\Require Pre-processed dataset $\mathcal{D}_\text{real}=\{(\mathbf{x}_{v},y)\}$, weights $\bm{\theta}_\mathrm{enc}$, ${\theta}_\mathrm{d}$, $\bm{\theta}_\mathrm{cla}$, $\bm{\theta}_\mathrm{ts}$, and $\bm{\theta}_\mathrm{llm}$, hyperparameters $S$, $N_\mathrm{dm}$, $N_\mathrm{llm}$, and $N_{\text{aug}}$, response text $\bm{y}_{g}$
+		\Ensure Trained CGCDM $\bm{\theta}_\mathrm{d}^*$, fine-tuned TMLLM $\bm{\theta}_\mathrm{ts}^*$, $\bm{\theta}_\mathrm{llm}^*$
+		\Statex \textbf{Stage 1: Train ControlNet-Guided CDM}
+		\For{epoch $=1$ \textbf{to} $N_\mathrm{dm}$} \Comment{Training epochs $N_\mathrm{dm}$}
+		\ForAll{$(\bm{x}_{v},y)\!\sim\!\mathcal{D}_\text{real}$}
+		\State $\bm{x}_{v}^{(S)}\leftarrow\textsc{AddNoise}(\bm{x}_{v},S)$
+		\State $L^{(s)}\!\leftarrow\!\lVert\epsilon-\epsilon_{\bm{\theta}_\mathrm{d}}(\bm{x}_{v}^{(s)},y,s)\rVert_2^2$
+		\State $\bm{\theta}_\mathrm{d}^*\!\leftarrow\!\bm{\theta}_\mathrm{d}-\eta_{\bm{\theta}_\mathrm{d}}\nabla_{\bm{\theta}_\mathrm{d}}L^{(s)}$
+		\EndFor
+		\EndFor
+		\Statex \textbf{Stage 2: Generate Augmented Samples}
+		\For{$n=1$ \textbf{to} $N_{\text{aug}}$} \Comment{Augmented samples $N_{\text{aug}}$}
+		\State $\bm x_{v}^{(S)}\sim\mathcal N(\bm 0,\bm I)$ 
+		\For{$s=S$ \textbf{downto} $1$}
+		\State $\bm c\leftarrow\textsc{ControlNet}(\bm{\theta}_\mathrm{enc}, \bm{\theta}_\mathrm{cla})$
+		\State $\bm\mu\leftarrow\textsc{PosteriorMean}(\bm x^{(s)},s,\bm c,\bm{\theta}_\mathrm{d}^*)$
+		\State $\bm\bar{\bm x}_{v}^{(s-1)}\sim\mathcal N\!\bigl(\bm\mu,(\sigma^{(s)})^{2}\bm I\bigr)$
+		\EndFor
+		\State $\mathcal D_{\text{syn}}\gets\mathcal D_{\text{syn}}\cup\{\bar{\bm{x}}_v^{(0)}\}$
+		\EndFor
+		\State $\mathcal{D}_\text{aug}\!\leftarrow\!\mathcal{D}_\text{real}\cup\mathcal{D}_\text{syn}$
+		\Statex \textbf{Stage 3: Fine-tune Trustworthy Multimodal LLM}
+		\State Initialize ${\bm{x}}_g\!\leftarrow\!\bar{\bm{x}}_v$
+		\For{epoch $=1$ \textbf{to} $N_\mathrm{llm}$} \Comment{Training epochs $N_\mathrm{llm}$}
+		\ForAll{$(\bm{x}_{g},\bm{y}_{g})\!\sim\!\mathcal{D}_\text{aug}$}
+		\State $\bm{x}_{pt}\leftarrow\textsc{AlignBlock}(\bm{x}_{g})$
+		\State $\bm{\hat y}_{g}\leftarrow\textsc{TMLLM}(\bm{x}_{pt})$
+		\State $\bm{\theta}_\mathrm{ts}^*, \bm{\theta}_\mathrm{llm}^*\leftarrow \operatorname{LoRA}(\bm{\hat y}_{g}, \bm{y}_{g})$
+		\EndFor
+		\EndFor
+		\State \Return $\bm{\theta}_\mathrm{d}^*$,  $\bm{\theta}_\mathrm{ts}^*$, $\bm{\theta}_\mathrm{llm}^*$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+	\caption{Inference Pipeline Based on Key Token-Driven Uncertainty Reweighting Strategy}
+	\label{alg:inference}
+	\begin{algorithmic}[1]
+		\Require Test set $\mathcal{D}_\text{test}$, window length $L_{\mathrm{win}}$, weights of TMLLM $\bm{\theta}_\mathrm{ts}^*$ , $\bm{\theta}_\mathrm{llm}^*$, calibration coefficient $\omega$, key-token index $\delta-1$, uncertainty threshold $\psi$
+		\ForAll{$\bm{x}_\mathrm{test}\!\sim\!\mathcal{D}_\mathrm{test}$}
+		\State $\hat{\bm{y}}_\mathrm{test} \gets \mathrm{TMLLM}(\bm{\theta}_\mathrm{ts}^*$, $\bm{\theta}_\mathrm{llm}^*;\bm{x}_\mathrm{test})$
+		\State $\hat{\bm{y}}_\mathrm{test}=\{\mathit{Token}_1,\dots,\mathit{Token}_{N_t}\}$
+		\Statex \textbf{Stage 1: Token-Level Normalization}
+		\For{$k = 1$ \textbf{to} $N_t$}
+		\State $\operatorname{NLL}_k \gets -\!\log P\!\bigl(\mathit{Token}_k \mid \mathit{Token}_{<k}\bigr)$
+		\EndFor
+		\State $\displaystyle
+		\tilde{\operatorname{NLL}}_k \gets 
+		\operatorname{NLL}_k \Big/ \sum_{j=1}^{N_t}\operatorname{NLL}_j$
+		\Statex \textbf{Stage 2: Key-Token Reweighting}
+		\For{$k = 1$ \textbf{to} $N_t$}
+		\State $\displaystyle
+		\operatorname{UT}_k \gets
+		\Bigl[1 + \bigl(\omega r_{\mathrm{pb}} - 1\bigr)\,
+		\mathbf{1}_{\{k=\delta-1\}}\Bigr]\!
+		\tilde{\operatorname{NLL}}_k$
+		\EndFor
+		\Statex \textbf{Stage 3: Sequence-Level Aggregation}
+		\State $\displaystyle
+		\operatorname{UA}\!\bigl(\hat{\bm{y}}_\mathrm{test}\bigr) \gets
+		\sum_{k=1}^{N_t}\operatorname{UT}_k$
+		\Statex \textbf{Stage 4: Decision}
+		\If{$\operatorname{UA}\!\bigl(\hat{\mathbf{y}}_{\text{test}}\bigr)\not\in[\psi_{lower}, \psi_{upper}]$}
+		\State \textbf{Reject} $\bm{x}_\mathrm{test}$ \Comment{hallucination detected}
+		\Else
+		\State \textbf{Output} $\hat{\bm{y}}_\mathrm{test}$
+		\EndIf
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+%
 
 \section{实验评估}\label{sec:DA-TMLLM_experiment}
 
