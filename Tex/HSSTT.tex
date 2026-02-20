@@ -9,7 +9,39 @@
     \label{fig:hsstt_challenges}
 \end{figure}
 
+
+Lithium-ion batteries (LIBs) are extensively utilized in industrial fields owing to their advantageous characteristics\cite{NASAJPOURESFAHANI2024114783}. The demanding conditions of industrial environments, coupled with intricate internal electrochemical reactions, necessitate enhanced measures for the safe and dependable long-term functionality of LIBs. It is therefore essential to monitor LIBs' performance to guarantee their continuous operation, and battery performance is usually represented by the state-of-health (SOH), defined as the ratio of a battery's current maximum available capacity to its nominal capacity\cite{WANG2024110325, 10391265}.
+
+The advancement of deep learning has facilitated the emergence of data-driven SOH estimation models, which are progressively supplanting physics-based models due to their reduced dependency on expert knowledge and enhanced capability to capture the complex dynamics of degradation mechanisms\cite{mit_dataset_attia2020closed, tri_dataset_severson2019data, tongji_dataset_zhu2022data}. However, data-driven models remain susceptible to generating inaccurate estimates when confronted with samples characterized by complex and inaccessible distributions, which arises from industrial environments' unavoidable noise fluctuations and variable load demands\cite{10214203}. Moreover, the deterministic nature of these models constrains them to offering mere point estimates of SOH without the capability to signal errors, as illustrated in Fig.~\ref{fig:problem}(a). Reliance on such deterministic models can jeopardize subsequent decision-making processes. For example, estimating the SOH of LIBs smaller than the actual value can result in premature retirement, leading to economic losses. Conversely, overestimating the SOH can cause excessive cycling, thereby increasing the potential risk of system-level thermal runaway.
+
+% To mitigate the issues of obliviousness in these models and ensure the dependability of industrial monitoring and maintenance, it is crucial to assess the trustworthiness of data-driven prognostic models' outputs. Given the significant relationship with trustworthy SOH estimation, the role of uncertainty is considered as utmost importance. On one hand, uncertainty serves as a measurement, reflecting the degree of trustworthiness through the discrepancy between the characterized distribution and the ground truth. On the other hand, uncertainty functions as a user-centered indicator for trustworthy analysis that can be easily integrated into decision-making processes involving human intervention.
+
+To mitigate the issues caused by deterministic models and ensure the dependability of industrial monitoring and maintenance, it is crucial to assess the trustworthiness of data-driven prognostic models' outputs. Given the significant relationship with trustworthy SOH estimation, the role of uncertainty is considered as utmost importance \cite{THUY2024330, 10539360}. On the one hand, uncertainty serves as a measurement, reflecting the degree of trustworthiness through the discrepancy between the characterized distribution and the ground truth. On the other hand, uncertainty functions as a user-centered indicator for trustworthy analysis that can be easily integrated into decision-making processes involving human intervention. Real-world industrial applications necessitate a trustworthy prognostic model for LIBs, presenting challenges outlined as follows.
+
+% The first challenge arises from the uncertainty in the process of representative correlation learning. 
+Firstly, the uncertainty in the process of representative correlation learning presents a challenge.
+During the aggregation of correlation information, the model's uncertainty in generating weight logits is often overlooked. Some unimportant tokens, possibly exhibiting high uncertainty, may be incorrectly assigned high logits \cite{20222012122312, 20191806851746, 10342686}. As shown in Fig.~\ref{fig:problem}(a), aggregating these unimportant tokens can mislead the extraction of complex degradation dynamics, ultimately degrading the precision of SOH estimation results.
+
+% The second challenge is the disregard of spatio-temporal uncertainties.
+Secondly, the disregard of {spatio-temporal uncertainties} presents a challenge.
+For the cyclic signals of LIBs, variability in cross-sensor dependencies due to shifts in the dominant channel can lead to inconsistencies in sensor data fusion. Meanwhile, the sparse distribution of cross-time dependencies adds ambiguity to the extraction of token-pair interactions. Inadequate modeling of such spatio-temporal uncertainties compromises the prognostic accuracy \cite{wang2023inherent, 9729404, capsnet_rul_li2024sensor}, as also illustrated in Fig.~\ref{fig:problem}(a).
+
+% The third challenge is the potential miscalibration of uncertainty.
+Thirdly, the potential miscalibration of uncertainty presents a challenge.
+In applications, the actual data distribution is inaccessible, and the predictive distribution derived through quantified uncertainty may misalign with it \cite{kuleshov2018accurate, 9729404, 10217044}. As depicted in Fig.~\ref{fig:problem}(b), this leads to under- or over-confident interval estimations. As a result, the trustworthiness of the prognostic results is diminished, and the performance of uncertainty score-based out-of-distribution detection is degraded.
+
+To address these issues, we propose a \textbf{H}ierarchical \textbf{S}tochastic \textbf{S}patial-\textbf{T}emporal \textbf{T}ransformer (HSSTT). In HSSTT, a novel Gumbel-Softmax reparameterization (GSR)-based self-attention mechanism is designed, transforming deterministic self-attention into its stochastic counterpart to deal with the uncertainty in both the feature extraction and feature mapping processes. Then, a hierarchical stochastic spatial-temporal Transformer is developed combining the uncertainty-aware dilated timestep-wise convolution and the stochastic self-attention to extract cross-sensor (spatial) and cross-cycle (temporal) degradation dynamics. Finally, the causes of model being under- or over-confident is analysed through bias-variance decomposition, based on which a primary calibration strategy is formulated, and the calibrated uncertainty is leveraged to distinguish between in-distribution (ID) and out-of-distribution (OOD) samples. The main contributions are as follows.
+
+\begin{enumerate}
+  \item We propose a stochastic self-attention mechanism that leverages GSR to enable self-attention with uncertainty quantification capabilities. Furthermore, the stochastic self-attention serves as the fundamental component of HSSTT for trustworthy SOH estimation.
+  \item We propose a hierarchical stochastic Transformer to perform uncertainty-guided spatial-temporal dependencies modeling and degradation dynamics extraction, through which the ambiguity in the cyclic data is eliminated, and the prognostic performance is enhanced.
+  \item We analyze the causes of model's miscalibration and propose a principled calibration method for HSSTT to better model the actual data distribution. Based on the miscalibration-free uncertainty, we design an OOD detection strategy tailored for prognostic scenarios.
+  \item We conduct comprehensive experiments on three public datasets to evaluate the performance of HSSTT, and experimental results confirm the effectiveness and superiority of HSSTT for trustworthy SOH estimation.
+\end{enumerate}
+
 \section{锂离子电池健康状态估计方法}\label{sec:HSSTT_methodology}
+
+In this section, we elaborate on the proposed HSSTT framework, provide an in-depth analysis of the deployment of HSSTT in practical industrial scenarios, and detail the methodology for achieving trustworthy SOH estimation. As depicted in Fig.~\ref{fig:framework}, correlation information between tokens are aggregated by the proposed stochastic self-attention. And degradation dynamics are captured by the designed uncertainty-aware spatial-temporal feature encoder and mapped to SOH through the downstream regressor. Model uncertainty is quantified employing Monte Carlo sampling and further calibrated by the proposed principled auxiliary model.
 
 \begin{figure}[!htbp]
     \centering
@@ -18,15 +50,174 @@
     \label{fig:hsstt_framework}
 \end{figure}
 
-Lin等\cite{9729404}
+% \subsection{}\label{subsec:stochastic_self_attention}
 
-\subsection{}\label{subsec:stochastic_self_attention}
+% \subsection{}\label{subsec:HSSTT_framework}
 
-\subsection{}\label{subsec:HSSTT_framework}
+% \subsection{}\label{subsec:well_calibrated_HSSTT}
 
-\subsection{}\label{subsec:well_calibrated_HSSTT}
+% \subsection{}\label{subsec:trustworthy_SOH_estimation}
 
-\subsection{}\label{subsec:trustworthy_SOH_estimation}
+\subsection{Stochastic Self-Attention for Uncertainty Quantification}\label{subsec:stochastic_attention}
+
+To address the issue of merging ambiguous segments resulting from the oversight of model uncertainty, we propose an uncertainty-aware self-attention mechanism based on the Gumbel-Softmax reparameterization (GSR) technique. This innovative self-attention mechanism is the most fundamental and crucial component in the construction of HSSTT.
+
+Transformer-based models's exceptional context modeling capability is primarily attributed to the multi-head self-attention (MHA) mechanism. Taking the $j$-th head as an example, the sequence $X=[x^{(1)}, x^{(2)}, \ldots, x^{(T)}] \in \mathbb{R}^{d_{in} \times T}$ undergoes affine transformations via trainable projection matrices $W_{Q}^{(j)}, W_{K}^{(j)}, W_{V}^{(j)} \in \mathbb{R}^{d_{emb} \times d_{in}}$ to generate query $Q^{(j)}$, key $K^{(j)}$, and value $V^{(j)}$. Here, $T$ is the total number of cycles in each sequence sample, while $d_{in}$ and $d_{emb}$ are the dimensions of the input and embedding, respectively.
+
+The attention weights $A^{(j)}$ produced by the softmax function exhibit the form of discrete probability distribution, indicating that they can be viewed as being sampled from a categorical distribution \cite{20193407356730, 20230613569727}. By substituting softmax with Gumbel-Softmax and replacing the deterministic computation with a probabilistic sampling method, we convert the self-attention into the stochastic counterpart. This modification alters the attention weights for each token into a categorical distribution with several discrete outcomes, which can be formulated as
+\begin{equation}
+% \tilde{A}^{(j)}\sim\mathcal{G}(\frac{K^{(j)^\top}Q^{(j)}}{\tau})
+\tilde{A}^{(j)}\sim\mathcal{G}((K^{(j)^\top}Q^{(j)}) / \tau),
+\label{eq:gumbel-softmax-attention}
+\end{equation}%
+where $\mathcal{G}$ is the Gumbel-Softmax function, and $\tau$ is a temperature parameter. Consequently, the attention weights $\tilde{A}^{(j)}$, derived via the self-attention mechanism, transition from being specific normalized logits to random variables probabilistically sampled from a distinct discrete distribution. In this manner, deterministic self-attention is converted into the stochastic variant for uncertainty quantification.
+
+The foundation of stochastic self-attention construction is the continuous relaxation of discrete categorical distributions, which can be effectively achieved through the GSR technique. Consider a non-negative discrete categorical distribution $(\pi_{1},\pi_{2},\cdots,\pi_{T})$, not entirely zeroes, representing the attention weights for a specific token in self-attention. Specifically, $\pi_{i}=k_{i}^\top q_{i}$ denotes the outcome of column-wise partitioning of matrices $K^{(j)}$ and $Q^{(j)}$, where $i$ indicates the column index. The initial step involves examining the index variable of this distribution, which is expressed as
+\begin{equation}
+z=one\_hot(argmax(g_{i}+\log(\pi_{i}))),
+\label{eq:index_variable}
+\end{equation}%
+where $T$ is the total number of potential outcomes in the discrete categorical distribution, corresponding to the count of input tokens. Moreover, $g_i$ is a random variable that adheres to the $Gumbel(0,1)$ distribution, and represented as
+\begin{equation}
+g_{i}=-\log(-\log(u_{i})),
+\label{eq:gumbel_noise}
+\end{equation}%
+where $u_i$ is uniformly distributed between 0 and 1, both $g_i$ and $u_i$ are independent and identically distributed (i.i.d.) simple random samples, and $g_i$ also referred to as Gumbel noise. The argmax operation in \eqref{eq:index_variable} is non-differentiable, thus the GSR technique is employed to convert it into a continuous counterpart, yielding
+\begin{equation}
+\tilde{A}^{(j)}=\frac{\exp((g_{i}+\log(\pi_{i}))/\tau)}{\sum\nolimits_{k=1}^{T}\exp((g_{i}+\log(\pi_{k}))/\tau)},
+\label{eq:gsr_relaxation}
+\end{equation}%
+which is equivalent to \eqref{eq:gumbel-softmax-attention}. In the context of MHA, $\tau$ serves as a replacement for the original scaling factor $1 / \sqrt{d_{emb}}$. From the GSR perspective, the right hand side of the above equation closely approximates the discrete categorical distribution $(\pi_{1}, \pi_{2}, \cdots, \pi_{T})$. As $\tau$ trends towards zero, the Gumbel-Softmax distribution increasingly resembles the original categorical distribution. Employing the GSR technique for continuous relaxation converts the non-differentiable categorical distribution into a smooth, differentiable GS distribution. This transformation permits the direct application of backpropagation for training stochastic self-attention. Initially, $\tau$ is set to a relatively large value, which is gradually reduced during training as the model progresses towards convergence, thus optimizing the balance between speed and effectiveness.
+
+Apparently, the GSR technique generates attention weights by incorporating Gumbel noise into the logits, followed by applying the softmax function to the resultant vector. As detailed in\cite{potapczynski2020invertible}, a direct mapping exists between Gumbel and Gaussian noise, ensuring that GSR-based approaches and methods such as MCD are fundamentally aligned. Our empirical findings, presented in Section \ref{subsec:ablation_study}, demonstrate that the proposed method surpasses the MCD-based approach in capturing model uncertainty.
+
+{The transformation from a deterministic attention mechanism to a stochastic one offers a direct window into the model's internal decision-making process, which offers the crucial advantages of not only quantifying uncertainty but also delivering model interpretability. Conceptualizing attention weights as distributions allows their variance across multiple stochastic forward passes to serve as a quantifiable indicator for the model's confidence in the salience of each input token. Low variance indicates high confidence in a feature's utility as a stable degradation indicator. Conversely, high variance signals model uncertainty when encountering noisy or ambiguous data segments. This inherent interpretability facilitates the generation of an `uncertainty map' over the input data, providing the foundation for the trustworthy feature extraction process detailed subsequently.}
+
+\subsection{Hierarchical Stochastic Transformer-Based Spatial-Temproal Encoder}\label{subsec:hierarchical_spatialtemporal}
+
+{Motivated by parallel advancements in hierarchical spatial-temporal modeling \cite{qianhstformerhierarchicalspatialtemporaltransformers} and probabilistic Transformers \cite{9879185}, we design a hierarchical stochastic Transformer-based spatial-temporal encoder that unifies these principles, tackling the dual challenges of complexity and trustworthiness inherent to battery degradation modeling.}
+% 
+First, an uncertainty-aware dilated convolution is implemented for the extraction of spatial information, which produces cross-sensor-dependency-aware embeddings. These embeddings are then processed by a stochastic distance-sensitive Transformer encoder for temporal modeling, in which a clustering mechanism is designed to handle feature sparsity and forms the hierarchical Transformer.
+
+We present a simple yet effective method that utilizes uncertainty-aware timestep-wise convolution to mine the cross sensor dependencies. This technique, applied to multivariate time series data $r^{(t)} \in \mathbb{R}^{S \times L}$ gathered from $S$ sensors over a length $L$ during the $t$-th cycle, exhibits several key characteristics: 1) It employs dilated convolution to broaden the receptive field, thereby identifying potential correlations among different sensors across different timesteps; 2) It employs stochastic self-attention to identify dominant sensor channels through uncertainty-reweighted attention; 3) The horizontal component of the convolution kernel exceeds 1 to detect cross-sensor dependencies; 4) The feature map generated by the convolution is subsequently flattened into a column vector, acting as a timestep-specific component of the sample $X_{i}$. After convolution, $r^{(t)}$ is transformed into $x^{(t)} \in \mathbb{R}^{d_{in} \times 1}$.
+
+Meanwhile, the temporal representation of degradation dynamics is achieved through self-attention. The Vanilla Transformer's sinusoidal positional embedding might lead to overlooking the crucial distances between cycle instances for SOH estimation. Inspired by\cite{wu-etal-2021-da}, we incorporate the real distance information between tokens by directly modifying the stochastic self-attention weight $\tilde{A}^{(j)}$. For a given time series $X$, the distance between any two token positions $p$ and $q$ is defined as $r_{p,q} = |p-q|$, creating a distance matrix $R = (r_{p,q}) \in \mathbb{R}^{T \times T}$. Additionally, a learnable parameter $\omega$ is allocated to each head within MHA to dynamically adjust distance sensitivity. Focusing on the $j$-th head, its specific distance matrix $R^{(j)} = \omega^{(j)}R$ allows for the differentiation between long-term and short-term information, with positive $\omega$ values favoring the former and negative values the latter. To seamlessly merge this weighted distance matrix $R$ with self-attention, a dynamic sigmoid function is utilized, projecting $R$ onto a re-scaled coefficient, which is formulated as
+\begin{equation}
+% \hat{R}^{(j)}=f(R^{(j)},V^{(j)})=\frac{1+\exp(V^{(j)})}{1+\exp(V^{(j)}-R^{(j)})}
+\hat{R}^{(j)} = \frac{1+\exp(V^{(j)})}{1+\exp(V^{(j)}-R^{(j)})},
+\label{eq:distance_matrix_coefficient}
+\end{equation}%
+where $V^{(j)}$ is the trainable parameter for the $j$-th head, regulating both the upper limit and ascending steepness of the sigmoid function. We then employ $\hat{R}^{(j)}$ to adjust the stochastic attention weights outlined in \eqref{eq:gumbel-softmax-attention} and the modified attention weights matrix is formulated as
+\begin{equation}
+% \hat{A}^{(j)} \sim \mathcal{G}\left(\frac{\sigma({K^{(j)}}^\top Q^{(j)}) * \hat{R}^{(j)}}{\tau}\right)
+\hat{A}^{(j)} \sim \mathcal{G}((\sigma({K^{(j)}}^\top Q^{(j)}) * \hat{R}^{(j)}) / {\tau}),
+\label{eq:distance_sensitive_self_attention}
+\end{equation}%
+where $*$ is the Hadamard product, $\sigma$ is the activation function, and the ReLU function is selected to ensure non-negativity.
+
+To facilitate the model in efficiently extracting health features associated with the aging status within a sparse feature space, while remaining unaffected by superfluous or unrelated information, a hierarchical stochastic self-attention mechanism is designed, drawing inspiration from \cite{clustered_attention_vyas2020fast}. This mechanism clusters the key heads before sampling the attention weights, which is equivalent to regularizing key attention heads and forces the model to attend to the predefined sparse cluster centroids. By substituting softmax with Gumbel-Softmax, the integrity of the approximation quality analysis is still established. This ensures that the difference between key attention of before- and after-clustering remains bounded. Based on this, we opt for a novel approach over Lloyd's algorithm for \textit{k}-means clustering in Hamming space as suggested in\cite{clustered_attention_vyas2020fast}. Our method involves treating the centroid matrix as a trainable matrix, facilitating efficient optimal cluster partitioning as the model progresses towards convergence. Furthermore, the hierarchical mechanism reduces the self-attention's quadratic computational complexity into a linear form\cite{clustered_attention_vyas2020fast}, thereby mitigating the computational burden induced by variational inference and enhancing the model's response rate.
+
+The formulation of this hierarchical stochastic distance-sensitive self-attention mechanism is formulated as
+\begin{align}
+\label{eq:attention_kqv} & Q^{(j)}, K^{(j)}, V^{(j)} = W_{Q}^{(j)}X, W_{K}^{(j)}X, W_{V}^{(j)}X, \\
+\label{eq:hsstt_k} & \hat{A}_{C} \sim \mathcal{G}(({K^{(j)}}^\top C) / \tau_{1}), \\
+\label{eq:hsstt_clustered_k} & \hat{K}^{(j)} = \hat{A}_{C}C^\top, \\
+\label{eq:hsstt_hierarchical_attention} & \hat{A}^{(j)} \sim \mathcal{G}((\sigma(\hat{K}^{(j)\top} Q^{(j)})*\hat{R}^{(j)}) / \tau_{2}), \\
+\label{eq:hsstt} & \hat{H}^{({j})}=\hat{A}^{({j})}V^{{(j)}}, \\
+\label{eq:hsstt_mha} & \widehat{MHA}=concat(\hat{H}^{(1)},\hat{H}^{(2)},\cdots,\hat{H}^{(h)})W_{O},
+\end{align}%
+where $C \in \mathbb{R}^{d_{emb}\times C}$ is the set of centroids, $\hat{A}_{C}$ is the weights for centroids sampled from the Gumbel-Softmax distribution, $\hat{K}^{(j)}$ is the clustered key head, $\tau_{1}$ and $\tau_{2}$ are temperature coefficients, $h$ is the number of heads, and $W_{O} \in \mathbb{R}^{h \times d_{emb} \times d_{in}}$ is a trainable projection matrix. After acquiring the representation of battery degradation patterns, a regressor consisting of multiple fully connected layers is employed to map these feature maps into SOH estimates.
+
+{This uncertainty-guided principle governs the encoder's operation. The model learns to dynamically allocate its attentional resources to features demonstrating high confidence. This mechanism is implemented across both spatial and temporal domains. The uncertainty-aware convolution and the stochastic Transformer both learn to attenuate the influence of high-variance features, suppressing contributions from noisy sensor channels and ambiguous temporal segments. Such a process yields a robust feature representation resistant to irrelevant information. The final predictive uncertainty for the SOH estimate emerges from the aggregation of these localized, internal uncertainties. A model's confidence in its feature selection therefore directly translates to the confidence of its final prediction, linking the model's reasoning process to the trustworthiness of its output.}
+
+\subsection{Towards Well-Calibrated HSSTT}\label{subsec:uncertainty_calibration}
+
+To obtain accurate and reliable uncertainty estimates and enhance HSSTT's trustworthiness, we investigate the issue of uncertainty calibration. First, we theoretically analyze the reasons behind the model's under- or over-confidence from the perspective of bias-variance decomposition and highlight the significance of uncertainty calibration. Subsequently, we propose a principled calibration strategy to align the predictive uncertainties of HSSTT with the empirical uncertainties derived from data samples.
+
+Empirical observations indicate existing uncertainty-aware methods display a dichotomous trend: models exhibiting higher prognostic accuracy quantify uncertainties with confidence-bias, while models offering high-quality uncertainty quantification have lower accuracy. We theoretically analyse this phenomenon using bias-variance decomposition, which is formulated as
+\begin{align}
+\label{eq:bias_variance_tradeoff} & E((y-\hat{f}(X))^{2}) = Bias^{2}(\hat{f}(X))+Var(\hat{f}(X))+\sigma^{2}, \\
+\label{eq:bias} & Bias(\hat{f}(X)) = E(\hat{f}(X))-E_{y \mid X}(f(X)), \\
+\label{eq:variance} & Var(\hat{f}(X)) = E((E(\hat{f}(X))-\hat{f}(X))^{2}),
+\end{align}%
+where $(X, y)$ is the test sample, $f(\cdot)$ is the true function, and $\hat{f}(\cdot)$ is the predictive function. Models employ mean $E(\hat{f}(X))$ and variance $Var(\hat{f}(X))$ of posterior sampling for SOH estimation and uncertainty quantification, respectively. Thus, as demonstrated  by \eqref{eq:bias_variance_tradeoff}, such models inherently impose an upper limit on the combined magnitude of estimates and uncertainties, establishing a trade-off between accuracy and confidence. The phenomenon of giving under- or over-confident results is also known as model miscalibration\cite{kuleshov2018accurate}, manifesting as a discrepancy between the distribution characterized by predictive uncertainty and the actual data distribution.
+
+% Its ideal outcome involves achieving a trade-off point, which invariably necessitates a compromise between on either SOH accuracy or uncertainty quality.
+{Unlike tasks such as sentiment classification \cite{20230613569727}, in safety-critical scenarios like battery degradation modeling, open-loop uncertainty quantification lacks completeness.}
+Therefore, model calibration is crucial for bridging the gap of confidence-bias and accomplishing trustworthy SOH estimation. Henceforth, the HSSTT model will be referred to as $f$ for simplicity. We consider the data samples $(X_{i},y_{i}) \in D_{x}\times D_{y}$ as observations from populations $\mathcal{X}$ and $\mathcal{Y}$, with their distribution represented by $\mathbb{P}$. The stochastic encoder outputs the cumulative distribution function (CDF) for $y_i$, symbolized as $F_i(\cdot): D_Y \to [0,1]$. This function $F(\cdot)$, characterized by its monotonic non-decreasing nature, has an inverse, $F_{i}^{-1}(\cdot): [0,1] \to D_{Y}$, known as the quantile function. This is defined as $F_{i}^{-1}(p) = \inf\{y \mid p \leq F_{i}(y)\}$, where $\inf(\cdot)$ is the infimum. A model $f$ is well-calibrated if and only if
+\begin{equation}
+\forall p \in [0,1], \sum\nolimits_{i=1}^{N} \mathbb{I}\{y_{i}\leq F_{i}^{-1}(p)\}/N\rightarrow p,N\rightarrow\infty,
+\label{eq:model_calibration_iff}
+\end{equation}%
+where $N$ is the number of samples, and $\mathbb{I}\{\cdot\}$ is the indicator function. Considering the data distribution $\mathbb{P}$, the right hand side of \eqref{eq:model_calibration_iff} can be written as
+\begin{equation}
+\forall p\in[0,1], \mathbb{P}(\mathcal{Y}\leq F_{\mathcal{X}}^{-1}(p))=p,
+\label{eq:model_calibration_sufficient}
+\end{equation}%
+where $\mathbb{P}$ is a continuous distribution.~\eqref{eq:model_calibration_sufficient} is also a sufficient condition for the model to be well-calibrated\cite{kuleshov2018accurate}.
+
+Drawing from \eqref{eq:model_calibration_iff} and \eqref{eq:model_calibration_sufficient}, rectifying a miscalibrated model involves identifying a mapping $g: [0,1] \to [0,1]$ that aligns the model's output distribution with the actual data distribution. Consequently, the composite function $g \circ f$ yields the desired well-calibrated model. To identify the mapping $g$, we construct dataset $S=\{F_{i}(y), \hat{p}(F_{i}(y))\}_{i=1}^{N}$, utilizing dataset $D=\{(X_{i},y_{i})\}_{i=1}^{N}$ and model $f$. Here, $F_{i}(y)$ represents the predictive CDF generated by $f$, and $\hat{p}(F_{i}(y))$ denotes the true empirical CDF, which is defined as
+\begin{equation}
+\begin{aligned}
+% \hat{p}(F_{i}(y))&=|\{y_{i}|F_{i}(y)\leq p,i=1,2,\cdots, N\}|/N \\
+% &=\sum\nolimits_{i=1}^{N}\mathbb{I}\{F_{i}(y)\leq p\}/N
+\hat{p}(F_{i}(y)) = \sum\nolimits_{i=1}^{N}\mathbb{I}\{F_{i}(y)\leq p\}/N.
+\end{aligned}
+\label{eq:true_empirical_cdf}
+\end{equation}%
+
+$S$ is the calibration dataset, and the model $g$ trained on $S$ is termed the calibration model. Given the non-decreasing property of CDFs, we designate $g$ as an isotonic regressor.
+
+{The significance of uncertainty calibration extends beyond adjusting the final prediction interval. A well-calibrated, bias-free uncertainty serves as a more accurate signal of the model's true confidence, which in turn enhances its interpretability. Calibration ensures that the internal attention variance more faithfully reflects the evidential uncertainty inherent in the data, rather than being distorted by the model's systemic biases. The resulting uncertainty maps thus become more reliable representations of feature relevance.}
+
+% \begin{algorithm}[t]
+%   \small
+%   \caption{HSSTT for Trustworthy SOH Estimation}
+%   \label{alg:hsstt}
+%   \begin{algorithmic}[1]
+%       \REQUIRE Training dataset $D=\{(X_{i}, y_{i})\}_{i=1}^{N}$, input of test data sample $X$, centroid matrix $C$, training epoch $n_{epoch}$, number of Monte Carlo sampling $B$
+%       \ENSURE Calibrated model $g \circ f$, estimated SOH $\hat{y}^{*}$ and corresponding uncertainty $\hat{\sigma}^{*}$
+%       \STATE Perform stochastic-attention-reweighted spatial embedding on training sample $X_{i}$, generate query $Q$, key $K$, and Value $V$
+%       \STATE Initialize the relative distance matrix $\hat{R}^{(j)}$ according to \eqref{eq:distance_matrix_coefficient}
+%       \STATE Sample and reparameterize the clustering attention weights on $K$ through $C$ according to \eqref{eq:gsr_relaxation} and \eqref{eq:hsstt_k}
+%       \STATE Sample and reparameterize the hierarchical attention weights according to \eqref{eq:gsr_relaxation}, \eqref{eq:hsstt_clustered_k} and \eqref{eq:hsstt_hierarchical_attention}
+%       \STATE Calculate MHA weights according to \eqref{eq:hsstt} and \eqref{eq:hsstt_mha} and map the estimated SOH
+%       \STATE Minimize the MSE loss and update model parameters
+%       \STATE End training when the model converges or reaches the predefined $n_{epoch}$, otherwise go back to step 1
+%       \STATE Determine the posterior distribution $p(\theta \mid D)$
+%       \STATE Compute estimated SOH $\hat{y}$ and corresponding uncertainty $\hat{\sigma}$ based on $p(\theta \mid D)$ according to \eqref{eq:predictive_mean} and \eqref{eq:predictive_std}
+%       \STATE Construct calibration dataset $S$ according to \eqref{eq:true_empirical_cdf}
+%       \STATE Train the calibration model $g$ on dataset $S$
+%       \STATE Generate the calibrated model $g \circ f$, construct result sets $\Theta^{*}$ and $Y^{*}$, obtain $\hat{y}^{*}$ and $\hat{\sigma}^{*}$
+%   \end{algorithmic}
+% \end{algorithm}
+
+\subsection{Trustworthy SOH Estimation Based on HSSTT}\label{subsec:trustworthy_soh_estimation}
+
+% To improve OOD detection performance and achieve trustworthy SOH estimation, we develope a prognostic framework based on HSSTT. This subsection outlines the uncertainty-aware framework, including the generation of prognostic outcomes and quantification and calibration uncertainty.
+
+To improve OOD detection performance and achieve trustworthy SOH estimation, we develop a prognostic framework based on HSSTT. This subsection outlines the uncertainty-aware framework, including the generation of prognostic outcomes, as well as the quantification and calibration of uncertainty. Additionally, a complexity analysis of HSSTT highlights its suitability for deployment in industrial scenarios.
+
+Given the cyclic signal input of the test sample $X$, the posterior distribution for target SOH $y$ produced by HSSTT is
+\begin{equation}
+p(y \mid X,D)=\int_{\theta}p(y \mid X,\theta^{\prime})p(\theta^{\prime} \mid D)d\theta^{\prime},
+\label{eq:posterior_distribution}
+\end{equation}%
+where $p(\theta \mid D)$ is the posterior distribution of model parameter $\theta$ given the training set $D$. This involves sampling $B$ parameter observations from $\theta$'s posterior distribution, resulting in $B$ distinct networks. The set of these parameter observations is denoted by $\Theta$, and the set of outcomes from $B$ forward propagations is represented by $Y$. The mean of the values in $Y$ provides the point estimate for the model, while the standard deviation indicates the model's uncertainty. The formula is presented as
+\begin{align}
+  \label{eq:predictive_mean} \hat{y} & =\frac{1}{|\Theta|}\sum_{\theta^{(i)} \in \Theta}f_{\theta^{(i)}}(X), \\
+  \label{eq:predictive_std} \hat{\sigma} & =\sqrt{\frac{1}{|\Theta|-1}\sum_{\theta^{(i)}\in \Theta}(f_{\theta^{(i)}}(X)-\hat{y})^{2}}.
+\end{align}
+
+We denote $[\hat{y}-3\hat{\sigma}, \hat{y}+3\hat{\sigma}]$ as the interval estimation for SOH. Uncertainty $\hat{\sigma}$ is further calibrated utilizing the method outlined in Section~\ref{subsec:uncertainty_calibration}. The overall end-to-end process for trustworthy SOH estimation is depicted in Algorithm~\ref{alg:hsstt}. We utilize uncertainty as an indicator to gauge model's confidence in its predictions. Lower predictive uncertainty signifies high confidence in the estimates, whereas higher uncertainty denotes a lack of confidence. Consequently, model uncertainty serves as a criterion for distinguishing between ID and OOD samples. A lower uncertainty in response to a test sample indicates a similarity in feature distribution with the training samples, classifying it as an ID sample. Conversely, a higher uncertainty signifies an OOD sample. This understanding of data distribution significantly improves the decision-making process following estimation.
+
+{Futhermore, the computational load of HSSTT is optimized by a clustered attention mechanism,
+positioning the proposed framework for potential deployment on industrial equipment.}
+By first clustering key vectors and subsequently computing attention matrices cluster-wise, HSSTT reduces the original Transformer's quadratic complexity. 
+Specifically, for a given number of clusters $ n_{\text{centroid}} $, the computational complexity is $ \mathcal{O}(T \cdot n_{\text{centroid}} \cdot d_{\text{emb}}) $, scaling linearly with the intput length $ T $.
+% where $d_{emb}$ is the attention embedding dimensionality.
+
+{This process creates a trustworthy SOH estimation framework where interpretability and reliability reinforce each other. Stochastic attention quantifies confidence at the feature level, which in turn guides the construction of robust representations based on the most reliable evidence in the input data. Principled calibration then refines the model's confidence expression to produce uncertainty intervals that are statistically accurate. The resulting calibrated uncertainty serves as a dependable indicator for distinguishing between ID and OOD samples, which is a critical capability for deployment in safety-critical applications. This holistic approach enables HSSTT to deliver not only a estimation, but also an trustworthy assessment of its own reliability.}
 
 \section{实验评估}\label{sec:HSSTT_experiment}
 

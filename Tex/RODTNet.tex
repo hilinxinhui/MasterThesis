@@ -9,6 +9,74 @@
     \label{fig:rodtnet_challenges}
 \end{figure}
 
+% para 1
+Li-ion batteries (LIBs) dominate as power sources in electric vehicles\cite{WASEEM2025236414}. However, degradation through cycling compromises driving range, elevates thermal runaway risks, and diminishes residual value for second-life utilization \cite{LI2024155588}.
+% 这个版本则强调这两个物理量的对比
+These critical challenges underscore the imperative for precise degradation monitoring through a key pair of complementary indicators. Namely, remaining useful life (RUL) which provides a forward-looking prediction by quantifying the operational cycles left until capacity drops below the end-of-life threshold, and state of health (SOH) which reflects the current condition via the current-to-nominal capacity ratio.
+% % 这个版本强调这两个关键量的定义
+% These critical challenges underscore the imperative for precise degradation monitoring through a key pair of complementary indicators: remaining useful life (RUL), quantifying the remaining cycles until capacity drops below end-of-life threshold, and state of health (SOH), defined as the current-to-nominal capacity ratio.
+
+% para 2
+Due to the requirements for non-invasive measurements in practical applications, RUL and SOH of batteries can only be inferred indirectly through degradation modeling. While traditional mechanistic approaches struggle with complex multi-physics coupling effects, data-driven methods, particularly deep learning based ones, have emerged as more powerful tools for establishing nonlinear mappings between operational signals and degradation states\cite{XIAO2023107347, XIE2024630}.
+% %
+% However, their performance critically relies on the consistency assumption between training and testing data distributions, a condition systematically violated in real-world transportation systems.
+% % 
+% Multidimensional variations, including material discrepancies across production batches, heterogeneous charging-discharing variability, and regional climate divergences, induce distribution shifts that degrade model performance, while the prohibitive cost of acquiring labeled data across all operational scenarios further compounds generalization challenges. 
+However, their performance heavily relies on the assumption that training and testing data share similar distributions, which is violated in dynamic real-world systems. Furthermore, the prohibitive cost of acquiring labeled data across all operational scenarios compounds the generalization challenges.
+
+% para 3
+Numerous studies have investigated training-testing distribution shifts in battery systems and proposed models via pretraining-finetuning or domain adaptation \cite{10177255}. However, these methods remain constrained by requiring target domain data, which are unavailable in applications due to privacy regulations, hardware constraints, or operational dynamics.
+% 
+Degradation modeling fundamentally differs from discrete-label tasks like anomaly detection and fault diagnosis \cite{10214203, 10577994} due to its continuous target space, where target values exhibit an intrinsic order. This ordinality renders standard approaches inadequate and makes out-of-distribution (OOD) generalization using only source data exceptionally challenging.
+%
+While some approaches leveraging representation learning or meta learning enable target-free modeling \cite{TAN2024103725, CHEN2024234696}, they still rely on degradation priors. In contrast, data manipulation, a distinct domain generalization paradigm \cite{9782500}, offers advantages in structural simplicity and model-agnostic integration. However, this strategy faces three challenges related to multi-stage propagation from raw inputs to the degradation targets.
+
+% para 4
+The first challenge is the spatiotemporal information scarcity, fundamentally stemming from the non-invasion measurement requirements.
+% 
+Temporally, equal-interval sampling results in sparse data within dynamically complex, degradation-sensitive periods \cite{BOSE2023107543, zhu2022data, GUAN2018204, XIONG2020110048}, while over-representing less informative static operational segments. This leads to an insufficient representation of critical temporal dynamics.
+% 
+Spatially, cyclic data relies on a limited set of sensor modalities, providing restricted multi-physical insight and failing to adequately capture crucial internal battery behaviors like thermodynamic stresses \cite{XIONG2020110048} and mechanical deformations \cite{zeng2023nonintrusive}.
+% 
+As illustrated in Fig.~\ref{fig:challenges}(a), direct modeling of such sparse raw cyclic signals yields a complex high-dimensional manifold structure where degradation representations lack topological continuity. Consequently, subsequent feature manipulation becomes susceptible to noise overfitting and demonstrates limited generalization capacity beyond training distributions.
+
+% para 5
+The second challenge arises from the lack of consideration of statistics uncertainty of representations within feature space, induced by domain shifts.
+% 
+The inherent complexity and sensitivity of battery aging \cite{LI2024155588} cause degradation patterns to inevitably diverge across different operational conditions. This divergence creates domain shifts, introducing statistics uncertainty as source-domain-trained models encounter OOD data with different underlying distributions \cite{9577663, pmlr-v202-dai23d, liuncertainty}.
+% 
+As illustrated in Fig.~\ref{fig:challenges}(b), these shifts primarily involve covariate shifts caused by variations in charging protocols, electrode materials, and depth of discharge, coupled with characteristic concept shifts arising from divergent degradation trajectories. 
+% 
+Consequently, this domain shift-induced uncertainty disrupts the consistency of the mapping learned between features and degradation states, limiting a model's ability to generalize from the source domains to unseen target domains and hindering the practical applicability of data-driven prognostics.
+
+% para 6
+The third challenge is the multi-domain long-tail degradation distribution, arising from complex internal thermoelectric coupled reactions and appearing as diverse nonlinear trajectories.
+%
+Specifically, the multi-stage dynamics of battery aging, often marked by a `knee point' transitioning from slow early degradation to accelerated late-stage deterioration, inherently leads to cyclic degradation samples being heavily concentrated in the early-life phase, with later stages sparsely represented.
+% 
+As illustrated by the fast charging example in Fig.~\ref{fig:challenges}(c), this creates an asymmetric, long-tailed sample distribution. Consequently, models neglecting this characteristic exhibit poor generalization on the less frequent `tail' samples. 
+% 
+This long-tail distribution biases feature manipulation-based approaches towards the abundant early-life data, creating skewed representations that undermine generalizability. Furthermore, the heterogeneity of these long-tail distributions across multiple source domains exacerbates feature space fragmentation, impeding robust degradation modeling in practice.
+
+% para 7
+In this paper, we propose a robust OOD degradation tracking network (RODTNet) and its long-tail-optimized variant (RODTNet-LT) to address these challenges.
+% 
+First, we propose a manifold contraction-based strategy to extract robust degradation representations (MCRDR), aimed at overcoming spatiotemporal information scarcity. This strategy analyzes feature space manifold topology to identify geometric properties of well-generalized representations, and then utilizes a heuristic signal reconstruction method in conjunction with the Mamba mechanism for feature mapping.
+% 
+Next, we develop an uncertainty-driven feature synthesis (UDFS) method to cope with domain shifts. By quantifying and sampling from the inherent statistics distribution of target domains via multivariate Gaussian distribution, the UDFS expands the boundaries of the learned degradation manifold and facilitates domain generalization for degradation patterns.
+% 
+Finally, we propose a long-tail-aware adaptive rebalancing refinement (LARR) method to address the generalization impairment caused by multi-domain long-tail distributions. Using Gaussian kernel smoothing, this method guides the feature synthesis process towards exploring low-density degradation patterns, thereby promoting a more balanced representation within the label space.
+% 
+The contributions of this work are as follows.
+
+% para 8, 9, 10, 11
+\begin{enumerate}
+	\item We propose the manifold contraction-based strategy for robust degradation representation extraction (MCRDR). By enforcing pattern continuity and contracting the feature manifold, MCRDR yields a robust degradation representation to overcome the spatiotemporal information scarcity and promotes generalization.
+	\item We develop the uncertainty-driven feature synthesis (UDFS) method to tackle domain shifts. UDFS explicitly links feature space statistics uncertainty to domain variability, thereby guiding the extraction of domain-invariant features and the synthesis of diverse OOD patterns for improved generalization.
+	\item We present the long-tail-aware adaptive rebalancing refinement (LARR) to address the multi-domain long-tail challenge. Leveraging similarities between feature and label spaces and distribution smoothing, LARR mitigates head-bias of feature synthesis, enhancing generalization for imbalanced degradation trajectories.
+	\item Comprehensive experiments across 11 OOD generalization tasks using 4 LIB aging datasets validate the effectiveness of both RODTNet and RODTNet-LT, and demonstrate their superiority over 14 baseline methods with their 20 variants.
+\end{enumerate}
+
 \section{锂离子电池退化建模方法}\label{sec:RODTNet_methodology}
 
 \begin{figure}[!htbp]
@@ -18,11 +86,209 @@
     \label{fig:rodtnet_framework}
 \end{figure}
 
-\subsection{}\label{subsec:RODTNet_MCRDR}
+% \subsection{}\label{subsec:RODTNet_MCRDR}
 
-\subsection{}\label{subsec:RODTNet_UDFS}
+% \subsection{}\label{subsec:RODTNet_UDFS}
 
-\subsection{}\label{subsec:RODTNet_LARR}
+% \subsection{}\label{subsec:RODTNet_LARR}
+
+\subsection{Overview}
+
+To enhance robustness against unseen degradation patterns, we propose RODTNet, a robust OOD degradation tracking network, and its long-tail optimized variant, RODTNet-LT. As illustrated in Fig.~\ref{fig:framework}, the core RODTNet integrates two key components: (1) a manifold contraction-based robust degradation representation extraction (MCRDR) strategy, and (2) an uncertainty-driven feature synthesis (UDFS) method. RODTNet-LT further incorporates (3) a long-tail-aware adaptive rebalancing refinement (LARR) module to specifically address challenges in imbalanced degradation distributions.
+% 
+First, the MCRDR module processes input signals via heuristic reconstruction and employs a Mamba model to map them into a latent representation that forms a manifold with low topological complexity and enhanced continuity, addressing the issue of insufficient spatiotemporal coverage.
+%
+Then, the UDFS module models the feature distribution of seen domain patterns, quantifies the uncertainty arising from domain shifts, and synthesizes plausible features corresponding to unseen domains by leveraging this uncertainty measure, promoting OOD generalization. 
+% 
+Finally, the LARR module complements the previous stages by adaptively recalibrating and rebalancing the feature space. This refinement sharpens the model's sensitivity to both frequent and rare degradation patterns, addressing the long-tail distribution challenge.
+
+We formulate the problem of modeling battery degradation under distribution shifts. Let $\boldsymbol{x}_{t} \in \mathbb{R}^{L \times C}$ denote the multi-sensor signal sequence (length $L$, $C$ sensors) at cycle $t$, and $y_{t} \in \mathbb{R}$ be the corresponding degradation indicator (RUL or SOH). We consider $(\boldsymbol{x}_{t}, y_{t})$ as samples from random variables $(X, Y)$ residing in spaces $\mathcal{X} \times \mathcal{Y}$, governed by a joint distribution $P_{XY}$ with marginals $P_{X}$ and $P_{Y}$.
+% 
+Variations in internal and external factors of batteries create distinct operational domains. We consider $K = M + N$ domains, denoted as $D^{i} = \{ (\boldsymbol{x}_{t}, y_{t}) \} \sim P_{XY}^{i}, i = 1, \dots, K$.
+% Crucially, distinct domains exhibit distribution shifts, meaning $P^{i}_{XY} \neq P^{j}_{XY}$ for $i \neq j$.
+And $P^{i}_{XY} \neq P^{j}_{XY}$ for $i \neq j$.
+% 
+The objective of OOD-robust degradation modeling is to learn a  model $f_{\theta}: \mathcal{S} \to \mathcal{T}$, parametered by $\theta$, using data from $M$ source domains $\mathcal{S} = \{ D^{i} \}_{i=1}^{M}$.
+% 
+The model should generalize to $N$ unseen target domains $\mathcal{T} = \{ D^{j} \}_{j=M+1}^{M+N}$ without requiring access to them during training. This is achieved by minimizing the expected loss $\ell$ on the target domains, that is $\mathop{\min}_{\theta}\mathbb{E}_{(\boldsymbol{x}, y) \in \mathcal{T}} [\ell(f_{\theta}(\boldsymbol{x}), y)]$. % where the expectation is taken over the data distribution of the target domain.
+
+\subsection{Manifold Contraction for Robust Degradation Representation}
+
+To address the challenge of insufficient spatiotemporal coverage, we design MCRDR based on manifold contraction that emphasizes critical temporal segments and achieves spatial dimension expansion, enabling subsequent feature synthesis to further increase feature density.
+First, we investigate the relationship between the generalization ability of degradation features and their manifold topology, exploring the geometric properties of well-generalized representations.
+Second, we propose a heuristic cyclic signal reconstruction method possessing potentially low topological complexity.
+Finally, the reconstructed input are mapped onto the feature space using a Mamba-based model.
+
+\subsubsection{Degenerate Representation from a Topological Perspective}
+
+Inspired by studies in relevant fields such as fault diagnosis, we investigate the geometric properties of generalizable features of degradation models.
+Omitting cycle and domain indices for notational clarity, we explicitly consider the latent variable $\boldsymbol{z}$ corresponding to input $\boldsymbol{x}$. Consequently, the domain is defined as $D = \{ (\boldsymbol{x}, \boldsymbol{z}, y) \}$, adapting the source $\mathcal{S}$ and target $\mathcal{T}$ domain structure accordingly.
+Let $Z$ be the random variable for $z \in \mathcal{Z}$ with distribution $P_{Z}$, we assume these representations reside on a manifold $\mathcal{M}_{Z}$ embedded within the feature space.
+We assess degradation representations using the Information Bottleneck (IB) \cite{alemi2017deep} principle for quality and Intrinsic Dimension (IntDim) \cite{10.5555/3692070.3694510} for geometry.
+The IB principle seeks an optimal representation $Z$ by maximizing its relevance to the label $Y$, $\mathcal{I}(Z;Y)$, while minimizing the information it retains about the input $X$, $\mathcal{I}(Z;Y)$. This objective is formulated as
+\begin{equation}
+    \min_{Z} \mathcal{IB} = \min_{Z} [- \mathcal{I}(Z;Y) + \beta \mathcal{I}(Z;X)], 
+    \label{IB_mutual_info}
+\end{equation}
+where $\mathcal{I}(\cdot;\cdot)$ is mutual information, and $\beta > 0$ is a Lagrangian multiplier. 
+The IntDim is the minimum dimension for isometric manifold embedding.
+Given the covariate shift inherent in degradation generalization, the IB objective is reformulated, focusing on the relationship between $Z$ and $Y$, formulated as
+\begin{equation}
+    \min_{Z} \mathcal{IB} = \min_{Z} [(1-\beta) \mathcal{H}(Y \mid Z) + \beta \mathcal{H}(Z \mid Y)], 
+    \label{IB_cond_entropy}
+\end{equation}
+with conditional entropy $\mathcal{H}(\cdot \mid \cdot)$ and weight $\beta \in (0, 1)$.
+The $\mathcal{H}(Y \mid Z)$ term encourages label predictability.
+The $\mathcal{H}(Z \mid Y)$ term, beyond potential overfitting implications, crucially links the representation to the data manifold's topology.
+
+The generalization error of prognostic models is upper-bounded by $\mathcal{H}(Z \mid Y)$, formulated as
+\begin{align}
+    & \mathbb{E}_{\{\boldsymbol{x},\boldsymbol{z},y\}\thicksim \mathcal{S}}[||f(\boldsymbol{z})-{y}||_2] -\mathbb{E}_{\{\boldsymbol{x},\boldsymbol{z},y\}\thicksim \mathcal{T}}(||f(\boldsymbol{z})-{y}||_2) \notag \\
+    & \leq 2KQ(\mathcal{H}(Z \mid Y)), \label{generalization_error}
+\end{align}
+% $||\cdot||_2$ is the $\ell_{2}$ norm
+where $K$ is down-task regressor's Lipschitz constant, and $Q(\cdot)$ depends on $P(Z \mid Y)$, influencing the bound's tightness.
+Furthermore, $\mathcal{H}(Z \mid Y)$ itself is bounded by the average IntDim of the conditional manifolds $\mathcal{M}_i\subset\mathcal{M}$ corresponding to observations $\boldsymbol{z}$ conditioned on $y = y_{i}$, formulated as
+\begin{equation}
+    \mathcal{H}(Z \mid Y) \leq \mathbb{E}_{{y}_{i} \sim \mathcal{Y}}[-\log(\epsilon)IntDim(\mathcal{M}_i)+\log\frac{K^{\prime}}{C(\epsilon)}],
+    \label{intrinsic_dimension} 
+\end{equation}
+where $\epsilon \to 0^{+}$ is a neighborhood radius, $K^{\prime}$ is a constant, and $C(\epsilon)$ is some function of $\epsilon$. 
+% $i$ indexes samples
+% $ID(\cdot)$ is the intrinsic dimension of the manifold
+Conditions, proof methodologies and other details for these bounds \cite{Ghosh_Motani_2023, 10.5555/3692070.3694510} are satisfied by our model, and details are omitted for brevity.
+
+Based on Eqs. \eqref{generalization_error}, \eqref{intrinsic_dimension}, and the IB principle's balance between compression and prediction, desirable degradation representations should possess two key geometric properties. These are: 
+a low IntDim, reflecting a relatively simple manifold structure faithfully representable in lower dimensions, and continuous degradation patterns, represented as ordered and separable feature distributions for different aging states.
+From a domain generalization perspective, these properties are vital. First, a low IntDim facilitates manifold contraction, simplifying the representation structure within which feature synthesis and distribution extrapolation are performed.
+Second, continuity and order across degradation states, reflected in separable feature distributions, promote domain invariance and enhance feature manipulation by reducing inter-state interference and enabling reliable density estimation.
+
+% Feature Engineering as Manifold Contraction
+Acquiring topologically optimal degradation representation via IntDim regularization on raw signals is challenging due to costly per-step IntDim estimation and feature discontinuities from sparse coverage, impeding effective optimization. Consequently, inspired by PINN methods in battery research \cite{wang2024physics, 10251604}, we utilize a heuristic cycle signal reconstruction.
+We implement this reconstruction by extracting statistical features from each sensor sequence of the original signal $\boldsymbol{x}_{t} \in \mathbb{R} ^ {L \times C}$. 
+Representative examples include temporal differences or channel-wise moments such as mean and standard deviation. Concatenating these extracted statistics yields the reconstructed signal $\boldsymbol{\widetilde{x}}_{t} \in \mathbb{R} ^ {D \times 1}$, where $D$, the total number of extracted statistics, typically satisfies $C < D \ll L$. The precise input construction methodology is detailed in Section~\ref{subsec:experimental_setup}.
+Empirically validated in Section~\ref{subsec:comparative_experiments}, this reconstruction mitigates temporal interference and expands features dimensionality to address insufficient coverage challenge, resulting in lower IntDim and more continuous degradation representation.
+
+\subsubsection{Mamba with Manifold Contraction}
+
+Selecting a backbone for mapping reconstructed signals to degradation features involves considering the task's sequential nature, linear time-invariant (LTI) system approximability for battery physics, and edge deployment constraints. Mamba's sequence modeling proficiency, LTI-compatible state-space mechanism, linear scaling, and parallel inference capabilities \cite{gu2024mamba} align well with these requirements, leading us to adopt it for this mapping task.
+
+We form Mamba's input $\widetilde{X}_{Recon} \in \mathbb{R}^{D \times E}$ by vertically stack $E$ consecutive reconstructed signals.
+This input is first embedded channel-independently into $\widetilde{X}_{Emb} \in \mathbb{R}^{H \times E}$, where $H$ is the hidden state dimension, then mapped via a three-branch residual structure into the feature space as
+\begin{align}
+& Z^{bypass}_{MRB} = SiLU(Linear(\widetilde{X}_{Emb})), \\
+& Z^{main}_{MRB} = SSM(SiLU(Conv(Linear(\widetilde{X}_{Emb})))), \\
+& Z_{MRB} = Linear(Z^{main}_{MRB} \odot Z^{bypass}_{MRB}) + \widetilde{X}_{Emb},
+\end{align}
+where $Z^{main}_{MRB}$, $Z^{bypass}_{MRB}$, and $Z_{MRB}$ are the main, bypass, and final Mamba residual block output. Operations include concatenation $\odot$, linear mapping $Linear(\cdot)$, convolution $Conv(\cdot)$, SiLU activation $SiLU(\cdot)$, and the S6 transformation $SSM(\cdot)$. The S6 model, an input-dependent discrete recurrent neural network, is formulated as
+\begin{align}
+& h_{t} = \overline{A}h_{t-1} + \overline{B}\widetilde{x}_{t}, \\
+& \overline{A} = DR_{A}(\Delta, A) = exp(\Delta A), \\
+& \overline{B} = DR_{B}(\Delta, A, B) = (\Delta A)^{-1}(exp(\Delta A)-I)\cdot\Delta B,
+\end{align}
+where $A$ and $B$ are trainable matrices. Adopting ZOH discretization $DR$ \cite{gu2024mamba}, $A$ is HiPPO-initialized \cite{20212610553629}, while $B$ and the discretization factor $\Delta$ are functions of input $\widetilde{x}_{t}$.
+
+\subsection{Uncertainty-driven Feature Synthesis against Domain Shifts}\label{subsec:UDFS}
+
+To mitigate the issue of domain shift-induced statistics uncertainty and enhance model generalization capability, we propose UDFS method, which extrapolates distribution boundaries based on the contracted degradation representation.
+First, we model feature statistics probabilistically via multivariate Gaussian distributions.
+Second, we quantify statistics uncertainty by non-parametrically estimating the variance of these statistics.
+Lastly, based on this uncertainty quantification, we synthesize features representing potential OOD degradation patterns through sampling, and the UDFS mechanism is subsequently integrated into the MMC model to enhance robustness. % against OOD instances.
+
+\subsubsection{Multivariate Gaussian Distribution for Domain Shift Modeling}
+
+Domain-specific degradation patterns are reflected in statistical distributions of features. We posit that domain shifts induce quantifiable inconsistencies in these statistics across different operational environments. Explicitly modeling this statistical inconsistency, particularly through the uncertainty inherent in feature statistics, enables the synthesis of features representative of unseen target domains from source data. This approach allows training degradation models with enhanced robustness.
+Our method quantifies inter-domain variability by identifying the underlying distribution that governs feature statistics and by leveraging its sampling variance.
+% 
+Quantifying statistics uncertainty for robust degradation modeling essentially involves characterizing the low-order moments of feature statistic distributions.
+This requires specific properties from the underlying distribution.
+Ideally, it should satisfy Carleman's condition \cite{akhiezer2020classical}, ensuring unique determination by its moments, while its low-order moments should capture suffici distributional information. The multivariate Gaussian distribution, which satisfies Carleman's condition and is completely defined by its mean and covariance, fulfills these requirements. Given this theoretical alignment and its established use in battery degradation analyses, we employ a multivariate Gaussian framework to model feature statistics.
+
+Specifically, for features $ Z_{MRB} \in \mathbb{R}^{B \times H \times E} $ derived from a minibatch of $ B $ samples, we employ batch-wise mean $ \mu_{Z} $ and standard deviation $ \sigma_{Z} $ as their statistical representations.
+As described in the previous paragraph, we have $ \mu_{Z} \sim \mathcal{N}(\mu, \Sigma_{\mu}^{2}) $ and $ \sigma_{Z} \sim \mathcal{N}(\sigma, \Sigma_{\sigma}^{2}) $, where $ \mu $ and $ \sigma $ are the means of the feature statistics $ \mu_{Z} $ and $ \sigma_{Z} $, respectively.
+We compute these statistics directly using the mean and standard deviation of features, formulated as
+\begin{align}
+    & \mu=\frac{1}{HE}\sum_{H}\sum_{E}Z_{MRB}, \\
+    & \sigma = \sqrt{\frac{1}{HE}\sum_{H}\sum_{E}(Z_{MRB} - \mu)^{2}}.
+\end{align}
+And $ \Sigma_{\mu}^{2} $ and $ \Sigma_{\sigma}^{2} $ are the variances associated with feature statistics $\mu_{Z}$ and $\sigma_{Z}$, which also serve to model the statistics uncertainty induced by domain shifts.
+These variances are estimated non-parametrically based on the observed intra-batch variability of the feature statistics, formulated as
+\begin{align}
+    & \Sigma_{\mu}^{2}=\frac{1}{B}\sum_{b\in B}(\mu-\mathbb{E}_{b}(\mu))^{2}, \\
+    & \Sigma_{\sigma}^{2} = \frac{1}{B}\sum_{b\in B}(\sigma-\mathbb{E}_{b}(\sigma))^{2},
+\end{align}
+where $ \mathbb{E}_{b}(\mu) $ and $ \mathbb{E}_{b}(\sigma) $ are the expectations of mean and standard deviation of the $ b $-th sample within a minibatch.
+
+\subsubsection{Uncertainty-driven Feature Synthesis}
+
+Differentiable generation of feature statistics employs the reparameterization method under the assumption of Gaussian distributed original statistics with parameters $\mu$, $\Sigma_{\mu}$ and $\sigma$, $\Sigma_{\sigma}$, formulated as
+\begin{align}
+    & \mu_{Z}^{\prime}=\epsilon_{\mu}\Sigma_{\mu}+\mu,  \\
+    & \sigma_{Z}^{\prime}=\epsilon_{\sigma}\Sigma_{\sigma}+\sigma, 
+\end{align}
+where $\mu_{Z}^{\prime}$ and $\sigma_{Z}^{\prime}$ are the generated feature mean and standard deviation, and $\epsilon_{\mu}$ and $\epsilon_{\sigma}$ are samples drawn from a standard normal distribution $\mathcal{N}(0, 1)$.
+% 
+The proposed UDFS utilizes the mean statistic $\mu$ as an anchor and standard deviation $\Sigma_{\mu}$ and $\Sigma_{\sigma}$ to probabilistically parameterize a offset, conferring adaptability to stochastic domain shifts through its variable direction and magnitude. Generating new statistics via reparameterization introduces controlled randomness, which augments the feature manifold surrounding the anchor statistics. This expansion improves coverage of potential unseen degradation patterns, enhancing model robustness and enabling generalization to OOD scenarios.
+% 
+Functionally, UDFS is integrated into the Mamba with manifold contraction model, operating between the encoder and the task-specific regression head for feature synthesis, formulated as
+\begin{equation}
+    G(Z_{MRB}) = \sigma_{Z}^{\prime}\left(\frac{Z_{MRB} - \mu}{\sigma}\right) + \mu_{Z}^{\prime}.
+    \label{UDFS}
+\end{equation}
+This UDFS integration adds negligible constant-level computational overhead during training.
+Furthermore, a dynamic activation mechanism based on Bernoulli sampling regulates its use, ensuring sufficient learning from real samples. At each training iteration, a Bernoulli value $p^{\prime}$ is drawn, and feature synthesis via UDFS proceeds only when $p^{\prime} < p_{0}$, where $p_{0}$ is a predefined activation threshold.
+
+\subsection{Long-tail-aware Adaptive Rebalancing Refinement}\label{susbec:LARR}
+
+To address the challenge of multi-source domain long-tail degradation distributions, we propose LARR, which employs feature distribution calibration specifically for enhancing battery degradation trajectory tracking and precise SOH estimation.
+First, we employ feature distribution calibration to strengthen the correspondence between degradation feature similarity and degradation label proximity.
+Second, we integrate this feature calibration strategy into UDFS to form LARR to eliminate domain-specific information tied to long-tail distributions, thereby purifying feature domain invariance.
+Finally, we examine LARR's training dynamics and subsequently incorporate a head-bias mitigation strategy designed to improve degradation pattern generalization.
+
+\subsubsection{Symmetric-kernel-based Feature Statistic Calibration}
+
+We discretize the bounded SOH label space via uniform binning into $\mathcal{B}$ intervals, indexed $\textit{b} = 1, 2, \dots, \mathcal{B}$. Battery degradation trajectories exhibit a long-tail distribution, characterized by substantial, often exponential, variation in the number of samples associated with each bin $\textit{b}$.
+% 
+Continuous degradation labels imply feature similarity relates inversely to label distance, unlike discrete labels. 
+% 
+The inherent long-tail distribution of degradation data violates this, as feature scarcity in tail bins leads to poor representations spuriously similar to head bin features.
+% 
+To counteract this, we calibrate features within each bin $\textit{b}$ by propagating information from adjacent bins via symmetric kernel functions. These corrected features, combined with the original observed features from the encoder-UDFS pipeline, are subsequently transformed to achieve a more balanced degradation feature representation.
+
+We compute bin-wise feature statistics similarly to the batch-wise counterparts described in Section \ref{subsec:UDFS}. For features $Z_{MRB}$ within bin $\textit{b}$, the mean $\mu_{\textit{b}}$ and standard deviation $\sigma_{\textit{b}}$ are formulated as
+\begin{align}
+    & \mu_{\textit{b}} = \frac{1}{HE}\sum_{H}\sum_{E}Z_{MRB}, \\
+    & \sigma_{\textit{b}} = \sqrt{\frac{1}{HE}\sum_{H}\sum_{E}(Z_{MRB} - \mu)^{2}}.
+\end{align}
+% 
+To calibrate the feature distribution, we employ kernel smoothing across bins based on their corresponding SOH values. Without loss of generality, we select the Gaussian kernel for this purpose. This yields calibration statistics $\widetilde{\mu}_{\textit{b}}$ and $\widetilde{\sigma}_{\textit{b}}$, formulated as
+% \begin{align}
+%     \widetilde{\mu}_{\textit{b}} & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}Gau(y_{\textit{b}}, y_{\textit{b}^{\prime}})\mu_{\textit{b}^{\prime}} \notag \\
+%     & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\mu_{\textit{b}^{\prime}},\label{mu_calibration} \\
+%     \widetilde{\sigma}_{\textit{b}} & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}Gau(y_{\textit{b}}, y_{\textit{b}^{\prime}})\sigma_{\textit{b}^{\prime}} \notag \\
+%     & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\sigma_{\textit{b}^{\prime}},\label{sigma_calibration}
+% \end{align}
+\begin{align}
+    \widetilde{\mu}_{\textit{b}} = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\mu_{\textit{b}^{\prime}},\label{mu_calibration} \\
+    \widetilde{\sigma}_{\textit{b}} = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\sigma_{\textit{b}^{\prime}},\label{sigma_calibration}
+\end{align}
+where $Gau(\cdot, \cdot)$ is the Gaussian kernel function with coefficient $\gamma$, and $y_{\textit{b}}$ and $y_{\textit{b}^{\prime}}$ are SOH values corresponding to the $\textit{b}$-th and $\textit{b}^{\prime}$-th bins, respectively.
+
+\subsubsection{Imbalance-bias-free Degradation Dynamics Generalization}
+
+To address the long-tail distribution challenge, which persists in a consistent form both preceding and following the feature synthesis via $G(Z_{MRB})$, we implement the proposed LARR algorithm for head-bias-free correction of features.
+LRAA performs feature distribution calibration utilizing two sets of bin-specific statistics, namely observed statistics $\{{\mu}_{\textit{b}}, {\sigma}_{\textit{b}}\}$ and calibration statistics $\{\widetilde{\mu}_{\textit{b}}, \widetilde{\sigma}_{\textit{b}}\}$, formulated as
+\begin{equation}
+    \widetilde{G}(Z_{MRB})=\widetilde{\sigma}_{\textit{b}}\left(\frac{G(Z_{MRB}) - \mu_{\textit{b}}}{\sigma_{\textit{b}}}\right)+\widetilde{\mu}_{\textit{b}}.
+\end{equation}
+Structurally identical to Eqs. \ref{UDFS}, the LARR approach, similar to UDFS, is applied exclusively during the training stage. % At iteration , the adjustment is performed via:
+To facilitate clear exposition of the training dynamics, we denote the iteration-specific observed statistics and calibration statistics for bin $\textit{b}$ as $\{\mu_{\textit{b}}^{(i)}, \sigma_{\textit{b}}^{(i)}\}$ and $\{\widetilde{\mu}_{\textit{b}}^{(i)}, {\widetilde{\sigma}_{\textit{b}}^{(i)}}\}$, respectively, where $i$ indexes the training iteration. Within each training iteration, the degradation representation is adjusted, and subsequently, the corresponding calibration statistics are updated at the iteration's conclusion.
+To ensure training stability, the observed statistics are updated via a momentum-based mechanism that integrates their values from the previous iteration and the static statistics, formulated as
+\begin{align}
+    & \mu_{\textit{b}}^{(i)} \leftarrow \alpha\mu_{\textit{b}}^{(i-1)}+(1-\alpha)\mu_{\textit{b}}, \\
+    & {\sigma_{\textit{b}}}^{(i)} \leftarrow \alpha{\sigma_{\textit{b}}}^{(i-1)}+(1-\alpha)\sigma_{\textit{b}},
+\end{align}
+where $\alpha$ is the update momentum. The calibration statistics are updated according to Eqs. \eqref{mu_calibration} and \eqref{sigma_calibration}.
 
 \section{实验评估}\label{sec:RODTNet_experiment}
 
