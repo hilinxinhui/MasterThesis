@@ -2,6 +2,7 @@
 
 \section{引言}\label{sec:HSSTT_introduction}
 
+% 这张图好像也没法修改为三张子横向排列的形式
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/HSSTT_figures/trans/FIG1_TII-25-2632.pdf}
@@ -12,7 +13,7 @@
 
 Lithium-ion batteries (LIBs) are extensively utilized in industrial fields owing to their advantageous characteristics\cite{NASAJPOURESFAHANI2024114783}. The demanding conditions of industrial environments, coupled with intricate internal electrochemical reactions, necessitate enhanced measures for the safe and dependable long-term functionality of LIBs. It is therefore essential to monitor LIBs' performance to guarantee their continuous operation, and battery performance is usually represented by the state-of-health (SOH), defined as the ratio of a battery's current maximum available capacity to its nominal capacity\cite{WANG2024110325, 10391265}.
 
-The advancement of deep learning has facilitated the emergence of data-driven SOH estimation models, which are progressively supplanting physics-based models due to their reduced dependency on expert knowledge and enhanced capability to capture the complex dynamics of degradation mechanisms\cite{mit_dataset_attia2020closed, tri_dataset_severson2019data, tongji_dataset_zhu2022data}. However, data-driven models remain susceptible to generating inaccurate estimates when confronted with samples characterized by complex and inaccessible distributions, which arises from industrial environments' unavoidable noise fluctuations and variable load demands\cite{10214203}. Moreover, the deterministic nature of these models constrains them to offering mere point estimates of SOH without the capability to signal errors, as illustrated in Fig.~\ref{fig:problem}(a). Reliance on such deterministic models can jeopardize subsequent decision-making processes. For example, estimating the SOH of LIBs smaller than the actual value can result in premature retirement, leading to economic losses. Conversely, overestimating the SOH can cause excessive cycling, thereby increasing the potential risk of system-level thermal runaway.
+The advancement of deep learning has facilitated the emergence of data-driven SOH estimation models, which are progressively supplanting physics-based models due to their reduced dependency on expert knowledge and enhanced capability to capture the complex dynamics of degradation mechanisms\cite{mit_dataset_attia2020closed, tri_dataset_severson2019data, tongji_dataset_zhu2022data}. However, data-driven models remain susceptible to generating inaccurate estimates when confronted with samples characterized by complex and inaccessible distributions, which arises from industrial environments' unavoidable noise fluctuations and variable load demands\cite{10214203}. Moreover, the deterministic nature of these models constrains them to offering mere point estimates of SOH without the capability to signal errors, as illustrated in Fig.~\ref{fig:hsstt_challenges}(a). Reliance on such deterministic models can jeopardize subsequent decision-making processes. For example, estimating the SOH of LIBs smaller than the actual value can result in premature retirement, leading to economic losses. Conversely, overestimating the SOH can cause excessive cycling, thereby increasing the potential risk of system-level thermal runaway.
 
 % To mitigate the issues of obliviousness in these models and ensure the dependability of industrial monitoring and maintenance, it is crucial to assess the trustworthiness of data-driven prognostic models' outputs. Given the significant relationship with trustworthy SOH estimation, the role of uncertainty is considered as utmost importance. On one hand, uncertainty serves as a measurement, reflecting the degree of trustworthiness through the discrepancy between the characterized distribution and the ground truth. On the other hand, uncertainty functions as a user-centered indicator for trustworthy analysis that can be easily integrated into decision-making processes involving human intervention.
 
@@ -20,15 +21,15 @@ To mitigate the issues caused by deterministic models and ensure the dependabili
 
 % The first challenge arises from the uncertainty in the process of representative correlation learning. 
 Firstly, the uncertainty in the process of representative correlation learning presents a challenge.
-During the aggregation of correlation information, the model's uncertainty in generating weight logits is often overlooked. Some unimportant tokens, possibly exhibiting high uncertainty, may be incorrectly assigned high logits \cite{20222012122312, 20191806851746, 10342686}. As shown in Fig.~\ref{fig:problem}(a), aggregating these unimportant tokens can mislead the extraction of complex degradation dynamics, ultimately degrading the precision of SOH estimation results.
+During the aggregation of correlation information, the model's uncertainty in generating weight logits is often overlooked. Some unimportant tokens, possibly exhibiting high uncertainty, may be incorrectly assigned high logits \cite{20222012122312, 20191806851746, 10342686}. As shown in Fig.~\ref{fig:hsstt_challenges}(a), aggregating these unimportant tokens can mislead the extraction of complex degradation dynamics, ultimately degrading the precision of SOH estimation results.
 
 % The second challenge is the disregard of spatio-temporal uncertainties.
 Secondly, the disregard of {spatio-temporal uncertainties} presents a challenge.
-For the cyclic signals of LIBs, variability in cross-sensor dependencies due to shifts in the dominant channel can lead to inconsistencies in sensor data fusion. Meanwhile, the sparse distribution of cross-time dependencies adds ambiguity to the extraction of token-pair interactions. Inadequate modeling of such spatio-temporal uncertainties compromises the prognostic accuracy \cite{wang2023inherent, 9729404, capsnet_rul_li2024sensor}, as also illustrated in Fig.~\ref{fig:problem}(a).
+For the cyclic signals of LIBs, variability in cross-sensor dependencies due to shifts in the dominant channel can lead to inconsistencies in sensor data fusion. Meanwhile, the sparse distribution of cross-time dependencies adds ambiguity to the extraction of token-pair interactions. Inadequate modeling of such spatio-temporal uncertainties compromises the prognostic accuracy \cite{wang2023inherent, 9729404, capsnet_rul_li2024sensor}, as also illustrated in Fig.~\ref{fig:hsstt_challenges}(a).
 
 % The third challenge is the potential miscalibration of uncertainty.
 Thirdly, the potential miscalibration of uncertainty presents a challenge.
-In applications, the actual data distribution is inaccessible, and the predictive distribution derived through quantified uncertainty may misalign with it \cite{kuleshov2018accurate, 9729404, 10217044}. As depicted in Fig.~\ref{fig:problem}(b), this leads to under- or over-confident interval estimations. As a result, the trustworthiness of the prognostic results is diminished, and the performance of uncertainty score-based out-of-distribution detection is degraded.
+In applications, the actual data distribution is inaccessible, and the predictive distribution derived through quantified uncertainty may misalign with it \cite{kuleshov2018accurate, 9729404, 10217044}. As depicted in Fig.~\ref{fig:hsstt_challenges}(b), this leads to under- or over-confident interval estimations. As a result, the trustworthiness of the prognostic results is diminished, and the performance of uncertainty score-based out-of-distribution detection is degraded.
 
 To address these issues, we propose a \textbf{H}ierarchical \textbf{S}tochastic \textbf{S}patial-\textbf{T}emporal \textbf{T}ransformer (HSSTT). In HSSTT, a novel Gumbel-Softmax reparameterization (GSR)-based self-attention mechanism is designed, transforming deterministic self-attention into its stochastic counterpart to deal with the uncertainty in both the feature extraction and feature mapping processes. Then, a hierarchical stochastic spatial-temporal Transformer is developed combining the uncertainty-aware dilated timestep-wise convolution and the stochastic self-attention to extract cross-sensor (spatial) and cross-cycle (temporal) degradation dynamics. Finally, the causes of model being under- or over-confident is analysed through bias-variance decomposition, based on which a primary calibration strategy is formulated, and the calibrated uncertainty is leveraged to distinguish between in-distribution (ID) and out-of-distribution (OOD) samples. The main contributions are as follows.
 
@@ -41,22 +42,14 @@ To address these issues, we propose a \textbf{H}ierarchical \textbf{S}tochastic 
 
 \section{锂离子电池健康状态估计方法}\label{sec:HSSTT_methodology}
 
-In this section, we elaborate on the proposed HSSTT framework, provide an in-depth analysis of the deployment of HSSTT in practical industrial scenarios, and detail the methodology for achieving trustworthy SOH estimation. As depicted in Fig.~\ref{fig:framework}, correlation information between tokens are aggregated by the proposed stochastic self-attention. And degradation dynamics are captured by the designed uncertainty-aware spatial-temporal feature encoder and mapped to SOH through the downstream regressor. Model uncertainty is quantified employing Monte Carlo sampling and further calibrated by the proposed principled auxiliary model.
+In this section, we elaborate on the proposed HSSTT framework, provide an in-depth analysis of the deployment of HSSTT in practical industrial scenarios, and detail the methodology for achieving trustworthy SOH estimation. As depicted in Fig.~\ref{fig:hsstt_framework}, correlation information between tokens are aggregated by the proposed stochastic self-attention. And degradation dynamics are captured by the designed uncertainty-aware spatial-temporal feature encoder and mapped to SOH through the downstream regressor. Model uncertainty is quantified employing Monte Carlo sampling and further calibrated by the proposed principled auxiliary model.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/HSSTT_figures/trans/FIG2_TII-25-2632.pdf}
-    \bicaption{HSSTT~架构图}{Diagram of the HSSTT framework}
+    \bicaption{HSSTT架构图}{Diagram of the HSSTT framework}
     \label{fig:hsstt_framework}
 \end{figure}
-
-% \subsection{}\label{subsec:stochastic_self_attention}
-
-% \subsection{}\label{subsec:HSSTT_framework}
-
-% \subsection{}\label{subsec:well_calibrated_HSSTT}
-
-% \subsection{}\label{subsec:trustworthy_SOH_estimation}
 
 \subsection{Stochastic Self-Attention for Uncertainty Quantification}\label{subsec:stochastic_attention}
 
