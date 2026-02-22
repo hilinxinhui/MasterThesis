@@ -65,11 +65,13 @@ First, we introduce the designed ControlNet-guided cross-dataset conditional dif
 Second, we introduce the trustworthy multimodal LLM, including details of fine-tuning, key token targeting, and a key token-driven uncertainty reweighting strategy.
 Third, we introduce the hallucination-resilient scheme based on DA-TMLLM.
 
+\subsection{}
+
 To mitigate inter-dataset discrepancies, we propose a cross-dataset standardization method by applying fixed-duration segmentation, length alignment, and scale normalization.
 Then, we develop the architecture of the conditional diffusion model (CDM) to synthesize vibration signals.
 Finally, we design a ControlNet to inject controllable semantic guidance into the reverse diffusion phase.
 
-\subsubsection{Cross-Dataset Standardization Method for Data Preprocessing}
+（）{Cross-Dataset Standardization Method for Data Preprocessing}
 Since sensor sampling rates, collection conditions, and bearing types vary substantially across different bearing datasets, collected signals exhibit differences on characteristic fault frequency and amplitude.
 When these heterogeneous signals are fed directly to a diffusion model, the model tends to treat the inter-dataset discrepancies as random noise, hindering its ability to learn an effective joint distribution.
 To address this issue, we propose a cross-dataset standardization method.
@@ -102,7 +104,7 @@ where $\ell$ is the actual number of spectral bins, and $\operatorname{SNorm}(\c
 \end{equation}
 where $g=\rho\sqrt{L_{f}}$, and $\rho$ is a predefined scaling factor.
 
-\subsubsection{ControlNet-Guided Conditional Diffusion}
+（）{ControlNet-Guided Conditional Diffusion}
 
 We employ a diffusion-based augmentation model that simultaneously promotes training stability and sample diversity, which is composed of a forward diffusion phase and a reverse diffusion phase.
 To enhance semantic consistency during generation, we design a ControlNet that injects high-level semantic features into the latent features at every reverse diffusion step.
@@ -214,7 +216,7 @@ In TMLLM, a multimodal LLM is developed by fine-tuning a pre-trained LLM on text
 To derive trustworthy answers, we target a key token of which energy decreases abnormally by computing point-biserial correlation coefficient and conducting a significance test.
 Furthermore, we design a key token-driven uncertainty reweighting strategy to quantify the uncertainty in LLM answer.
 
-\subsubsection{Fine-Tuning LLM on Text-Signal Pairs}
+（）{Fine-Tuning LLM on Text-Signal Pairs}
 Since recent pre-trained LLMs are optimized for discrete textual tokens and cannot natively process vibration signals, we introduce a dual-branch tokenizer-encoder block, which converts vibration signal samples and corresponding textual descriptions into signal-specific and token-specific features.
 The modality-specific features are subsequently aligned by a text-signal alignment block, and the whole model is fine-tuned to maximize cross-modal alignment.
 
@@ -239,7 +241,7 @@ Finally, the text-signal alignment block embeds the language tokens into a prede
 The weight of text-signal alignment block is denoted as $\boldsymbol{\theta}_\mathrm{ts}=\{\bm{\theta}_\mathrm{l_{1}}, \bm{\theta}_\mathrm{l_{2}}, \bm{\theta}_\mathrm{l_{3}}\}$, and the weight of the pre-trained LLM is denoted as $\boldsymbol{\theta}_\mathrm{llm}$.
 To fine-tune the weights of text-signal alignment block and LLM on downstream tasks, we adopt a parameter-efficient approach using low-rank adaptation (LoRA) \cite{20231213775448}.
 
-\subsubsection{Key Token Targeting}
+（）{Key Token Targeting}
 To solve the issue of hiddenness of sequence-level hallucinations, we jointly consider the autoregressive generation rule and diagnosis-specific characteristics.
 % We hypothesize that key tokens exist that act as sentinel positions that expose imminent uncertainty.
 We hypothesize that certain key tokens act as sentinels, signaling imminent uncertainty.
@@ -321,7 +323,7 @@ Accordingly, we adopt $\mathit{Token}_{\delta-1}$ as our key token for undesired
 
 
 
-\subsubsection{Key Token-Driven Uncertainty Reweighting Strategy}
+（）{Key Token-Driven Uncertainty Reweighting Strategy}
 To quantify the uncertainty in LLM outputs and to construct a TMLLM, we propose a key token-driven uncertainty reweighting strategy (KTURS).
 The proposed strategy employs token-level energy as an uncertainty quantification metric and assigns greater weights to tokens that exhibit stronger correlation with the designated key token.
 
@@ -467,7 +469,6 @@ Third, we analyze the sensitivity of DA-TMLLM's performance to varying hyperpara
 
 % Peng等\cite{Peng_Liu_Du_Gao_Wang_2025}
 
-\subsection{Experimental Setup}
 To benchmark DA-TMLLM against comparative models under hallucination-prone scenarios, we employ two dataset categories: domain-specific datasets and undesired datasets.
 The undesired datasets are used only during the testing phase to build an undesired test subset that quantifies the model's ability to reject undesired inputs.
 The domain-specific datasets, consisting of multiple bearing datasets, are partitioned into a training set, a validation set, and a domain-specific test subset.
@@ -481,11 +482,9 @@ The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{Ma
 \setlength{\tabcolsep}{5pt}
 \begin{table*}[!htbp]
 	\footnotesize
-	% table caption is above the table
 	\caption{Datasets overview}
 	\centering
 	\label{tab:Detailed datasets} % Give a unique label
-	% For LaTeX tables use
 	\begin{tabular}{lccccccccccc} % 10 列
 		\toprule[1pt]\noalign{\smallskip}
 		Fault Locations & PU & JNU & CWRU & JUST & DIRG & HIT & IMS & MFPT & XJTU &Total Sample& Training Sample\\
@@ -697,13 +696,13 @@ The expanded confusion matrices jointly present hallucination‐detection outcom
 We conduct ablation studies to quantify the contribution of each principal component of DA-TMLLM.
 As presented in Table \ref{tab:ablation_study}, experimental results of the ablation study across the three scenarios in terms of DS-ACC, G-ACC, AUROC, FAR@95, and AUPR are reported.
 
-\subsubsection{w/o ControlNet} We substitute the ControlNet module with a Wide-Kernel Deep Convolutional Neural Network, thereby removing the conditional guidance and reverting the model to a conventional denoising diffusion probabilistic model. This variant exhibits a decrease in performance across all three scenarios, indicating that the ControlNet is essential for extracting discriminative features from vibration signals under various fault types and working conditions.
+（）{w/o ControlNet} We substitute the ControlNet module with a Wide-Kernel Deep Convolutional Neural Network, thereby removing the conditional guidance and reverting the model to a conventional denoising diffusion probabilistic model. This variant exhibits a decrease in performance across all three scenarios, indicating that the ControlNet is essential for extracting discriminative features from vibration signals under various fault types and working conditions.
 
-\subsubsection{w/o CGCDM} We remove the proposed data ControlNet-guided cross-dataset conditional diffusion module and train the diagnostic model exclusively on the original, imbalanced fault signals. This results in a degradation in diagnostic accuracy. This finding underscores the efficacy of our diffusion-based fault mode augmentation, highlighting its effectiveness in mitigating statistical bias and rectifying the distorted decision boundaries caused by data imbalance.
+（）{w/o CGCDM} We remove the proposed data ControlNet-guided cross-dataset conditional diffusion module and train the diagnostic model exclusively on the original, imbalanced fault signals. This results in a degradation in diagnostic accuracy. This finding underscores the efficacy of our diffusion-based fault mode augmentation, highlighting its effectiveness in mitigating statistical bias and rectifying the distorted decision boundaries caused by data imbalance.
 
-\subsubsection{w/o KTURS} We replace the proposed token-level uncertainty, as defined in Eq.~\eqref{equa:token_level_uncertainty}, with the normalized energy score in Eq.~\eqref{equa:normalized_energy_score}. We observe a decline in the performance of undesired input identification, as measured by AUROC, FAR@95, and AUPR. This outcome demonstrates that the designed key-token uncertainty reweighting strategy is effective for detecting sequence-level hallucination.
+（）{w/o KTURS} We replace the proposed token-level uncertainty, as defined in Eq.~\eqref{equa:token_level_uncertainty}, with the normalized energy score in Eq.~\eqref{equa:normalized_energy_score}. We observe a decline in the performance of undesired input identification, as measured by AUROC, FAR@95, and AUPR. This outcome demonstrates that the designed key-token uncertainty reweighting strategy is effective for detecting sequence-level hallucination.
 
-\subsubsection{w/o TMLLM} We remove the trustworthy multimodal large language module and thus eliminate the framework's hallucination detection capability, leading to a decline in the performance of undesired input identification. This outcome confirms that the proposed approach effectively quantifies uncertainties and provides trustworthy diagnostic answers.
+（）{w/o TMLLM} We remove the trustworthy multimodal large language module and thus eliminate the framework's hallucination detection capability, leading to a decline in the performance of undesired input identification. This outcome confirms that the proposed approach effectively quantifies uncertainties and provides trustworthy diagnostic answers.
 
 \setlength{\tabcolsep}{1pt}
 \begin{table*}[t!]
@@ -777,14 +776,14 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
 
 To assess the sensitivity of DA-TMLLM's performance to its hyperparameters, we conduct an analysis on the MBHM, MaFaulDa, and UP datasets. This experiment investigates the impact of the diffusion model's noise scheduler $\zeta$, the diagnostic signal length $L_{f}$, the LoRA fine-tuning rank $r_{LoRA}$, and the key-token calibration coefficient $\omega$. The influence of these parameters is evaluated by the RMSE between generated and real signals, ControlNet's diagnostic accuracy on known classes, the binary cross-entropy loss at the final tuning epoch, and the detection rate of undesired inputs, respectively.
 
-\subsubsection{Impact of $\zeta$} We evaluate linear, cosine, and sigmoid noise schedulers and find a linear approach yields superior signal reconstruction across most fault types, as shown in Fig.~\ref{fig:Sensitivity_Analysis}. Its uniform noise addition aligns better with the inductive biases for fault signal reconstruction, while non-linear schedulers can impair generative stability.
+（）{Impact of $\zeta$} We evaluate linear, cosine, and sigmoid noise schedulers and find a linear approach yields superior signal reconstruction across most fault types, as shown in Fig.~\ref{fig:Sensitivity_Analysis}. Its uniform noise addition aligns better with the inductive biases for fault signal reconstruction, while non-linear schedulers can impair generative stability.
 
-\subsubsection{Impact of $L_{f}$} We investigate the effect of diagnostic signal length on DA-TMLLM's performance by testing values from \{960, 1200, 1600, 2400, 4800\}. As illustrated in Fig.~\ref{fig:Sensitivity_Analysis}, diagnostic accuracy improves with signal length. Shorter signals lack sufficient discriminative information, while excessively long signals can create a GPU memory bottleneck during the diffusion process. Consequently, we select 
+（）{Impact of $L_{f}$} We investigate the effect of diagnostic signal length on DA-TMLLM's performance by testing values from \{960, 1200, 1600, 2400, 4800\}. As illustrated in Fig.~\ref{fig:Sensitivity_Analysis}, diagnostic accuracy improves with signal length. Shorter signals lack sufficient discriminative information, while excessively long signals can create a GPU memory bottleneck during the diffusion process. Consequently, we select 
 $L_{f} = 2400$ to balance diagnostic efficacy against computational overhead.
 
-\subsubsection{Impact of $r_{LoRA}$} Since the settings of LoRA influences text-signal pair alignment during fine-tuning, we conduct an experiment targeting the Value Projection ($v\_proj$), Query Projection ($q\_proj$), and All Linear layers ($all\_linear$). The trainable parameters for these modules are 0.0130\%, 0.0223\%, and 0.300\% of the model's total, respectively. We select the LoRA rank $r_{LoRA}$ from \{1, 2, 4, 8, 16\}. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, text-signal alignment performance improves with both trainable parameter count and LoRA rank. The lowest loss of $0.0240$ is achieved when targeting All Linear layers with $r_{LoRA} = 4$, consistent with the optimal parameters in Table~\ref{tab:Hyperparameter}.
+（）{Impact of $r_{LoRA}$} Since the settings of LoRA influences text-signal pair alignment during fine-tuning, we conduct an experiment targeting the Value Projection ($v\_proj$), Query Projection ($q\_proj$), and All Linear layers ($all\_linear$). The trainable parameters for these modules are 0.0130\%, 0.0223\%, and 0.300\% of the model's total, respectively. We select the LoRA rank $r_{LoRA}$ from \{1, 2, 4, 8, 16\}. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, text-signal alignment performance improves with both trainable parameter count and LoRA rank. The lowest loss of $0.0240$ is achieved when targeting All Linear layers with $r_{LoRA} = 4$, consistent with the optimal parameters in Table~\ref{tab:Hyperparameter}.
 
-\subsubsection{Impact of $\omega$} We assess the impact of the uncertainty calibration coefficient $\omega$ over the range \{1, 2, $\cdots$, 50\} on undesired input detection. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, a larger coefficient enhances DA-TMLLM's ability to detect undesired tokens. This occurs because it more accurately quantifies unbiased token-level uncertainty, thereby amplifying the distributional divergence between domain-specific and undesired tokens.
+（）{Impact of $\omega$} We assess the impact of the uncertainty calibration coefficient $\omega$ over the range \{1, 2, $\cdots$, 50\} on undesired input detection. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, a larger coefficient enhances DA-TMLLM's ability to detect undesired tokens. This occurs because it more accurately quantifies unbiased token-level uncertainty, thereby amplifying the distributional divergence between domain-specific and undesired tokens.
 
 \subsection{故障信号生成质量评估}\label{subsec:DA-TMLLM_signal_generation_quality_evaluation}
 

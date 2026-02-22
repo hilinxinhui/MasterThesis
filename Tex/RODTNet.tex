@@ -119,7 +119,7 @@ First, we investigate the relationship between the generalization ability of deg
 Second, we propose a heuristic cyclic signal reconstruction method possessing potentially low topological complexity.
 Finally, the reconstructed input are mapped onto the feature space using a Mamba-based model.
 
-\subsubsection{Degenerate Representation from a Topological Perspective}
+（）{Degenerate Representation from a Topological Perspective}
 
 Inspired by studies in relevant fields such as fault diagnosis, we investigate the geometric properties of generalizable features of degradation models.
 Omitting cycle and domain indices for notational clarity, we explicitly consider the latent variable $\boldsymbol{z}$ corresponding to input $\boldsymbol{x}$. Consequently, the domain is defined as $D = \{ (\boldsymbol{x}, \boldsymbol{z}, y) \}$, adapting the source $\mathcal{S}$ and target $\mathcal{T}$ domain structure accordingly.
@@ -169,7 +169,7 @@ We implement this reconstruction by extracting statistical features from each se
 Representative examples include temporal differences or channel-wise moments such as mean and standard deviation. Concatenating these extracted statistics yields the reconstructed signal $\boldsymbol{\widetilde{x}}_{t} \in \mathbb{R} ^ {D \times 1}$, where $D$, the total number of extracted statistics, typically satisfies $C < D \ll L$. The precise input construction methodology is detailed in Section~\ref{subsec:experimental_setup}.
 Empirically validated in Section~\ref{subsec:comparative_experiments}, this reconstruction mitigates temporal interference and expands features dimensionality to address insufficient coverage challenge, resulting in lower IntDim and more continuous degradation representation.
 
-\subsubsection{Mamba with Manifold Contraction}
+（）{Mamba with Manifold Contraction}
 
 Selecting a backbone for mapping reconstructed signals to degradation features involves considering the task's sequential nature, linear time-invariant (LTI) system approximability for battery physics, and edge deployment constraints. Mamba's sequence modeling proficiency, LTI-compatible state-space mechanism, linear scaling, and parallel inference capabilities \cite{gu2024mamba} align well with these requirements, leading us to adopt it for this mapping task.
 
@@ -195,7 +195,7 @@ First, we model feature statistics probabilistically via multivariate Gaussian d
 Second, we quantify statistics uncertainty by non-parametrically estimating the variance of these statistics.
 Lastly, based on this uncertainty quantification, we synthesize features representing potential OOD degradation patterns through sampling, and the UDFS mechanism is subsequently integrated into the MMC model to enhance robustness. % against OOD instances.
 
-\subsubsection{Multivariate Gaussian Distribution for Domain Shift Modeling}
+（）{Multivariate Gaussian Distribution for Domain Shift Modeling}
 
 Domain-specific degradation patterns are reflected in statistical distributions of features. We posit that domain shifts induce quantifiable inconsistencies in these statistics across different operational environments. Explicitly modeling this statistical inconsistency, particularly through the uncertainty inherent in feature statistics, enables the synthesis of features representative of unseen target domains from source data. This approach allows training degradation models with enhanced robustness.
 Our method quantifies inter-domain variability by identifying the underlying distribution that governs feature statistics and by leveraging its sampling variance.
@@ -219,7 +219,7 @@ These variances are estimated non-parametrically based on the observed intra-bat
 \end{align}
 where $ \mathbb{E}_{b}(\mu) $ and $ \mathbb{E}_{b}(\sigma) $ are the expectations of mean and standard deviation of the $ b $-th sample within a minibatch.
 
-\subsubsection{Uncertainty-driven Feature Synthesis}
+（）{Uncertainty-driven Feature Synthesis}
 
 Differentiable generation of feature statistics employs the reparameterization method under the assumption of Gaussian distributed original statistics with parameters $\mu$, $\Sigma_{\mu}$ and $\sigma$, $\Sigma_{\sigma}$, formulated as
 \begin{align}
@@ -245,7 +245,7 @@ First, we employ feature distribution calibration to strengthen the corresponden
 Second, we integrate this feature calibration strategy into UDFS to form LARR to eliminate domain-specific information tied to long-tail distributions, thereby purifying feature domain invariance.
 Finally, we examine LARR's training dynamics and subsequently incorporate a head-bias mitigation strategy designed to improve degradation pattern generalization.
 
-\subsubsection{Symmetric-kernel-based Feature Statistic Calibration}
+（）{Symmetric-kernel-based Feature Statistic Calibration}
 
 We discretize the bounded SOH label space via uniform binning into $\mathcal{B}$ intervals, indexed $\textit{b} = 1, 2, \dots, \mathcal{B}$. Battery degradation trajectories exhibit a long-tail distribution, characterized by substantial, often exponential, variation in the number of samples associated with each bin $\textit{b}$.
 % 
@@ -274,7 +274,7 @@ To calibrate the feature distribution, we employ kernel smoothing across bins ba
 \end{align}
 where $Gau(\cdot, \cdot)$ is the Gaussian kernel function with coefficient $\gamma$, and $y_{\textit{b}}$ and $y_{\textit{b}^{\prime}}$ are SOH values corresponding to the $\textit{b}$-th and $\textit{b}^{\prime}$-th bins, respectively.
 
-\subsubsection{Imbalance-bias-free Degradation Dynamics Generalization}
+（）{Imbalance-bias-free Degradation Dynamics Generalization}
 
 To address the long-tail distribution challenge, which persists in a consistent form both preceding and following the feature synthesis via $G(Z_{MRB})$, we implement the proposed LARR algorithm for head-bias-free correction of features.
 LRAA performs feature distribution calibration utilizing two sets of bin-specific statistics, namely observed statistics $\{{\mu}_{\textit{b}}, {\sigma}_{\textit{b}}\}$ and calibration statistics $\{\widetilde{\mu}_{\textit{b}}, \widetilde{\sigma}_{\textit{b}}\}$, formulated as
@@ -813,27 +813,27 @@ Visual evidence, as demonstrated by the tightly clustered RUL prediction scatter
 
 We conduct ablation studies to evaluate the effectiveness of each components in RODTNet and RODTNet-LT. Table~\ref{tab:ablation_1} reports the MAE and MSE results for RUL prediction using RODTNet variants across 4 datasets. Correspondingly, Table~\ref{tab:ablation_study_2} presents these metrics for the SOH estimation task using both RODTNet and RODTNet-LT on the same datasets.
 
-\subsubsection{Baseline}
+（）{Baseline}
 
 We establish the baseline model using a fully linear backbone with downsampled raw cyclic signals as input.
 
-\subsubsection{DGBL}
+（）{DGBL}
 
 We obtain the DGBL model by adding UDFS strategy to the baseline. We observe an improvement in generalization performance, which proves the effectiveness of our proposed UDFS in expanding the distribution boundary and fitting OOD degradation patterns.
 
-\subsubsection{LMCRDR}
+（）{LMCRDR}
 
 We create the LMCRDR model by replacing the baseline's raw input with reconstructed input using the heuristic manifold contraction strategy. We observe an improvement in performance, demonstrating the good adaptability of our manifold contraction approach to the backbone and its superiority in generalizing degradation patterns.
 
-\subsubsection{MCRDR}
+（）{MCRDR}
 
 We then develop the MCRDR model by replacing the linear backbone of LMCRDR with Mamba. We observed a further improvement in prognostic accuracy, indicating that Mamba effectively extracts domain-invariant features.
 
-\subsubsection{LRODTNet}
+（）{LRODTNet}
 
 We combine LMCRDR with the UDFS while retaining a linear backbone to form LRODTNet. We observe that the addition of UDFS improved performance over LMCRDR, thus proving that our propose feature synthesis strategy can extend the boundary of learned degradation representations possessing low intrinsic dimensions.
 
-\subsubsection{RODTNet-LT}
+（）{RODTNet-LT}
 
 For the task of SOH estimation involving long-tailed distributions, we obtained the RODTNet-LT variant by the adding LARR strategy. We observe that RODTNet-LT achieved lower generalization error compared to RODTNet, proving the effectiveness of LARR in removing head bias.
 
@@ -848,19 +848,19 @@ For the task of SOH estimation involving long-tailed distributions, we obtained 
 
 We conduct a sensitivity analysis across 4 datasets to evaluate the model's performance sensitivity to variations in batch size, encoder hidden dimension, number of encoder layers, and the UDFS activation threshold, using target domain RMSE as the evaluation metric.
 
-\subsubsection{Batch Size}
+（）{Batch Size}
 
 We investigate batch size's impact on performance, testing \{32, 64, 128, 256, 512\}. Fig.~\ref{fig:sensitivity}(a) demonstrates that a size of 32 typically yields optimal performance in general scenarios. However, on MATR tasks, larger batches decrease error, suggesting sufficient samples allow approximation of domain shift, whereas smaller batches better capture degradation patterns in other tasks.
 
-\subsubsection{Encoder Hidden Dimension}
+（）{Encoder Hidden Dimension}
 
 We assess how encoder hidden dimension affects generalization, testing \{16, 32, 64, 128, 256\}. Fig.~\ref{fig:sensitivity}(b) reveals improved performance on Tongji and HUST tasks with larger dimensions, reflecting scalability. Conversely, performance degrades on MATR and XJTU, suggesting potential overfitting from excessive model scale.
 
-\subsubsection{Number of Encoder Layers}
+（）{Number of Encoder Layers}
 
 We analyze the number of encoder layers' influence on model scale and generalization, testing \{1, 2, 3, 4, 5\}. Fig.~\ref{fig:sensitivity}(c) indicates effects generally consistent with hidden dimension, where increasing layers appear more susceptible to overfitting bottlenecks.
 
-\subsubsection{UDFS Activation Threshold}
+（）{UDFS Activation Threshold}
 
 We evaluate sensitivity to the UDFS activation threshold, which affects the real/generated data ratio, testing \{0.0008, 0.004, 0.02, 0.1, 0.5\}. Fig.~\ref{fig:sensitivity}(d) shows generalization improves across all datasets as the threshold increases, highlighting the importance of real source domain data for modeling OOD patterns.
 
