@@ -1,0 +1,1039 @@
+\documentclass[UTF8,lettersize,journal]{IEEEtran}
+\usepackage{ctex}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{array}
+\usepackage[caption=false,font=normalsize,labelfont=rm,textfont=rm]{subfig}
+\usepackage{textcomp}
+\usepackage{stfloats}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{cite}
+\usepackage[acronym]{glossaries}
+\usepackage{color}
+\usepackage{amsthm,amsmath}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{indentfirst}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{mhchem}
+\usepackage[figuresright]{rotating}
+\usepackage[switch]{lineno}
+\usepackage{threeparttable, tabularx}
+\usepackage{bbding}
+\usepackage{makecell}
+\usepackage{arydshln}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[export]{adjustbox}
+% \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
+\usepackage{subfiles} % Best loaded last in the preamble
+\usepackage{xcolor} % 引入颜色宏包
+\hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
+% updated with editorial comments 8/9/2021
+
+\renewcommand{\thepage}{}
+
+% 定义一个名为 \rev 的命令
+% 使用方法：\rev{这是修改的内容}
+\newcommand{\rev}[1]{\textcolor{blue}{#1}}
+
+\begin{document}
+
+\title{\rev{面向车载电池管理系统的OOD鲁棒退化建模}：基于拓扑约束的不确定性驱动特征操控}
+
+\author{
+    Xinhui~Lin,
+    Yuanguo~Bi,~\IEEEmembership{Member,~IEEE},
+    Rao~Fu,
+    Qiang~He,
+    Jun~Liu,~\IEEEmembership{Member,~IEEE},
+    and Liang~Zhao,~\IEEEmembership{Member,~IEEE}
+    \vspace{-1.5em}
+        % <-this % stops a space
+% \thanks{This paper was produced by the IEEE Publication Technology Group. They are in Piscataway, NJ.}% <-this % stops a space
+% \thanks{Manuscript received April 19, 2021; revised August 16, 2021.}
+\thanks{(\emph{通讯作者：Yuanguo Bi。})}
+\thanks{Xinhui~Lin、Yuanguo~Bi和Rao~Fu就职于东北大学计算机科学与工程学院，沈阳110169，中国，同时就职于教育部复杂网络系统安全技术工程研究中心，沈阳110169，中国（电子邮件：linxinhui@stumail.neu.edu.cn；biyuanguo@mail.neu.edu.cn；2010764@stu.neu.edu.cn）。}
+\thanks{Qiang~He就职于东北大学计算机科学与工程学院，沈阳110169，中国（电子邮件：heqiang@mail.neu.edu.cn）。}
+\thanks{Jun~Liu就职于北京航空航天大学电子信息工程学院，北京100191，中国（电子邮件：liujun2019@buaa.edu.cn）。}
+\thanks{Liang~Zhao就职于沈阳航空航天大学计算机学院，沈阳110135，中国（电子邮件：lzhao@sau.edu.cn）。}
+}
+
+% The paper headers
+\markboth{J. of \LaTeX\ C. F.,~Vol.~14, No.~8, Aug.~2021}%
+{Shell \MakeLowercase{\textit{et al.}}: A Sample Article Using IEEEtran.cls for IEEE Journals}
+
+% \IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark.
+
+\maketitle
+
+\begin{abstract}
+\rev{现代交通的快速电气化需要能够为车载电池管理系统提供剩余使用寿命（RUL）预测和健康状态（SOH）估计的退化建模方法。}
+对由内外部因素（如\rev{材料和动态车载运行条件}）驱动的分布外（OOD）退化模式的鲁棒性，是这些车载监测方法的关键要求。
+% 
+然而，实现能够处理普遍分布偏移的鲁棒方法面临重大挑战，例如：时空信息稀缺、域偏移引起的特征统计不确定性，以及多源不平衡退化分布中的早期阶段偏差。
+为解决这些问题，我们提出了一种鲁棒OOD退化跟踪网络（RODTNet）及其长尾优化变体（RODTNet-LT），通过基于拓扑约束的不确定性驱动特征操控，\rev{专门用于电动汽车动力总成监测}。
+% 
+首先，我们设计了一种基于流形收缩的退化表示提取策略，利用降维和保持退化连续性的信号重建以及基于Mamba的编码器。
+%
+其次，我们提出了一种不确定性驱动的特征合成方法，通过多元高斯分布进行概率退化表征和量化统计不确定性，以缓解域偏移。
+%
+第三，我们开发了一种长尾感知自适应重平衡细化策略，利用高斯核平滑利用邻近退化信息，以放大欠表示样本表示并解决早期阶段偏差。
+%
+最后，我们在包含386个电池的4个数据集上建立了11个跨域泛化任务，与14个基线方法（含20个变体）的对比实验验证了RODTNet和RODTNet-LT的卓越鲁棒性，\rev{证明了它们适用于可靠的车载电子系统。}
+\end{abstract}
+
+\begin{IEEEkeywords}
+\rev{汽车锂离子电池}，
+\rev{车载电池管理系统}，
+退化建模，
+域泛化，
+特征操控，
+长尾重平衡。
+\end{IEEEkeywords}
+
+% \bstctlcite{IEEEexample:BS}
+
+\section{引言}
+
+% para 1
+\rev{随着电动汽车成为可持续交通的基石，锂离子电池（LIBs）作为车载动力总成的基本储能单元}\cite{10766661, 9849057, 10897846, WASEEM2025236414}。然而，循环过程中的退化会损害续航里程，增加热失控风险，并降低二次利用的残值\cite{LI2024155588}。
+\rev{这些关键挑战凸显了通过一对互补指标进行精确退化监测的必要性。}即，剩余使用寿命（RUL）通过量化容量下降至寿命终止阈值前的运行循环数提供前瞻性预测，而健康状态（SOH）则通过当前容量与额定容量的比值反映当前状况。
+
+% para 2
+\rev{由于车载应用对非侵入式测量的要求，电池的RUL和SOH只能通过利用从车载电池管理系统（BMS）获取的监测数据进行退化建模来间接推断。}
+% 
+虽然传统的机理方法难以应对复杂的多物理耦合效应，但数据驱动方法，特别是基于深度学习的方法，已成为建立运行信号与退化状态之间非线性映射的更强大工具\cite{XIAO2023107347, XIE2024630}。
+然而，它们的性能严重依赖于训练和测试数据具有相似分布的假设，\rev{这在动态真实驾驶条件下被违反了。}此外，在所有运行场景中获取标记数据的昂贵成本加剧了泛化挑战。
+
+% para 3
+大量研究已经调查了电池系统中的训练-测试分布偏移，并通过预训练-微调或域适应提出了模型\cite{10177255}。\rev{然而，这些方法仍然受限于需要目标域数据，而由于数据传输带宽限制、隐私法规和实时运行约束，这些数据在已部署的车载系统中无法获得}\cite{10886998, 10663939, 9849057}。
+% 
+退化建模与异常检测和故障诊断等离散标签任务\cite{10214203, 10577994}根本不同，因为它具有连续的目标空间，其中目标值表现出内在顺序。这种有序性使得标准方法不充分，并仅使用源数据实现分布外（OOD）泛化变得异常困难。
+%
+虽然一些利用表示学习或元学习的方法能够实现无需目标的建模\cite{TAN2024103725, CHEN2024234696}，但它们仍然依赖退化先验。相比之下，数据操控是一种不同的域泛化范式\cite{9782500}，在结构简单性和模型无关集成方面具有优势。然而，这种策略面临着与从原始输入到退化目标的多阶段传播相关的三个挑战。
+
+\begin{figure*}[t!]
+    \vspace{-1em}
+\centering
+\includegraphics[width=7.1in]{Fig1_Challenges.eps}
+\caption{锂离子电池OOD鲁棒退化建模中的挑战，包括：(a) 时空信息稀缺，(b) 域偏移引起的统计不确定性，以及 (c) 长尾退化分布。}
+\label{fig:challenges}
+\end{figure*}
+
+% para 4
+第一个挑战是时空信息稀缺，这根本上源于非侵入式测量要求。
+% 
+\rev{在时间上，等间隔采样导致在动态复杂、退化敏感时期数据稀疏}\cite{9648002, BOSE2023107543, zhu2022data, GUAN2018204, XIONG2020110048}，\rev{而对信息量较少的静态运行段过度表示。这导致关键时间动态的不充分表示。}
+% 
+在空间上，循环数据依赖于有限的传感器模态集合，提供受限的多物理洞察，无法充分捕捉关键的内部电池行为，如热力学应力\cite{XIONG2020110048}和机械变形\cite{zeng2023nonintrusive}。
+% 
+如图~\ref{fig:challenges}(a)所示，对这种稀疏原始循环信号的直接建模产生复杂的高维流形结构，其中退化表示缺乏拓扑连续性。因此，后续的特征操控容易对噪声过拟合，并在训练分布之外表现出有限的泛化能力。
+
+% para 5
+第二个挑战源于对域偏移引起的特征空间统计不确定性缺乏考虑。
+% 
+电池老化的固有复杂性和敏感性\cite{LI2024155588}导致退化模式在不同运行条件下不可避免地发散。这种发散产生域偏移，当源域训练的模型遇到具有不同底层分布的OOD数据时，引入统计不确定性\cite{9577663, pmlr-v202-dai23d, liuncertainty}。
+% 
+如图~\ref{fig:challenges}(b)所示，这些偏移主要涉及由充电协议、电极材料和放电深度变化引起的协变量偏移，以及由发散退化轨迹引起的特征概念偏移。
+% 
+因此，这种域偏移引起的确定性破坏了特征与退化状态之间学习映射的一致性，限制了模型从源域泛化到未见目标域的能力，并阻碍了数据驱动预测的实际适用性。
+
+% para 6
+第三个挑战是多域长尾退化分布，源于复杂的热电耦合内部反应，并表现为多样化的非线性轨迹。
+%
+具体而言，电池老化的多阶段动态，通常以从缓慢早期退化到加速后期恶化的"拐点"为标志，本质上导致循环退化样本在早期寿命阶段高度集中，而后期阶段稀疏表示。
+% 
+如图~\ref{fig:challenges}(c)中的快速充电示例所示，这形成了不对称的长尾样本分布。因此，忽视这一特性的模型在较少见的"尾部"样本上表现出较差的泛化能力。
+% 
+这种长尾分布使基于特征操控的方法偏向丰富的早期寿命数据，产生破坏泛化能力的偏斜表示。此外，这些长尾分布在多源域之间的异质性加剧了特征空间碎片化，阻碍了实际的鲁棒退化建模。
+
+% para 7
+在本文中，我们提出了一种鲁棒OOD退化跟踪网络（RODTNet）及其长尾优化变体（RODTNet-LT）来解决这些挑战。
+% 
+首先，我们提出了一种基于流形收缩的策略来提取鲁棒退化表示（MCRDR），旨在克服时空信息稀缺问题。该策略分析特征空间流形拓扑以识别良好泛化表示的几何特性，然后利用启发式信号重建方法与Mamba机制相结合进行特征映射。
+% 
+其次，我们开发了一种不确定性驱动的特征合成（UDFS）方法来应对域偏移。通过通过多元高斯分布量化和采样目标域的固有统计分布，UDFS扩展了学习到的退化流形边界，并促进了退化模式的域泛化。
+% 
+最后，我们提出了一种长尾感知自适应重平衡细化（LARR）方法，以解决多域长尾分布引起的泛化损伤。使用高斯核平滑，该方法引导特征合成过程探索低密度退化模式，从而在标签空间内促进更平衡的表示。
+% 
+本工作的贡献如下。
+
+% para 8, 9, 10, 11
+\begin{enumerate}
+\item 我们提出了基于流形收缩的鲁棒退化表示提取策略（MCRDR）。通过强制模式连续性并收缩特征流形，MCRDR产生克服时空信息稀缺并促进泛化的鲁棒退化表示。
+\item 我们开发了不确定性驱动的特征合成（UDFS）方法来应对域偏移。UDFS将特征空间统计不确定性与域变异性显式关联，从而指导域不变特征的提取和多样化OOD示例的合成以提高泛化能力。
+\item 我们提出了长尾感知自适应重平衡细化（LARR）来解决多域长尾挑战。利用特征空间与标签空间之间的相似性以及分布平滑，LARR减轻了特征合成的头部偏差，增强了不平衡退化轨迹的泛化能力。
+\item 使用4个LIB老化数据集进行的11个OOD泛化任务的全面实验验证了RODTNet和RODTNet-LT的有效性，\rev{并证明了它们相对于14个基线方法及其20个变体的优越性，推进了可靠的车载BMS。}
+\end{enumerate}
+
+% para 12
+本文结构如下。
+第二节回顾与鲁棒预测相关的方法。
+第三节详细介绍用于鲁棒退化建模的所提出模型RODTNet和RODTNet-LT。
+第四节对RODTNet和RODTNet-LT进行全面评估，并呈现实验结果。
+第五节总结本研究。
+
+\section{相关工作}
+
+在本节中，我们回顾与鲁棒电池退化建模相关的方法，包括基于(1)预训练-微调范式、(2)域适应范式和(3)域泛化范式的方法。
+% (1) pretraining-finetuning requiring full target-domain labels,
+% (2) domain adaptation aligning feature distributions with unlabeled target data,
+% (3) domain generalization operating without target-domain supervision.
+
+\subsection{基于预训练-微调的退化建模}
+
+在\cite{LI2021116410}中，Li \emph{et al.}提出了一种轻量级且可泛化的电池SOH估计模型，将预训练-微调范式与剪枝卷积神经网络相结合。
+\rev{在\cite{9372902}中，Bhattacharjee \emph{et al.}利用微调1D CNN来实现不同电池化学性质的状态估计。}
+\rev{在\cite{9343713}中，Che \emph{et al.}介绍了一种基于高斯过程回归、长短期记忆神经网络和预训练-微调策略的RUL预测在线自校准模型。}
+在\cite{LIU2025115347}中，Liu \emph{et al.}基于微分电压特征微调双向长短期记忆（BiLSTM）-Mamba2模型，以实现不同运行条件和电极材料下电池的SOH估计。
+在\cite{D2EE01676A}中，Ma \emph{et al.}提出了一种名为CRNN的实时个性化电池退化建模框架，基于卷积-循环神经网络，实现跨运行条件的SOH和RUL联合预测。
+在\cite{wang2024physics}中，Wang \emph{et al.}提出了一种用于电池退化建模的物理信息神经网络（PINN），并使用预训练-微调范式实现跨数据集电池健康状态预测。
+\rev{在\cite{10886998}中，Wang \emph{et al.}提出了一种去中心化框架，以在异构电池数据集上实现鲁棒SOH估计。}
+
+\subsection{基于域适应的退化建模}
+
+在\cite{9788003}中，Ma \emph{et al.}提出了一种名为ConvMMD的方法，通过最小化源域和目标域之间低阶矩的最大均值差异来对齐它们，实现电池的条件鲁棒SOH估计。
+在\cite{HAN2022230823}中，Han \emph{et al.}提出了一种高精度退化模型，仅需要少量目标域样本，通过将域适应层纳入长短期记忆神经网络来实现，称为LSTM-DA。
+在\cite{9560040}中，Ye \emph{et al.}设计了一种名为DDAN的方法，通过源域和目标域之间的对抗训练实现无监督退化特征对齐，实现可迁移的预测模型。
+在\cite{10029904}中，Lu \emph{et al.}开发了一个名为DKTL的两阶段预测框架，结合退化机制，实现从合成数据到真实数据的退化模式知识迁移。
+在\cite{WANG2023108897}中，Wang \emph{et al.}开发了一种具有域不变特定特征解耦策略和退化趋势保持策略的双分支模型，以对齐跨域退化模式，称为DR-Net。
+
+\subsection{基于域泛化的退化建模}
+
+域泛化范式涉及三个主要类别，即数据操控、表示学习和特定学习策略\cite{9782500}。
+在\cite{CHEN2024234696}中，Chen \emph{et al.}开发了一种双分支特征提取器，用混合和分离的源处理域样本。通过利用域判别器和健康状态估计器，他们的方法实现域不变退化特征提取，最终形成一种称为DGSOH的基于表示学习的退化模式泛化方法。
+在\cite{TAN2024103725}中，Tan \emph{et al.}设计了一种基于元学习的域泛化方法，称为MAGNet。它将两阶段元优化策略（训练/测试循环）与RUL驱动的健康预测相结合，通过任务对齐的梯度同步强制域不变表示学习。
+在\cite{liu2024itransformer}中，Liu \emph{et al.}提出了一种旨在通过包含转置注意力模块和前馈网络模块来获得对OOD时间模式鲁棒的序列表示的方法，称为iTransformer。
+在\cite{nie2023a}中，Nie \emph{et al.}提出了一种抵抗模式漂移的时间序列建模框架，称为PatchTST。该模型采用子序列分割和通道独立建模来增强其对动态时间模式的适应性。
+在\cite{chen2023tsmixer}中，Chen \emph{et al.}开发了一种纯线性模型，能够高效提取时空依赖性而无需依赖任务特定的先验知识，称为TSMixer。
+% 
+\rev{在\cite{10980357}中，Alamin \emph{et al.}提出了一种数字孪生框架，以实现BMS有效的云-车泛化。}
+
+虽然预训练-微调和域适应范式表现出对目标域数据不同程度的依赖，但采用这些策略的方法在动态运行条件和部分可观测性场景下面临部署约束。
+% 表示学习和元学习策略消除了对目标域样本的需求，但通常依赖精确的域标签或复杂的代理任务，限制了其在复杂交通环境中的有效性。
+虽然基于表示学习和元学习的泛化方法能够实现无需目标的建模，但它们对退化先验的依赖，包括辅助元数据或代理任务，限制了可扩展性和泛化性能。
+% 
+% 这些局限性激发了对相对研究较少的数据操控策略驱动方法的探索，特别是特征操控策略。
+尽管前景广阔，基于数据操控的泛化方法在鲁棒电池预测方面面临开放问题，包括稀缺的时空退化信息、域偏移引起的特征空间统计不确定性，以及多源域的长尾退化分布。
+为解决这些问题，我们提出了RODTNet，一种旨在实现OOD退化模式泛化的新模型。RODTNet通过启发式特征重建和概率特征统计生成，在低复杂度潜在特征空间内生成连续退化模式。此外，我们提出了RODTNet-LT，RODTNet的增强变体，它结合了统计特征校正来专门解决长尾分布挑战。
+
+\section{方法}
+
+\begin{figure*}[t!]
+    \vspace{-1em}
+\centering
+\includegraphics[width=7.1in]{Fig2_RODTNet_framework.eps}
+\caption{所提出的RODTNet及其长尾优化变体RODTNet-LT的概述。核心RODTNet包括基于流形收缩的鲁棒退化表示提取机制（基于Mamba的编码器）和不确定性驱动的特征合成模块。RODTNet-LT通过结合长尾感知自适应重平衡细化模块扩展了RODTNet。}
+\label{fig:framework}
+\end{figure*}
+
+\subsection{概述}
+
+\rev{为推进智能车载BMS中的可靠预测能力并增强对未见退化模式的系统鲁棒性，我们提出了RODTNet，一种鲁棒OOD退化跟踪网络，及其长尾优化变体RODTNet-LT。}如图~\ref{fig:framework}所示，核心RODTNet集成两个关键组件：(1) 基于流形收缩的鲁棒退化表示提取（MCRDR）策略，和(2) 不确定性驱动的特征合成（UDFS）方法。RODTNet-LT进一步结合(3) 长尾感知自适应重平衡细化（LARR）模块，专门解决不平衡退化分布中的挑战。
+% 
+首先，MCRDR模块通过启发式重建处理车载传感器信号，并使用Mamba模型将其映射到低拓扑复杂度和增强连续性的流形形式的潜在表示中，解决时空覆盖不足的问题。
+%
+然后，UDFS模块对可见域模式的特征分布进行建模，量化域偏移产生的不确定性，并利用这种不确定性度量合成对应于未见域的合理特征，促进OOD泛化。
+% 
+最后，LARR模块通过自适应重新校准和重平衡特征空间来补充前一阶段。这种细化增强了模型对频繁和罕见退化模式的敏感性，解决了长尾分布挑战。
+
+我们将分布偏移下的电池退化建模问题形式化。\rev{令$\boldsymbol{x}_{t} \in \mathbb{R}^{L \times C}$表示周期$t$的多传感器监测信号序列（长度$L$，$C$个传感器），$y_{t} \in \mathbb{R}$为相应的退化指标（RUL或SOH）。}我们将$(\boldsymbol{x}_{t}, y_{t})$视为驻留在空间$\mathcal{X} \times \mathcal{Y}$中的随机变量$(X, Y)$的样本，受联合分布$P_{XY}$支配，边缘分布为$P_{X}$和$P_{Y}$。
+% 
+\rev{汽车运行条件（如驾驶工况、环境温度）和内部电池状态的变化产生不同的运行域。我们考虑$K = M + N$个域，记为$D^{i} = \{ (\boldsymbol{x}_{t}, y_{t}) \} \sim P_{XY}^{i}, i = 1, \dots, K$。关键的是，不同域表现出分布偏移，即对于$i \neq j$，有$P^{i}_{XY} \neq P^{j}_{XY}$。}
+% 
+OOD鲁棒退化建模的目标是学习一个模型$f_{\theta}: \mathcal{S} \to \mathcal{T}$，由$\theta$参数化，使用来自$M$个源域$\mathcal{S} = \{ D^{i} \}_{i=1}^{M}$的数据。
+% 
+该模型应泛化到$N$个未见目标域$\mathcal{T} = \{ D^{j} \}_{j=M+1}^{M+N}$，而无需在训练期间访问它们。这通过最小化目标域上的期望损失$\ell$来实现，即$\mathop{\min}_{\theta}\mathbb{E}_{(\boldsymbol{x}, y) \in \mathcal{T}} [\ell(f_{\theta}(\boldsymbol{x}), y)]$，其中期望取目标域的数据分布。
+
+\subsection{基于流形收缩的鲁棒退化表示}
+
+为解决时空覆盖不足的挑战，我们设计了基于流形收缩的MCRDR，强调关键时间段并实现空间维度扩展，使后续特征合成能够进一步增加特征密度。
+首先，我们研究退化特征的泛化能力与其流形拓扑之间的关系，探索良好泛化表示的几何特性。
+其次，我们提出了一种具有潜在低拓扑复杂度的启发式循环信号重建方法。
+最后，使用基于Mamba的模型将重建的输入映射到特征空间。
+
+\subsubsection{从拓扑视角看退化表示}
+
+受相关领域（如故障诊断）研究的启发，我们研究退化模型可泛化特征的几何特性。
+为符号清晰起见，省略周期和域索引，我们显式考虑对应于输入$\boldsymbol{x}$的潜在变量$\boldsymbol{z}$。因此，域定义为$D = \{ (\boldsymbol{x}, \boldsymbol{z}, y) \}$，相应调整源$\mathcal{S}$和目标$\mathcal{T}$域结构。
+令$Z$为$z \in \mathcal{Z}$的随机变量，分布为$P_{Z}$，我们假设这些表示驻留在嵌入特征空间内的流形$\mathcal{M}_{Z}$上。
+我们使用信息瓶颈（IB）\cite{alemi2017deep}原理评估质量，使用内在维度（IntDim）\cite{10.5555/3692070.3694510}评估几何。
+IB原理通过最大化其与标签$Y$的相关性$\mathcal{I}(Z;Y)$，同时最小化其保留的关于输入$X$的信息$\mathcal{I}(Z;X)$，来寻找最优表示$Z$。该目标形式化为
+\begin{equation}
+    \min_{Z} \mathcal{IB} = \min_{Z} [- \mathcal{I}(Z;Y) + \beta \mathcal{I}(Z;X)], 
+    \label{IB_mutual_info}
+\end{equation}
+其中$\mathcal{I}(\cdot;\cdot)$为互信息，$\beta > 0$为拉格朗日乘子。
+IntDim是等距流形嵌入的最小维度。
+鉴于退化泛化中固有的协变量偏移，IB目标被重新制定，关注$Z$与$Y$之间的关系，形式化为
+\begin{equation}
+    \min_{Z} \mathcal{IB} = \min_{Z} [(1-\beta) \mathcal{H}(Y \mid Z) + \beta \mathcal{H}(Z \mid Y)], 
+    \label{IB_cond_entropy}
+\end{equation}
+其中$\mathcal{H}(\cdot \mid \cdot)$为条件熵，权重$\beta \in (0, 1)$。
+$\mathcal{H}(Y \mid Z)$项鼓励标签可预测性。
+$\mathcal{H}(Z \mid Y)$项，除了潜在的过拟合含义外，关键地将表示与数据流形的拓扑联系起来。
+
+预测模型的泛化误差由$\mathcal{H}(Z \mid Y)$上界约束，形式化为
+\begin{align}
+    & \mathbb{E}_{\{\mathbf{x},\mathbf{z},y\}\thicksim \mathcal{S}}[||f(\mathbf{z})-{y}||_2] -\mathbb{E}_{\{\mathbf{x},\mathbf{z},y\}\thicksim \mathcal{T}}(||f(\mathbf{z})-{y}||_2) \notag \\
+    & \leq 2KQ(\mathcal{H}(Z \mid Y)), \label{generalization_error}
+\end{align}
+% $||\cdot||_2$ is the $\ell_{2}$ norm
+其中$K$为下游任务回归器的Lipschitz常数，$Q(\cdot)$依赖于$P(Z \mid Y)$，影响约束的紧致性。
+此外，$\mathcal{H}(Z \mid Y)$本身由对应于以$y = y_{i}$为条件的观测$\boldsymbol{z}$的条件流形$\mathcal{M}_i\subset\mathcal{M}$的平均IntDim上界约束，形式化为
+\begin{equation}
+    \mathcal{H}(Z \mid Y) \leq \mathbb{E}_{\mathbf{y}_{i} \sim \mathcal{Y}}[-\log(\epsilon)IntDim(\mathcal{M}_i)+\log\frac{K^{\prime}}{C(\epsilon)}],
+    \label{intrinsic_dimension} 
+\end{equation}
+其中$\epsilon \to 0^{+}$为邻域半径，$K^{\prime}$为常数，$C(\epsilon)$为$\epsilon$的某个函数。
+% $i$ indexes samples
+% $ID(\cdot)$ is the intrinsic dimension of the manifold
+这些约束的条件、证明方法和其他细节\cite{Ghosh_Motani_2023, 10.5555/3692070.3694510}由我们的模型满足，为简洁起见省略细节。
+
+基于式~\eqref{generalization_error}和\eqref{intrinsic_dimension}，以及IB原理在压缩与预测之间的平衡，理想的退化表示应具有两个关键几何特性。它们是：
+低IntDim，反映相对简单的流形结构，可以在较低维度中忠实表示，以及连续的退化模式，表示为不同老化状态的有序和可分离特征分布。
+从域泛化的角度来看，这些特性至关重要。首先，低IntDim促进流形收缩，简化在其中进行特征合成和分布外推的表示结构。
+其次，跨退化状态的连续性和有序性，反映在可分离的特征分布中，促进域不变性并通过减少状态间干扰和实现可靠的密度估计来增强特征操控。
+
+% Feature Engineering as Manifold Contraction
+通过原始信号上的IntDim正则化获取拓扑最优退化表示具有挑战性，因为每步IntDim估计成本高昂，且来自稀疏覆盖的特征不连续性阻碍了有效优化。因此，受电池研究中PINN方法\cite{wang2024physics, 10251604}的启发，我们利用启发式循环信号重建。
+我们通过从原始信号$\boldsymbol{x}_{t} \in \mathbb{R} ^ {L \times C}$的每个传感器序列中提取统计特征来实现这种重建。
+代表性示例包括时间差分或通道级矩，如均值和标准差。将这些提取的统计量拼接产生重建信号$\boldsymbol{\widetilde{x}}_{t} \in \mathbb{R} ^ {D \times 1}$，其中$D$为提取的统计量总数，通常满足$C < D \ll L$。精确的输入构建方法详见第~\ref{subsec:experimental_setup}节。
+在第~\ref{subsec:comparative_experiments}节中经验验证，这种重建减轻了时间干扰并扩展了特征维度以解决覆盖不足的挑战，从而产生更低的IntDim和更连续的退化表示。
+
+\subsubsection{基于流形收缩的Mamba}
+
+\rev{为映射重建信号到退化特征选择骨干网络涉及考虑任务的序列性质、电池物理的线性时不变（LTI）系统可近似性，以及车载边缘部署约束。Mamba的序列建模能力、LTI兼容的状态空间机制、线性扩展和并行推理能力\cite{gu2024mamba}与这些要求非常吻合，使我们采用它来完成此映射任务。}
+
+我们通过垂直堆叠$E$个连续重建信号形成Mamba的输入$\widetilde{X}_{Recon} \in \mathbb{R}^{D \times E}$。
+该输入首先通过通道独立嵌入到$\widetilde{X}_{Emb} \in \mathbb{R}^{H \times E}$，其中$H$为隐藏状态维度，然后通过三分支残差结构映射到特征空间，形式化为
+\begin{align}
+& Z^{B}_{MRB} = SiLU(Linear(\widetilde{X}_{Emb})), \\
+& Z^{M}_{MRB} = SSM(SiLU(Conv(Linear(\widetilde{X}_{Emb})))), \\
+& Z_{MRB} = Linear(Z^{M}_{MRB} \odot Z^{B}_{MRB}) + \widetilde{X}_{Emb},
+\end{align}
+其中$Z^{M}_{MRB}$、$Z^{B}_{MRB}$和$Z_{MRB}$分别为主要、旁路和最终Mamba残差块输出。操作包括拼接$\odot$、线性映射$Linear(\cdot)$、卷积$Conv(\cdot)$、SiLU激活$SiLU(\cdot)$和S6变换$SSM(\cdot)$。S6模型是一种输入相关的离散循环神经网络，形式化为
+\begin{align}
+& h_{t} = \overline{A}h_{t-1} + \overline{B}\widetilde{x}_{t}, \\
+& \overline{A} = DR_{A}(\Delta, A) = exp(\Delta A), \\
+& \overline{B} = DR_{B}(\Delta, A, B) = (\Delta A)^{-1}(exp(\Delta A)-I)\cdot\Delta B,
+\end{align}
+其中$A$和$B$为可训练矩阵。采用ZOH离散化$DR$\cite{gu2024mamba}，$A$为HiPPO初始化\cite{20212610553629}，而$B$和离散化因子$\Delta$为输入$\widetilde{x}_{t}$的函数。
+
+\subsection{应对域偏移的不确定性驱动特征合成}\label{subsec:UDFS}
+
+为缓解域偏移引起的统计不确定性问题并增强模型泛化能力，我们提出UDFS方法，基于收缩的退化表示外推分布边界。
+首先，我们通过多元高斯分布对特征统计进行概率建模。
+其次，我们通过非参数估计这些统计的方差来量化统计不确定性。
+最后，基于这种不确定性量化，我们通过采样合成表示潜在OOD退化模式的特征，随后将UDFS机制集成到MMC模型中以增强对OOD实例的鲁棒性。
+
+\subsubsection{用于域偏移建模的多元高斯分布}
+
+域特定的退化模式反映在特征的统计分布中。我们认为域偏移在不同运行环境中引起这些统计的可量化不一致。显式建模这种统计不一致，特别是通过特征统计中的固有不一致性，能够从源数据合成代表未见目标域的特征。这种方法允许训练具有增强鲁棒性的退化模型。
+我们的方法通过识别支配特征统计的底层分布并利用其采样方差来量化域间变异性。
+% 
+鲁棒退化建模的统计不确定性量化本质上涉及特征统计分布的低阶矩表征。
+这需要底层分布的特定属性。
+理想情况下，它应满足Carleman条件\cite{akhiezer2020classical}，确保由其矩唯一确定，而其低阶矩应捕获足够的分布信息。多元高斯分布满足Carleman条件并由其均值和协方差完全定义，满足这些要求。鉴于这种理论契合及其在电池退化分析中的既定使用，我们采用多元高斯框架来建模特征统计。
+
+具体而言，对于来自$B$个样本小批量的特征$Z_{MRB} \in \mathbb{R}^{B \times H \times E}$，我们采用批次均值$\mu_{Z}$和标准差$\sigma_{Z}$作为其统计表示。
+如上一段所述，我们有$\mu_{Z} \sim \mathcal{N}(\mu, \Sigma_{\mu}^{2})$和$\sigma_{Z} \sim \mathcal{N}(\sigma, \Sigma_{\sigma}^{2})$，其中$\mu$和$\sigma$分别为特征统计$\mu_{Z}$和$\sigma_{Z}$的均值。
+我们直接使用特征的均值和标准差计算这些统计量，形式化为
+\begin{align}
+    & \mu=\frac{1}{HE}\sum_{H}\sum_{E}Z_{MRB}, \\
+    & \sigma = \sqrt{\frac{1}{HE}\sum_{H}\sum_{E}(Z_{MRB} - \mu)^{2}}.
+\end{align}
+而$\Sigma_{\mu}^{2}$和$\Sigma_{\sigma}^{2}$为与特征统计$\mu_{Z}$和$\sigma_{Z}$相关的方差，也用于建模域偏移引起的统计不确定性。
+这些方差基于特征统计的观测批次内变异性非参数估计，形式化为
+\begin{align}
+    & \Sigma_{\mu}^{2}=\frac{1}{B}\sum_{b\in B}(\mu-\mathbb{E}_{b}(\mu))^{2}, \\
+    & \Sigma_{\sigma}^{2} = \frac{1}{B}\sum_{b\in B}(\sigma-\mathbb{E}_{b}(\sigma))^{2},
+\end{align}
+其中$\mathbb{E}_{b}(\mu)$和$\mathbb{E}_{b}(\sigma)$为小批量中第$b$个样本的均值和标准差的期望。
+
+\subsubsection{不确定性驱动的特征合成}
+
+可微分特征统计生成采用重参数化方法，假设原始统计服从参数为$\mu$、$\Sigma_{\mu}$和$\sigma$、$\Sigma_{\sigma}$的高斯分布，形式化为
+\begin{align}
+    & \mu_{Z}^{\prime}=\epsilon_{\mu}\Sigma_{\mu}+\mu,  \\
+    & \sigma_{Z}^{\prime}=\epsilon_{\sigma}\Sigma_{\sigma}+\sigma, 
+\end{align}
+其中$\mu_{Z}^{\prime}$和$\sigma_{Z}^{\prime}$为生成的特征均值和标准差，$\epsilon_{\mu}$和$\epsilon_{\sigma}$为从标准正态分布$\mathcal{N}(0, 1)$中抽取的样本。
+% 
+所提出的UDFS利用均值统计$\mu$作为锚点，标准差$\Sigma_{\mu}$和$\Sigma_{\sigma}$来概率参数化偏移，通过其可变方向和幅度赋予对随机域偏移的适应性。通过重参数化生成新统计量引入受控随机性，增强锚点统计周围的特征流形。这种扩展改善了对潜在未见退化模式的覆盖，增强了模型鲁棒性并实现对OOD场景的泛化。
+% 
+功能上，UDFS集成到基于流形收缩的Mamba模型中，在编码器和任务特定回归头之间运行以进行特征合成，形式化为
+\begin{equation}
+    G(Z_{MRB}) = \sigma_{Z}^{\prime}\left(\frac{Z_{MRB} - \mu}{\sigma}\right) + \mu_{Z}^{\prime}.
+    \label{UDFS}
+\end{equation}
+这种UDFS集成在训练期间增加了可忽略的常数级计算开销。
+此外，基于伯努利采样的动态激活机制调节其使用，确保从真实样本充分学习。在每次训练迭代中，抽取伯努利值$p^{\prime}$，仅当$p^{\prime} < p_{0}$时通过UDFS进行特征合成，其中$p_{0}$为预定义的激活阈值。
+
+\subsection{长尾感知自适应重平衡细化}\label{susbec:LARR}
+
+为解决多源域长尾退化分布的挑战，我们提出LARR，采用特征分布校正专门用于增强电池退化轨迹跟踪和精确SOH估计。
+首先，我们采用特征分布校正来加强退化特征相似性与退化标签邻近性之间的对应关系。
+其次，我们将这种特征校正策略集成到UDFS中形成LARR，以消除与长尾分布相关的域特定信息，从而净化特征域不变性。
+最后，我们检查LARR的训练动态，随后纳入旨在改善退化模式泛化的头部偏差缓解策略。
+
+\subsubsection{基于对称核的特征统计校正}
+
+我们通过均匀分箱将有限SOH标签空间离散化为$\mathcal{B}$个区间，索引为$\textit{b} = 1, 2, \dots, \mathcal{B}$。电池退化轨迹表现出长尾分布，其特征是与每个分箱$\textit{b}$相关的样本数量存在大量（通常是指数级）变化。
+% 
+连续退化标签意味着特征相似性与标签距离成反比，不同于离散标签。
+% 
+退化数据的固有长尾分布违反了这一点，因为尾部分箱中的特征稀缺导致表示质量差，虚假地与头部分箱特征相似。
+% 
+为抵消这一点，我们通过对称核函数从相邻分箱传播信息来校正每个分箱$\textit{b}$内的特征。这些校正特征与来自编码器-UDFS管道的原始观测特征相结合，随后进行转换以实现更平衡的退化特征表示。
+
+我们类似地计算批次内特征的统计量，如第~\ref{subsec:UDFS}节所述。对于分箱$\textit{b}$内的特征$Z_{MRB}$，均值$\mu_{\textit{b}}$和标准差$\sigma_{\textit{b}}$形式化为
+\begin{align}
+    & \mu_{\textit{b}} = \frac{1}{HE}\sum_{H}\sum_{E}Z_{MRB}, \\
+    & \sigma_{\textit{b}} = \sqrt{\frac{1}{HE}\sum_{H}\sum_{E}(Z_{MRB} - \mu)^{2}}.
+\end{align}
+% 
+为校正特征分布，我们基于其对应的SOH值跨分箱采用核平滑。不失一般性，我们选择高斯核用于此目的。这产生校正统计量$\widetilde{\mu}_{\textit{b}}$和$\widetilde{\sigma}_{\textit{b}}$，形式化为
+\begin{align}
+    \widetilde{\mu}_{\textit{b}} & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}Gau(y_{\textit{b}}, y_{\textit{b}^{\prime}})\mu_{\textit{b}^{\prime}} \notag \\
+    & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\mu_{\textit{b}^{\prime}},\label{mu_calibration} \\
+    \widetilde{\sigma}_{\textit{b}} & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}Gau(y_{\textit{b}}, y_{\textit{b}^{\prime}})\sigma_{\textit{b}^{\prime}} \notag \\
+    & = \sum_{1 \leq \textit{b}, \textit{b}^{\prime} \leq \mathcal{B}}exp(-\gamma\|y_{\textit{b}} - y_{\textit{b}^{\prime}}\|_{2})\sigma_{\textit{b}^{\prime}},\label{sigma_calibration}
+\end{align}
+其中$Gau(\cdot, \cdot)$为系数$\gamma$的高斯核函数，$y_{\textit{b}}$和$y_{\textit{b}^{\prime}}$分别为对应于第$\textit{b}$和第$\textit{b}^{\prime}$分箱的SOH值。
+
+\subsubsection{无不平衡偏差的退化动态泛化}
+
+为解决长尾分布挑战，其在通过$G(Z_{MRB})$进行特征合成前后以一致形式持续存在，我们实施所提出的LARR算法进行无头部偏差的特征校正。
+LARR利用两组分箱特定统计量执行特征分布校正，即观测统计量$\{{\mu}_{\textit{b}}, {\sigma}_{\textit{b}}\}$和校正统计量$\{\widetilde{\mu}_{\textit{b}}, \widetilde{\sigma}_{\textit{b}}\}$，形式化为
+\begin{equation}
+    \widetilde{G}(Z_{MRB})=\widetilde{\sigma}_{\textit{b}}\left(\frac{G(Z_{MRB}) - \mu_{\textit{b}}}{\sigma_{\textit{b}}}\right)+\widetilde{\mu}_{\textit{b}}.
+\end{equation}
+在结构上与式~\eqref{UDFS}相同，LARR方法与UDFS类似，仅在训练阶段应用。
+为便于清晰展示训练动态，我们将分箱$\textit{b}$的迭代特定观测统计量和校正统计量分别记为$\{\mu_{\textit{b}}^{(i)}, \sigma_{\textit{b}}^{(i)}\}$和$\{\widetilde{\mu}_{\textit{b}}^{(i)}, {\widetilde{\sigma}_{\textit{b}}^{(i)}}\}$，其中$i$索引训练迭代。在每个训练迭代内，调整退化表示，随后在该迭代结束时更新相应的校正统计量。
+为确保训练稳定性，观测统计量通过整合其前一次迭代的值和静态统计量的基于动量的机制更新，形式化为
+\begin{align}
+    & \mu_{\textit{b}}^{(i)} \leftarrow \alpha\mu_{\textit{b}}^{(i-1)}+(1-\alpha)\mu_{\textit{b}}, \\
+    & {\sigma_{\textit{b}}}^{(i)} \leftarrow \alpha{\sigma_{\textit{b}}}^{(i-1)}+(1-\alpha)\sigma_{\textit{b}},
+\end{align}
+其中$\alpha$为更新动量。校正统计量根据式~\eqref{mu_calibration}和\eqref{sigma_calibration}更新。
+
+\begin{figure*}[t!]
+    \vspace{-1em}
+    \centering
+    \subfloat{
+        \includegraphics[width=1.1in]{fig3_deg_traj_matr_1.eps}
+        \includegraphics[width=1.1in]{fig3_deg_traj_matr_2.eps}
+        \includegraphics[width=1.1in]{fig3_deg_traj_tongji_1.eps}
+        \includegraphics[width=1.1in]{fig3_deg_traj_tongji_2.eps}
+    \includegraphics[width=1.1in]{fig3_deg_traj_hust.eps}
+        \includegraphics[width=1.1in]{fig3_deg_traj_xjtu.eps}
+    }
+
+  \subfloat{
+        \includegraphics[width=1.1in]{fig3_tri_lt.eps}
+        \includegraphics[width=1.1in]{fig3_mit_lt.eps}
+        \includegraphics[width=1.1in]{fig3_tongji_nca_lt.eps}
+        \includegraphics[width=1.1in]{fig3_tongji_ncm_lt.eps}
+    \includegraphics[width=1.1in]{fig3_hust_lt.eps}
+        \includegraphics[width=1.1in]{fig3_xjtu_lt.eps}
+    }
+    \caption{MATR、Tongji、HUST和XJTU数据集中电池退化轨迹、域划分和长尾数据分布的说明。}
+    \label{fig:degradation_trajectory}
+\end{figure*}
+
+\section{实验}
+
+% 数据集描述
+\begin{table*}[h!]
+    \centering
+    \caption{数据集概述。}
+    \scalebox{0.8}
+    {
+    \small
+    \begin{threeparttable}
+      \begin{tabular}{cccccc}
+      \toprule
+      数据集 & 子集 & 正极材料\tnote{a} & 额定容量 & 电池数量 & 样本数量 \\
+      \midrule
+      MATR \cite{severson2019data, attia2020closed}  & batch\{1, 2, 3, 9\tnote{b} \} & \ce{LiFePO_{4}} & 1100 mAh  & 144   & 115416 \\
+      \midrule
+      \makecell{Tongji \cite{zhu2022data}} & \makecell{NCA, NCM\tnote{c}} & \makecell{\ce{Li_{0.86}Ni_{0.86}Co_{0.11}Al_{0.03}O_2(NCA)} \\ \ce{Li_{0.84}Ni_{0.83}Co_{0.11}Mn_{0.07}O_2}(NCM)} & 3500 mAh  & \makecell{116} & \makecell{41963} \\
+      \midrule
+      HUST \cite{D2EE01676A}  & $\backslash$ & \ce{LiFePO_{4}} & 1100 mAh  & 77    & 114366 \\
+      \midrule
+      XJTU \cite{wang2024physics} & Batch-\{1, 2, 4\} & \ce{LiNi_{0.5}Co_{0.2}Mn_{0.3}O_2} & 2000 mAh  & 31    & 11182 \\
+      \bottomrule
+      \end{tabular}%
+      \begin{tablenotes}
+        \item[a] 所有电池的负极材料均为石墨。
+        \item[b] 仅使用batch 9中协议为`3.6-6-5.6-4.755'、`4.8-5.2-5.2-4.16'、`6-5.6-4.4-3.834'和`8-4.4-4.4-3.94'的电池。
+        \item[c] NCA子集中的电池{CY35-05\_1-\#3}和NCM子集中的电池{CY35-05\_\#\{1, 2, 3, 4\}}被排除。
+    \end{tablenotes}
+  \end{threeparttable}
+    }
+    \label{tab:dataset}%
+  \end{table*}%
+  
+  % 域泛化任务划分
+  \begin{table*}[htbp]
+    \vspace{-1em}
+    \footnotesize
+      \centering
+      \caption{设计的OOD退化模式泛化任务。}
+      % \scalebox{0.9}
+      % {
+      %   \small
+      \begin{threeparttable}
+        % \resizebox{\linewidth}{!}{
+        \begin{tabularx}{\textwidth}{ccXX}
+        \toprule
+        任务 & 数据集 & 源域中的电池ID（\textbf{源域数量}） & 目标域中的电池ID（\textbf{目标域}） \\
+        \midrule
+        1     & MATR  & 8C(35\%)-3.6C\_\{47,48\}, 8C(25\%)-3.6C\_\{45,46\}, \newline
+        8C(15\%)-3.6C\_\{43,44\}, 7C(40\%)-3C\_\{37,38\}, \newline
+        7C(40\%)-3.6C\_\{41,42\}, 7C(30\%)-3.6C\_\{39,40\}, \newline
+        6C(50\%)-3.6C\_\{35,36\}, 6C(40\%)-3C\_\{25,26\}, \newline
+        6C(40\%)-3.6C\_\{33,34\}, 6C(4\%)-4.75C\_46, \newline
+        等\tnote{a}。（\textbf{52}）
+        % 6C(30\%)-3.6C\_32, 5C(67\%)-4C\_\{10,18,2,34,42,47\}, \newline
+        % 5.9C(60\%)-3.1C\_\{32,40\}, 5.9C(15\%)-4.6C\_\{24,39\}, \newline
+        % 5.6C(5\%)-4.75C\_41, 5.6C(38\%)-4.25C\_38, \newline
+        % 5.6C(36\%)-4.3C\_\{13,15,21,23,29,37,45,5\}, \newline 
+        % 5.4C(70\%)-3C\_\{17,18\}, 5.4C(60\%)-3C\_\{15,16\}, \newline
+        % 5.4C(50\%)-3C\_14, 5.4C(40\%)-3.6C\_20, \newline
+        % 5.3C(54\%)-4C\_\{11,19,27,35,3,43,48,8\}, \newline
+        % 5.2C(58\%)-4C\_34, 5.2C(50\%)-4.25C\_33, \newline
+        % 5.2C(37\%)-4.5C\_32, 5.2C(10\%)-4.75C\_31, \newline
+        % 4C(80\%)-4C\_\{5,6\}, 4C(40\%)-6C\_29, \newline
+        % 4C(4\%)-4.85C\_30, 4.9C(69\%)-4.25C\_26, \newline
+        % 4.9C(61\%)-4.5C\_25, 4.65C(44\%)-5C\_22, \newline
+        % 4.65C(19\%)-4.85C\_21, 4.4C(80\%)-4.4C\_7, \newline
+        % 4.4C(47\%)-5.5C\_18, 4.4C(24\%)-5C\_17, \newline
+        % 3.7C(31\%)-5.9C\_\{16,30,38\}, 3.6C(9\%)-5C\_16, \newline
+        % 3.6C(80\%)-3.6C\_\{1,2,3\}, 3.6C(30\%)-6C\_15, \newline
+        % 5.4C(60\%)-3.6C\_\{23,24\}, 4.4C(8\%)-4.85C\_20, \newline
+        % 5.2C(66\%)-3.5C\_35, 3.6C(2\%)-4.85C\_14, \newline
+        % 5.6C(19\%)-4.6C\_\{14,20,22,28,36,44,4\}, \newline
+        % 4.8C(80\%)-4.8C\_\{17,1,25,9,10,4,7,8,9\}, \newline
+        % 4C(13\%)-5C\_27, 5.4C(80\%)-5.4C\_\{11,12\}, \newline
+        % 4.65C(69\%)-6C\_23, 6C(60\%)-3C\_\{29,30,48\}, \newline
+        % 6C(50\%)-3C\_\{27,28\}, 5.6C(25\%)-4.5C\_37 (\textbf{52})
+        & 6C(52\%)-3.5C\_47, 6C(40\%)-4C\_45,
+        6C(31\%)-4.25C\_44, \newline
+        6C(20\%)-4.5C\_43, 5.6C(65\%)-3C\_42, 5.6C(58\%)-3.5C\_40, \newline
+        5.6C(47\%)-4C\_39, 5.2C(71\%)-3C\_36, 4C(31\%)-5C\_28, \newline
+        4.9C(27\%)-4.75C\_24, 4.4C(55\%)-6C\_19, 3.6C(22\%)-5.5C\_13, \newline
+        2C(7\%)-5.5C\_12, 2C(2\%)-5C\_11, 2C(10\%)-6C\_10, \newline
+        1C(4\%)-6C\_9 （\textbf{16}） \\
+        \midrule
+        2     & MATR  & M-batch9-1\_\{1,10,2,42,20\}, M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} （\textbf{3}） & M-batch9-4\_\{11,12,27,29,38\} （\textbf{1}） \\
+        \midrule
+        3     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} （\textbf{3}） & M-batch9-1\_\{1,2,10,20,42\} （\textbf{1}） \\
+        \midrule
+        4     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-3\_\{13,16,23,47,24\} （\textbf{3}） & M-batch9-2\_\{21,22,31,36,9\} （\textbf{1}） \\
+        \midrule
+        5     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-2\_\{21,22,31,36,9\} （\textbf{3}） & M-batch9-3\_\{13,16,23,47,24\} （\textbf{1}） \\
+        \midrule
+        6     & Tongji & CY25-1\_1-\#\{6,1,9,3,7,2,8\}, CY25-05\_1-\#\{14,11,6,\newline 1,2,19,13,7,17,4,16,10,15\},  CY45-05\_1-\#\{28,17,5,2,\newline 21,7,9,19,22,14,16,8,23,24,12,10,20,26,13,27\}, \newline CY25-025\_1-\#\{3,5,4,6\}, CY35-05\_1-\#2 （\textbf{5}） & CY25-1\_1-\#\{4,5\}, CY25-05\_1-\#\{3,5,12,18\}, \newline CY25-025\_1-\#7, CY35-05\_1-\#1, \newline CY45-05\_1-\#\{1,11,15,18,25\} （\textbf{5}） \\
+        \midrule
+        7     & Tongji & CY25-05\_1-\#\{6,5,13,15,18,7,3,9,1,16,17,4,14,2,12,10,19,11,8\}, \newline CY25-025\_1-\#\{6,7,4,1,2,3,5\}, \newline CY45-05\_1-\#\{15,4,14,28,13,1,3, 26,19,9,18,16,11,12,27,5,10, \newline 22,8,7,21,6,17,24,20,2,25,23\} （\textbf{3}） & CY25-05\_1-\#\{6,23,5,13,15,18,7,3,9,1,\newline 16,17,4,14,21,2,20,12,10,19,11,8,22\}, \newline CY45-05\_1-\#\{23,15,4,14,28,13,1,3,2,25,26,19, \newline 9,18,16,11,12,17,24,20,27,5,10,22,8,7,21,6\} （\textbf{2}） \\
+        \midrule
+        8     & HUST  & 9-1,2-2,4-7,9-7,1-8,4-6,2-7,8-4,7-2,10-3,2-4,7-4,3-4,5-4,8-7,7-7, \newline 4-4,1-3,7-1,5-2,6-4,9-8,9-5,6-3,10-8,1-6,3-5,2-6,3-8,3-6,4-8,7-8, \newline 5-1,2-8,8-2,1-5,7-3,10-2,5-5,9-2,5-6,1-7,8-3,4-1,4-2,1-4,6-5,4-3, \newline 5-7,3-3,2-3,9-3,10-5,3-2,3-7 （\textbf{55}） & 9-6,4-5,1-2,10-7,1-1,6-1,6-6,9-4,10-4,8-5,5-3, \newline 10-6,2-5,6-2,3-1,8-8,8-1,8-6,7-6,6-8,7-5,10-1 （\textbf{22}） \\
+        \midrule
+        9     & XJTU  & X-batch2-\{1, $\cdots$\tnote{b}, 15\}, X-batch4-\{1, $\cdots$, 8\} （\textbf{2}） & X-batch1-\{1, $\cdots$, 8\} （\textbf{1}） \\
+        \midrule
+        10    & XJTU  & X-batch1-\{1, $\cdots$, 8\}, X-batch4-\{1, $\cdots$, 8\} （\textbf{2}） & X-batch2-\{1, $\cdots$, 15\} （\textbf{1}） \\
+        \midrule
+        11    & XJTU  & X-batch1-\{1, $\cdots$, 8\}, X-batch2-\{1, $\cdots$, 15\} （\textbf{2}） & X-batch4-\{1, $\cdots$, 8\} （\textbf{1}） \\
+        \bottomrule
+        \end{tabularx}%
+        \begin{tablenotes}
+          \item[a] 为简洁起见省略。详见\cite{TAN2024103725}。
+          \item[b] 此省略号表示连续的电池ID。
+      \end{tablenotes}
+      \end{threeparttable}
+      \label{tab:tasks}%
+      \end{table*}%
+
+\rev{在本节中，我们全面评估所提出模型RODTNet和RODTNet-LT的性能，验证其对智能车载BMS的适用性。
+我们将它们与14个基线方法及其20个变体在源自4个涵盖多样化汽车运行条件的数据集的11个泛化任务上进行比较。}
+我们首先比较RODTNet、RODTNet-LT和基线方法在不同数据集和泛化任务上的性能。
+接下来，我们进行消融研究以证明RODTNet中每个关键组件的有效性，并评估LARR模块在RODTNet-LT中的具体贡献。
+最后，我们研究RODTNet性能对超参数设置变化的敏感性。
+
+\subsection{实验设置}\label{subsec:experimental_setup}
+  
+\subsubsection{数据集和泛化任务}
+
+我们使用4个大规模数据集评估框架：MATR\cite{severson2019data, attia2020closed}、Tongji\cite{zhu2022data}、HUST\cite{D2EE01676A}和XJTU\cite{wang2024physics}，通过11个OOD泛化任务。表~\ref{tab:dataset}总结了数据集特征，包括材料组成、电气规格和统计细节，而图~\ref{fig:degradation_trajectory}说明了不同数据集中不同域电池的退化轨迹和相应的分布密度。域划分标准包括充放电协议、电极材料和放电深度。\rev{具体而言，这些协议具有模拟真实电动汽车驾驶行为的动态工况。}任务1-5\cite{TAN2024103725,10522981}系统检验快速充电协议鲁棒性。任务6改编\cite{TAN2024103725}的配置以评估罕见退化模式适应（域间共享0.9\%循环），而任务7扩展此框架以评估OOD条件下的电极材料泛化。任务8\cite{D2EE01676A}评估模型对多阶段放电协议变化的鲁棒性。在MATR数据集基线的基础上，任务9-11研究由充电协议-放电协议-放电深度交互引起的耦合域偏移。完整域划分见表~\ref{tab:tasks}。电池退化通过RUL和SOH量化，分别表征瞬时性能和全生命周期演化。
+
+\subsubsection{输入信号重建}
+
+遵循\cite{10251604,wang2024physics}中的既定方法，我们通过信号变换实现启发式输入重建策略。实施数据集特定的重建协议以严格验证策略的通用适用性。对于MATR数据集（涉及5个任务），8维向量编码电化学描述符，包括2.7–3.3 V电压范围内微分容量曲线拟合的二次系数和偏置项，以及最大值、最小值、方差、循环平均温度、内阻和充电时间。其他数据集（涉及6个任务）采用16维表示来捕捉多相循环特征。16维特征集分为两类。第一类包括统计指标，包括均值、标准差、峰度、偏度、曲线斜率和曲线熵，从指定运行范围内的车载电压和电流传感器提取（Tongji和XJTU数据集电流：0.1–0.5 A；电压：4.0–4.2 V，HUST数据集电压：3.4–3.6 V）。第二类包括恒流和恒压充电阶段的持续时间和累积电荷测量。
+
+\subsubsection{基准方法}
+
+为评估RODTNet和RODTNet-LT的性能，我们在5类方法上进行了全面比较，总结如下：
+% 
+(1) 最先进的电池预测方法，包括DeNN\cite{10102497}（含3种聚合策略）、PINN\cite{wang2024physics}和MambaLithium\cite{shi2024mambalithiumselectivestatespace}；
+(2) 基于预训练-微调的方法，包括CRNN\cite{D2EE01676A}和PINN$^\ast$\cite{wang2024physics}；
+(3) 基于域适应的方法，包括ConvMMD\cite{9788003}、LSTM-DA\cite{HAN2022230823}、DTKL\cite{10029904}、DDAN\cite{9560040}和DR-Net\cite{WANG2023108897}；
+(4) 基于域泛化的方法，包括MAGNet\cite{TAN2024103725}、iTransformer\cite{liu2024itransformer}、PatchTST\cite{nie2023a}和TSMixer\cite{chen2023tsmixer}；
+(5) 直接在目标域上训练的RODTNet和RODTNet-LT，分别称为RODTNet$^\ast$和RODTNet-LT$^\ast$。
+% 
+鉴于通用时间序列预测模型（包括iTransformer、PatchTST和TSMixer）在电池退化预测背景下的应用有限，我们还检查了它们的微调变体，分别记为iTransformer$^\ast$、PatchTST$^\ast$和TSMixer$^\ast$。
+
+\subsubsection{实现细节}
+
+我们在配备Intel Core i9-13900KF CPU和NVIDIA 4090 GPU（PyTorch 2.3.1 with CUDA 11.8）的服务器上进行所有实验。
+所有循环数据经过min-max归一化到0到1之间。SOH标签遵循数据集特定的缩放协议，MATR数据集使用基于定义的[0.8-1]缩放，而其他数据集采用min-max [0, 1]归一化。RUL标签在训练期间归一化，在评估期间反归一化。
+% 
+域划分的详细信息总结在表~\ref{tab:tasks}中。
+% 
+基于域泛化的方法遵循严格的验证协议\cite{9847099}，其中验证集完全由源域电池构建，训练-验证比例为3:1（MATR批次1–3、Tongji、XJTU）、4:1（MATR批次9）和6:1（HUST）。所有目标域电池保留用于测试。
+% 
+为促进基于域适应的方法中的域对齐，目标域进一步划分为测试子集（包括指定用于退化建模的电池）和训练子集（包括剩余电池）。两个子集确保目标域中退化样本的标签在模型训练阶段完全不可访问。
+% 
+遵循预训练-微调范式的模型在预训练期间镜像域泛化协议，使用与域适应方法相同的测试集，并将剩余目标域电池进一步划分为9:1的训练-验证分割用于微调。
+% 
+样本构建、模型架构和超参数的详细信息见表~\ref{tab:hyperparameters_setting}。使用均方误差损失函数与Adam优化器进行模型参数优化。训练过程最多进行100个epoch，基于验证集损失实施早停。
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[htbp]
+\centering
+\caption{超参数设置。}
+\scalebox{0.8}
+{
+    \small
+\begin{threeparttable}
+    \begin{tabular}{rll}
+    \toprule
+    \multicolumn{1}{l}{符号} & 描述 & 值 \\
+    \midrule
+    \multicolumn{1}{l}{$E$} & 连续充放电循环数 & $1$ \\
+    \multicolumn{1}{l}{$H (d_{model})$} & 隐藏状态维度 & $16$ \\
+    \multicolumn{1}{l}{$n_{enc}$} & Mamba残差块数量 & $1$ \\
+    \multicolumn{1}{l}{$n_{exp}$} & Mamba扩展因子 & $4$ \\
+    \multicolumn{1}{l}{$r_{\Delta}$} & Mamba离散化因子秩 & $1$ \\
+    \multicolumn{1}{l}{$d_{convs}$} & Mamba中CNN的核大小 & $4$ \\
+    \multicolumn{1}{l}{$N$} & Mamba中参数矩阵的维度 & $1024$ \\
+    \multicolumn{1}{l}{$p_{0}$} & UDFS激活阈值 & $0.5$ \\
+    \multicolumn{1}{l}{$\mathcal{B}$} & LARR的分箱数 & $100$ \\
+    \multicolumn{1}{l}{$\gamma$} & LARR高斯核系数 & $0.5$ \\
+    \multicolumn{1}{l}{$l$} & LARR高斯核大小 & $9$ \\
+    \multicolumn{1}{l}{$\alpha$} & LARR更新动量 & $0.9$ \\
+    \multicolumn{1}{l}{$n_{bs}$} & 批次大小 & $32$ \\
+    \multicolumn{1}{l}{$n_{epochs}$} & 最大训练轮数 & $100$ \\
+    \multicolumn{1}{l}{$\eta_{0}$} & 初始学习率 & $1 \times 10^{-4}$ \\
+    \multicolumn{1}{l}{$p_{dropout}$} & Dropout率 & $0.01$ \\
+    \bottomrule
+    \end{tabular}%
+\end{threeparttable}
+}
+\label{tab:hyperparameters_setting}%
+\end{table}%
+
+\subsubsection{评估指标}
+
+我们采用四个指标，即平均绝对误差（MAE）、均方误差（MSE）、均方根误差（RMSE）和决定系数（$R^{2}$），来评估模型的OOD退化模式泛化能力。具体而言，较低的MAE、MSE和RMSE值表示改进的泛化性能，而较高的$R^{2}$值表示更强的泛化能力。
+
+\begin{figure*}[h]
+\captionsetup[subfloat]{font=scriptsize}
+\centering
+% --- Row 1 ---
+\subfloat[iTransformer]{\includegraphics[width=1.35in, height=1.137in]{fig4_iTransformer.eps}%
+    \label{fig:rul_itransformer}} % Optional label for subfigure
+% \hfill % Distribute space horizontally
+\subfloat[PatchTST]{\includegraphics[width=1.35in, height=1.137in]{fig4_PatchTST.eps}%
+    \label{fig:rul_patchtst}}
+% \hfill
+\subfloat[TSMixer]{\includegraphics[width=1.35in, height=1.137in]{fig4_TSMixer.eps}%
+    \label{fig:rul_tsmixer}}
+% \hfill
+\subfloat[MambaLithium]{\includegraphics[width=1.35in, height=1.137in]{fig4_MambaLithium.eps}%
+    \label{fig:rul_mamba}}
+% \hfill
+\subfloat[PINN]{\includegraphics[width=1.35in, height=1.137in]{fig4_PINN.eps}%
+    \label{fig:rul_pinn}}
+
+% --- Row 2 ---
+\subfloat[iTransformer$^\ast$]{\includegraphics[width=1.35in, height=1.137in]{fig4_iTransformer+.eps}%
+    \label{fig:rul_itransformer_plus}}
+% \hfill
+\subfloat[PatchTST$^\ast$]{\includegraphics[width=1.35in, height=1.137in]{fig4_PatchTST+.eps}%
+    \label{fig:rul_patchtst_plus}}
+% \hfill
+\subfloat[TSMixer$^\ast$]{\includegraphics[width=1.35in, height=1.137in]{fig4_TSMixer+.eps}%
+    \label{fig:rul_tsmixer_plus}}
+% \hfill
+\subfloat[CRNN]{\includegraphics[width=1.35in, height=1.137in]{fig4_CRNN.eps}%
+    \label{fig:rul_crnn}}
+% \hfill
+\subfloat[PINN$^\ast$]{\includegraphics[width=1.35in, height=1.137in]{fig4_PINN+.eps}%
+    \label{fig:rul_pinn_plus}}
+
+% --- Row 3 ---
+\subfloat[DeNN-bagging]{\includegraphics[width=1.35in, height=1.137in]{fig4_bagging.eps}%
+    \label{fig:rul_bagging}}
+% \hfill
+\subfloat[DeNN-fusion]{\includegraphics[width=1.35in, height=1.137in]{fig4_fusion.eps}%
+    \label{fig:rul_fusion}}
+% \hfill
+\subfloat[DeNN-voting]{\includegraphics[width=1.35in, height=1.137in]{fig4_voting.eps}%
+    \label{fig:rul_voting}}
+% \hfill
+\subfloat[ConvMMD]{\includegraphics[width=1.35in, height=1.137in]{fig4_ConvMMD.eps}%
+    \label{fig:rul_convmmd}}
+% \hfill
+\subfloat[DRNet]{\includegraphics[width=1.35in, height=1.137in]{fig4_DRNet.eps}%
+    \label{fig:rul_drnet}}
+
+% --- Row 4 ---
+\subfloat[DDAN]{\includegraphics[width=1.35in, height=1.137in]{fig4_DDAN.eps}%
+    \label{fig:rul_ddan}}
+\subfloat[DKTL]{\includegraphics[width=1.35in, height=1.137in]{fig4_DKTL.eps}%
+    \label{fig:rul_dktl}}
+\subfloat[LSTM-DA]{\includegraphics[width=1.35in, height=1.137in]{fig4_LSTM-DA.eps}%
+    \label{fig:rul_lstmda}}
+\subfloat[MAGNet]{\includegraphics[width=1.35in, height=1.137in]{fig4_MAGNet.eps}%
+    \label{fig:rul_magnet}}
+% Consider changing 'OURS' to your actual model name, e.g., 'RODTNet'
+\subfloat[RODTNet]{\includegraphics[width=1.35in, height=1.137in]{fig4_RODTNet.eps}%
+    \label{fig:rul_ours}}
+
+\caption{在OOD泛化任务1上所提出的RODTNet与对比模型的RUL预测性能比较。在每个面板中，预测RUL（y轴）与真实RUL（x轴）绘制。虚线作为理想参考，点代表各方法的单独预测。预测误差的分布由右下角的内嵌直方图可视化。}
+\label{fig:rul} % Overall figure label
+\end{figure*}
+
+\begin{figure*}[b!]
+\captionsetup[subfloat]{font=scriptsize}
+\centering
+\subfloat[泛化性能比较 \label{fig:soh}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{fig5_soh_radar_chart.eps}}}
+\hspace{0.05\textwidth}
+\subfloat[泛化效率比较 \label{fig:comp}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{fig5_footprint.eps}}}
+\caption{所提出的RODTNet-LT模型与基线方法在SOH估计方面的对比分析。
+(a) 雷达图比较RODTNet-LT和基线模型在11个不同SOH估计泛化任务上的性能。
+(b) OOD SOH估计泛化任务上模型性能（MSE）、推理速度（秒）和参数数量的比较。}
+\label{fig:soh_efficiency}
+\end{figure*}
+
+% RUL对比实验
+\begin{table*}[htbp]
+    \footnotesize
+    \centering
+    \caption{MATR、TRI、TJU和XJTU数据集上RUL预测OOD泛化任务的对比实验结果。}
+    % \resizebox{\linewidth}{!}{
+    \scalebox{0.8}{
+    \small
+    \begin{adjustbox}{center}{
+    \begin{threeparttable}
+        \begin{tabular}{lccccccccccc}
+        \toprule
+        任务  & \multicolumn{2}{c}{任务1} & \multicolumn{2}{c}{任务2} & \multicolumn{2}{c}{任务3} & \multicolumn{2}{c}{任务4} & \multicolumn{2}{c}{任务5} & 任务6 \\
+    \cmidrule{2-12}    指标 & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
+        \midrule
+        iTransformer \cite{liu2024itransformer} & 99.78  & 15290.60  & 78.56  & 12430.67  & 153.83  & 34106.78  & 94.88  & 15629.50  & 93.21  & 16692.93  & 46.35  \\
+        iTransformer$^\ast$\tnote{a} \cite{liu2024itransformer} & 12.16  & 290.75  & 44.35  & 5100.32  & 40.20  & 4450.44  & 29.83  & 3284.53  & 40.36  & 5311.12  & 9.80  \\
+        PatchTST \cite{nie2023a} & 30.86  & 2147.96  & 141.59  & 40006.27  & 89.28  & 13432.70  & 149.46  & 36100.57  & 75.57  & 12738.93  & 29.58  \\
+        PatchTST$^\ast$ \cite{nie2023a} & 12.82  & 393.49  & 42.24  & 4470.77  & 51.99  & 6520.95  & 38.72  & 3993.89  & 49.47  & 6372.25  & 30.24  \\
+        TSMixer \cite{chen2023tsmixer} & 261.39  & 95673.01  & 95.70  & 17312.12  & 159.98  & 42316.82  & 125.36  & 27480.27  & 92.97  & 17272.87  & 115.18  \\
+        TSMixer$^\ast$ \cite{chen2023tsmixer} & 16.77  & 584.11  & 52.31  & 5986.63  & 80.59  & 12311.22  & 75.14  & 12132.82  & 66.54  & 9945.74  & 19.64  \\
+        PINN \cite{wang2024physics}  & 27.07  & 1345.26  & 29.33  & 1948.74  & 46.42  & 5144.30  & 46.24  & 4323.02  & 48.57  & 3539.95  & 43.84  \\
+        PINN$^\ast$ \cite{wang2024physics} & 6.04  & 77.55  & 8.38  & 213.91  & 12.02  & 266.98  & 12.27  & 408.44  & 9.74  & 195.91  & 9.74  \\
+        DR-Net \cite{WANG2023108897} & 11.61  & 284.32  & 42.50  & 5231.99  & 49.33  & 5978.47  & 42.87  & 5410.01  & 45.92  & 8061.80  & 8.91  \\
+        CRNN \cite{D2EE01676A}  & 13.66  & 378.74  & 18.16  & 708.65  & 14.40  & 535.36  & 13.86  & 579.07  & 12.73  & 365.98  & 8.34  \\
+        MAGNet \cite{TAN2024103725} & 13.51  & 347.84  & 15.08  & 492.65  & 16.03  & \underline{455.34}  & \underline{14.75}  & \underline{394.57}  & 13.37  & \underline{313.13}  & 8.98  \\
+        DeNN-bagging \cite{10102497} & 23.40  & 1014.55  & 46.38  & 4144.07  & 68.88  & 8058.54  & 93.65  & 14047.69  & 57.23  & 5960.93  & 16.73  \\
+        DeNN-fusion \cite{10102497} & 24.34  & 1010.97  & 49.15  & 4672.25  & 74.74  & 9549.55  & 95.93  & 16148.70  & 76.95  & 10290.79  & 16.80  \\
+        DeNN-voting \cite{10102497} & 22.90  & 939.58  & 45.83  & 4074.09  & 71.58  & 8787.72  & 93.89  & 13623.54  & 57.07  & 6028.56  & 16.38  \\
+        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 13.19  & 368.84  & 20.32  & 818.35  & 19.99  & 923.46  & 17.47  & 672.48  & 13.55  & 385.23  & 7.28  \\
+        LSTM-DA \cite{HAN2022230823} & 20.36  & 713.70  & 30.14  & 1484.85  & 30.15  & 1701.16  & 31.45  & 1644.90  & 20.28  & 769.22  & 18.70  \\
+        ConvMMD \cite{9788003} & 23.95  & 989.20  & 36.96  & 2619.11  & 46.70  & 4542.61  & 57.68  & 6594.72  & 28.70  & 1960.54  & 17.03  \\
+        DKTL \cite{10029904}  & 23.77  & 1005.67  & 38.93  & 3220.22  & 51.40  & 5403.52  & 62.88  & 7711.63  & 30.94  & 2252.70  & 15.71  \\
+        DDAN \cite{9560040}  & 19.35  & 622.24  & 26.90  & 1206.61  & 25.29  & 1267.76  & 26.25  & 1252.40  & 17.79  & 541.77  & 14.07  \\
+        RODTNet$^{\ast\ast}$\tnote{b} {(ours)} & \underline{2.13}  & \underline{20.29}  & \underline{12.01}  & \underline{380.16}  & \underline{10.49}  & 577.50  & 25.63  & 3137.51  & \underline{12.83}  & 481.95  & \underline{4.06}  \\
+        RODTNet (ours) & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} \\
+    \midrule
+        \multicolumn{12}{c}{} \\
+    \midrule
+            & 任务6 & \multicolumn{2}{c}{任务7} & \multicolumn{2}{c}{任务8} & \multicolumn{2}{c}{任务9} & \multicolumn{2}{c}{任务10} & \multicolumn{2}{c}{任务11} \\
+    \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+        \midrule
+        iTransformer \cite{liu2024itransformer} & 3348.46  & 79.31  & 11828.38  & 285.14  & 134288.68  & 97.72  & 12857.57  & 115.28  & 16008.10  & 86.33  & 9092.28  \\
+        iTransformer$^\ast$ \cite{liu2024itransformer} & 451.88  & 19.96  & 690.05  & 25.39  & 1232.29  & 12.37  & 255.54  & 5.93  & 50.74  & 21.45  & 746.27  \\
+        PatchTST \cite{nie2023a} & 1881.96  & 156.53  & 55065.22  & 171.01  & 70146.16  & 80.18  & 8273.63  & 78.84  & 8451.20  & 108.02  & 16314.58  \\
+        PatchTST$^\ast$ \cite{nie2023a} & 2642.04  & 21.09  & 803.19  & 107.18  & 20704.56  & 13.70  & 298.71  & 7.34  & 81.72  & 25.52  & 1018.20  \\
+        TSMixer \cite{chen2023tsmixer} & 21255.96  & 102.14  & 18803.24  & 363.95  & 183759.79  & 343.38  & 119826.16  & 97.57  & 12165.74  & 356.55  & 134948.97  \\
+        TSMixer$^\ast$ \cite{chen2023tsmixer} & 844.83  & 20.28  & 700.89  & 45.71  & 3708.16  & 17.68  & 530.08  & 7.90  & 105.46  & 35.20  & 2180.88  \\
+        PINN \cite{wang2024physics}  & 4496.71  & 81.96  & 18077.43  & 126.97  & 25586.95  & 53.12  & 5147.91  & 55.81  & 4744.68  & 111.30  & 22690.40  \\
+        PINN$^\ast$ \cite{wang2024physics} & 195.91  & 16.70  & 610.41  & 24.96  & 1203.36  & 10.54  & 251.13  & 9.83  & 261.32  & 9.83  & 177.17  \\
+        DR-Net \cite{WANG2023108897} & 180.23  & 15.77  & 482.02  & 30.98  & 1763.16  & 17.30  & 532.24  & 17.40  & 669.82  & 24.64  & 1306.43  \\
+        CRNN \cite{D2EE01676A}  & 138.99  & 13.79  & 365.50  & 39.02  & 3541.77  & 29.13  & 1250.78  & 26.57  & 1346.65  & 35.58  & 3191.76  \\
+        MAGNet \cite{TAN2024103725} & 146.94  & 15.79  & 428.60  & 44.58  & 4499.43  & 27.53  & 1183.21  & 24.84  & 1321.13  & 38.51  & 2961.67  \\
+        DeNN-bagging \cite{10102497} & 607.03  & 28.97  & 1520.12  & 85.31  & 15854.20  & 40.39  & 2688.63  & 36.51  & 2682.08  & 61.02  & 7199.04  \\
+        DeNN-fusion \cite{10102497} & 625.23  & 31.39  & 1769.45  & 92.75  & 17801.56  & 41.68  & 2863.98  & 36.61  & 2652.09  & 62.20  & 7491.24  \\
+        DeNN-voting \cite{10102497} & 586.70  & 30.15  & 1646.72  & 86.36  & 16175.97  & 40.83  & 2692.80  & 36.85  & 2739.17  & 61.56  & 7397.65  \\
+        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 105.15  & 21.18  & 752.52  & 71.95  & 12473.49  & 45.07  & 3804.16  & 28.68  & 1469.89  & 41.50  & 3260.10  \\
+        LSTM-DA \cite{HAN2022230823} & 639.52  & 32.55  & 1741.70  & 121.14  & 24930.62  & 31.85  & 1526.07  & 24.87  & 1151.76  & 44.07  & 3391.50  \\
+        ConvMMD \cite{9788003} & 544.12  & 37.69  & 2722.93  & 108.81  & 21251.08  & 20.64  & 668.67  & 28.49  & 1531.89  & 50.73  & 5750.57  \\
+        DKTL \cite{10029904}  & 465.40  & 36.85  & 2282.25  & 104.67  & 19313.69  & 28.27  & 1281.96  & 27.02  & 1456.52  & 54.55  & 6445.32  \\
+        DDAN \cite{9560040}  & 357.74  & 29.73  & 1478.19  & 117.50  & 24882.38  & 34.05  & 1859.57  & 24.13  & 1211.62  & 42.90  & 3599.68  \\
+        RODTNet$^{\ast\ast}$ {(ours)} & \underline{36.10}  & \textbf{0.40} & \textbf{0.30} & \underline{1.51}  & \underline{6.89}  & \underline{7.62}  & \underline{127.05}  & \underline{3.86}  & \textbf{36.87} & \textbf{8.39} & \underline{419.11}  \\
+        RODTNet (ours) & \textbf{0.68} & \underline{0.78}  & \underline{1.18}  & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} & \textbf{3.50} & \underline{70.76}  & \underline{14.03}  & \textbf{395.27} \\
+        \bottomrule
+        \end{tabular}%}
+    \begin{tablenotes}
+    \item[a] $\ast$表示在目标域上微调。
+    \item[b] $\ast\ast$表示直接在目标域上训练。
+    \item[c] \textbf{粗体}/\underline{下划线}表示\textbf{最佳}/\underline{次佳}。
+    \item[d] 为公平起见，排除使用预训练-微调的模型。
+    \item[e] 此处描述的符号和实验设置也适用于表~\ref{tab:soh_results}。
+\end{tablenotes}
+\end{threeparttable}}
+\end{adjustbox}
+}
+\label{tab:rul_results}%
+\end{table*}%
+
+\begin{figure*}[htbp]
+\vspace{-1em}
+\centering
+\subfloat{
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tri_3d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tongji_3d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_hust_3d.eps}
+    \hfill
+    \hspace{15pt} % 左侧间距加大
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in); % 缩短高度并上下留空
+    \end{tikzpicture}}
+    \hspace{15pt} % 右侧间距加大
+    \hfill
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tri_3d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tongji_3d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_hust_3d.eps}
+}
+\hfil
+\subfloat{
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tri_2d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tongji_2d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_hust_2d.eps}
+    \hfill
+    \hspace{15pt}
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
+    \end{tikzpicture}}
+    \hspace{15pt}
+    \hfill
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tri_2d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tongji_2d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_hust_2d.eps}
+}
+\hfil
+\subfloat{
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tri_1d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_tongji_1d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_ours_hust_1d.eps}
+    \hfill
+    \hspace{15pt}
+    \smash{\begin{tikzpicture}
+        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
+    \end{tikzpicture}}
+    \hspace{15pt}
+    \hfill
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tri_1d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_tongji_1d.eps}
+    \includegraphics[width=1in]{fig6_rul_manifold_others_hust_1d.eps}
+}
+\caption{从RODTNet（左）和TSMixer（右）获得的特征分布比较。特征通过PCA降维到3D（顶行）、2D（中行）和1D（底行）可视化，点根据真实标签着色。}
+\label{fig:Performance_Comparison_2}
+\end{figure*}
+
+\subsection{OOD泛化性能比较}\label{subsec:comparative_experiments}
+
+为评估所提出的RODTNet和RODTNet-LT的OOD泛化能力，我们在11个任务上使用MAE和MSE作为评估指标进行全面实验。对于RUL预测任务，表~\ref{tab:rul_results}表明RODTNet在9个任务中实现最先进性能，在剩余2个任务中排名第二，仅被其目标域适应变体超越。
+% 
+% 在SOH估计任务中，如表~\ref{tab:soh_results}所示，RODTNet-LT在9种场景中获得最优性能，而在2种情况下与其目标域对应模型和MAGNet表现出边际性能差距。
+完整的SOH估计结果在\textbf{补充材料的表S1}中提供。值得注意的是，RODTNet-LT在11个场景中的9个中取得了最佳性能，仅在2种情况下与其目标域对应模型和MAGNet表现出边际差距。
+% 
+定量而言，在OOD RUL预测任务中，RODTNet相比次优基线将预测误差降低了40.76\% MAE和28.65\% MSE。类似地，在OOD SOH估计任务中，RODTNet-LT相比现有基准实现了5.03\% MAE和22.22\% MSE的改进。这些平均百分比改进通过将我们方法的性能与给定任务为最优时的次优基线或否则与表现最佳的基线进行比较（负值表示相对于最佳的性能不足），然后平均这些相对差异跨越所有11个泛化任务计算得出。这些增强验证了所提方法对异质退化机制引起的域偏移的鲁棒性。
+% 
+相比之下，现有基线即使在部分数据访问的目标域微调/适应下也表现出提取域不变退化模式的能力有限。值得注意的是，RODTNet和RODTNet-LT均优于其目标域训练变体，这可归因于通过多源域集成实现的增强模式全面性。
+% 
+视觉证据进一步证实了这些发现。
+图~\ref{fig:rul}使用散点图（实际与预测寿命）和误差分布直方图评估RODTNet与基线的泛化能力。每个子图还在左上角呈现$R^{2}$分数，进一步量化拟合优度。RODTNet的预测密集聚集在理想线周围，误差分布显著更窄，证明了其在捕获OOD退化模式方面的有效性。此外，如图~\ref{fig:soh_efficiency}(a)中SOH估计的雷达图所示，RODTNet-LT的性能多边形在多个指标上始终延伸到图表的外边缘附近，反映了其卓越且更全面的泛化性能。
+
+为研究退化表示的拓扑，我们应用PCA降维到三维、二维和一维以可视化来自RODTNet编码器的特征图，按标签着色点。\rev{如图~\ref{fig:Performance_Comparison_2}所示，左侧采用MCRDR策略获得的流形表现出连续分布，跨维度保持良好，促进高精度泛化。这种拓扑连续性确保平滑输出，有利于下游BMS控制稳定性。}相反，右侧没有MCRDR的流形显示不连续性表现为空洞，并在降维后遭受显著的退化阶段间特征重叠，阻碍了这种泛化。
+
+RODTNet-LT与基线方法在预测性能、推理速度和模型大小之间的权衡评估，结果可视化于图~\ref{fig:soh_efficiency}(b)。研究结果表明，实现与RODTNet-LT相当预测性能的模型，如MambaLithium和MAGNet，往往规模更大或推理更慢。相反，具有更大参数或时间效率的模型，包括PINN、ConvMMD和TSMixer，表现出较差的泛化。这凸显了RODTNet-LT的有效平衡，源于其设计。一方面，其启发式信号重建产生紧凑的退化特征。另一方面，其Mamba编码器提供线性复杂度，不确定性驱动的特征操控预计算流形边界外推和特征校正。\rev{因此，RODTNet-LT以低计算占用实现鲁棒泛化，验证其在汽车电子控制单元上的实时可行性。}
+
+% ablation study 1
+\begin{table*}[t!]
+    \footnotesize
+    \centering
+    \caption{RODTNet在MATR、Tongji、HUST和XJTU数据集上的消融研究结果。}
+    \scalebox{0.8}
+    {
+        \small
+        \begin{threeparttable}
+        \begin{tabular}{lccccccccccc}
+        \toprule
+            & \multicolumn{3}{c}{组件} & \multicolumn{2}{c}{MATR数据集} & \multicolumn{2}{c}{Tongji数据集} & \multicolumn{2}{c}{HUST数据集} & \multicolumn{2}{c}{XJTU数据集} \\
+    \cmidrule{2-12}          & \multicolumn{1}{l}{MC} & \multicolumn{1}{l}{Mamba} & \multicolumn{1}{l}{UDFS} & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+        \midrule
+        基线\tnote{a} &  &  &  & 111.2889  & 17628.7479  & 21.0490  & 926.8474  & 266.2715  & 116654.9141  & 96.2077  & 12405.8422  \\
+        DGBL\tnote{b} &       &       & \checkmark & 23.3242  & 979.1668  & 22.1563  & 852.3195  & 65.1147  & 6879.1396  & 32.4785  & 1900.7478  \\
+        LMCRDR\tnote{c} & \checkmark &       &       & 0.9910  & 1.8321  & 3.2627  & 21.1491  & 0.9775  & 2.8166  & 9.5687  & 163.8348  \\
+        MCRDR\tnote{d} & \checkmark & \checkmark & & \underline{0.6214}  & 1.3798  & \underline{0.8529}  & \underline{1.4767}  & \underline{0.4390}  & \underline{0.4802}  & \underline{4.7762}  & \underline{49.0050}  \\
+        LRODTNet\tnote{e} & \checkmark &  & \checkmark & 0.6734  & \textbf{0.7131} & 2.9669  & 16.7873  & 1.3954  & 3.9988  & 10.6988  & 234.1704  \\
+        RODTNet & \checkmark & \checkmark & \checkmark & \textbf{0.5370} & \underline{1.3636}  & \textbf{0.7820} & \textbf{1.1815} & \textbf{0.3200} & \textbf{0.2935} & \textbf{4.3448} & \textbf{46.0641} \\
+        \bottomrule
+        \end{tabular}%
+        \begin{tablenotes}
+        \item[a] 基线：使用下采样原始循环信号和线性骨干的模型。
+        \item[b] DGBL：增强特征操控策略的基线模型。
+        \item[c] LMCRDR：RODTNet变体，具有线性骨干，无特征操控。
+        \item[d] MCRDR：无特征操控策略的RODTNet变体。
+        \item[e] LRODTNet：具有线性骨干的RODTNet变体。
+    \end{tablenotes}
+    \end{threeparttable}
+    }
+    \label{tab:ablation_1}%
+    \end{table*}%
+    
+    % ablation study 2
+    \begin{table}[htbp]
+    \centering
+    \caption{RODTNet-LT在MATR、Tongji、HUST和XJTU数据集上的消融研究结果。}
+    % \resizebox{\linewidth}{!}{
+    \scalebox{0.7}{
+    \small
+    \begin{adjustbox}{center}
+    {
+        \begin{threeparttable}
+        \begin{tabular}{lcccccccc}
+        \toprule
+        \multicolumn{1}{c}{数据集} & \multicolumn{2}{c}{MATR数据集} & \multicolumn{2}{c}{Tongji数据集} & \multicolumn{2}{c}{HUST数据集} & \multicolumn{2}{c}{XJTU数据集} \\
+    \cmidrule{2-9}    \multicolumn{1}{c}{指标} & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+        \midrule
+        基线\tnote{a} & 5.1276  & 0.5883  & 9.6675  & 1.6127  & 9.4620  & 1.4738  & 20.8255  & 9.4026  \\
+        RODTNet & \underline{1.1207}  & \underline{0.0257}  & \underline{7.3428}  & \underline{0.8164}  & \underline{1.5201}  & \underline{0.0448}  & \textbf{4.4705} & \underline{0.3998}  \\
+        RODTNet-LT\tnote{b}  & \textbf{1.0384} & \textbf{0.0208} & \textbf{3.5394} & \textbf{0.3020} & \textbf{1.0781} & \textbf{0.0195} & \underline{4.5385}  & \textbf{0.3831} \\
+        \bottomrule
+        \end{tabular}%
+        \begin{tablenotes}
+        \item[a] 基线：使用下采样原始循环信号和线性骨干的模型。
+        \item[b] RODTNet-LT：带有LARR模块的RODTNet。
+    \end{tablenotes}
+    \end{threeparttable}}
+    \end{adjustbox}
+    }
+    \label{tab:ablation_study_2}%
+    \end{table}
+
+\begin{figure*}[h]
+    \vspace{-1em}
+    \centering
+    \includegraphics[width=7.16in]{Fig7_sensitivity_analysis_combined.eps}
+    \caption{RODTNet泛化性能的超参数敏感性分析，通过MATR、Tongji、HUST和XJTU数据集上的RMSE评估，研究批次大小、隐藏状态维度、编码器层数和USDF激活阈值变化的影响。}
+    \label{fig:sensitivity}
+    \end{figure*}
+
+\subsection{消融研究}
+
+我们进行消融研究以评估RODTNet和RODTNet-LT中各组件的有效性。表~\ref{tab:ablation_1}报告了RODTNet变体在4个数据集上RUL预测的MAE和MSE结果。相应地，表~\ref{tab:ablation_study_2}呈现了RODTNet和RODTNet-LT在同一数据集上SOH估计任务的这些指标。
+
+\subsubsection{基线}
+
+我们使用完全线性骨干和下采样原始循环信号作为输入建立基线模型。
+
+\subsubsection{DGBL}
+
+我们通过向基线添加UDFS策略获得DGBL模型。我们观察到泛化性能的改进，这证明了我们提出的UDFS在扩展分布边界和拟合OOD退化模式方面的有效性。
+
+\subsubsection{LMCRDR}
+
+我们通过将基线的原始输入替换为使用启发式流形收缩策略重建的输入创建LMCRDR模型。我们观察到性能的改进，证明了我们流形收缩方法对骨干的良好适应性和其在泛化退化模式方面的优越性。
+
+\subsubsection{MCRDR}
+
+然后通过用Mamba替换LMCRDR的线性骨干开发MCRDR模型。我们观察到预测精度的进一步提高，表明Mamba有效提取域不变特征。
+
+\subsubsection{LRODTNet}
+
+我们将LMCRDR与UDFS结合，同时保留线性骨干形成LRODTNet。我们观察到UDFS的添加比LMCRDR提高了性能，从而证明了我们提出的特征合成策略可以扩展具有低内在维度的学习退化表示的边界。
+
+\subsubsection{RODTNet-LT}
+
+对于涉及长尾分布的SOH估计任务，我们通过添加LARR策略获得RODTNet-LT变体。我们观察到RODTNet-LT相比RODTNet实现了更低的泛化误差，证明了LARR在消除头部偏差方面的有效性。\rev{这对高风险电池寿命终止阶段的安全关键监测至关重要。}
+
+\subsection{超参数敏感性分析}
+
+我们在4个数据集上进行敏感性分析，以评估模型性能对批次大小、编码器隐藏维度、编码器层数和UDFS激活阈值变化的敏感性，使用目标域RMSE作为评估指标。
+
+\subsubsection{批次大小}
+
+我们研究批次大小对性能的影响，测试\{32, 64, 128, 256, 512\}。图~\ref{fig:sensitivity}(a)表明，大小为32通常在一般场景下产生最优性能。然而，在MATR任务上，较大批次降低误差，表明足够样本允许近似域偏移，而较小批次更好地捕获其他任务中的退化模式。
+
+\subsubsection{编码器隐藏维度}
+
+我们评估编码器隐藏维度如何影响泛化，测试\{16, 32, 64, 128, 256\}。图~\ref{fig:sensitivity}(b)揭示在Tongji和HUST任务上较大维度改善性能，反映可扩展性。相反，在MATR和XJTU上性能下降，表明过度模型规模可能导致过拟合。
+
+\subsubsection{编码器层数}
+
+我们分析编码器层数对模型规模和泛化的影响，测试\{1, 2, 3, 4, 5\}。图~\ref{fig:sensitivity}(c)表明效果通常与隐藏维度一致，增加层数似乎更容易受到过拟合瓶颈的影响。
+
+\subsubsection{UDFS激活阈值}
+
+我们评估对UDFS激活阈值的敏感性，它影响真实/生成数据比率，测试\{0.0008, 0.004, 0.02, 0.1, 0.5\}。图~\ref{fig:sensitivity}(d)显示随着阈值增加，所有数据集的泛化能力提高，突出了真实源域数据对建模OOD模式的重要性。
+
+我们观察到RODTNet通常对超参数不敏感，除了复杂的XJTU任务。为保持一致比较，我们在任务间固定参数，使用经常最优的批次大小32，以及隐藏维度16和编码器层1以提高计算效率。\rev{值得注意的是，RODTNet即使使用这些优先效率的参数也能保持强劲性能，凸显其为嵌入式车载系统量身定制的设计。}我们选择0.5的UDFS阈值，有效平衡最小泛化误差和降低训练开销。
+
+\section{结论}
+
+\rev{在本文中，我们提出了RODTNet，一种用于车载BMS中鲁棒OOD电池退化建模的新方法，以及其长尾优化变体RODTNet-LT。}
+% 
+首先，我们提出了基于流形收缩的鲁棒退化表示提取策略。它通过结合启发式信号重建和通过Mamba机制生成的潜在动态，实现模式连续性并压缩特征流形。
+% 
+\rev{其次，我们开发了一种不确定性驱动的特征合成方法来应对多样化汽车运行条件引起的域偏移。}该方法使用概率建模将特征统计不确定性与域变化相关联，引导创建域不变特征和多样化OOD示例。
+% 
+最后，我们设计了基于特征分布平滑的长尾感知自适应重平衡细化技术。通过利用特征-标签相关性，它缓解合成特征中的头部偏差，改善对不平衡轨迹的处理。
+% 
+\rev{使用4个LIB老化数据集进行的11个不同OOD泛化任务的全面实验结果证明了所提出的RODTNet和RODTNet-LT相对于14个基线及其20个变体的显著优势，推进了可靠的车载BMS。}
+
+% Despite advancements, real-world battery operation necessitates continuous adaptation as degradation dynamics evolve throughout the lifespan, posing demands beyond initial OOD robustness. Exploring temporal domain adaptation thus presents a promising future direction, aiming to equip models with dynamic online update capabilities for sustained prognostic performance over time.
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv, reference.bib}
+
+% \newpage
+
+% % If you have an EPS/PDF photo (graphicx package needed), extra braces are
+% %  needed around the contents of the optional argument to biography to prevent
+% %  the LaTeX parser from getting confused when it sees the complicated
+% %  $\backslash${\tt{includegraphics}} command within an optional argument. (You can create
+% %  your own custom macro containing the $\backslash${\tt{includegraphics}} command to make things
+% %  simpler here.)
+ 
+% % \vspace{11pt}
+
+% % \bf{If you include a photo:}\vspace{-33pt}
+% \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{fig1}}]{Michael Shell}
+% Use $\backslash${\tt{begin\{IEEEbiography\}}} and then for the 1st argument use $\backslash${\tt{includegraphics}} to declare and link the author photo.
+% Use the author name as the 3rd argument followed by the biography text.
+% \end{IEEEbiography}
+
+% \vfill
+
+\end{document}
