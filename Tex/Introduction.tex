@@ -28,41 +28,61 @@ In this section, we review the related methods including (1) CDLMs and LLMs for 
 
 Physics-based prognostic models derive uncertainty-aware predictions by integrating degradation mechanisms with filtering techniques for state estimation and parameter updating. The employed filters—predominantly Kalman filters and particle filters—leverage inherent Bayesian frameworks to quantify uncertainty through probabilistic inference over system states and noise distributions\cite{chen2003bayesian}, enabling dynamic confidence bounds on predictive results.
 % 2016
-Bressel等人\cite{7386653} propose an extended Kalman filter-based algorithm integrated with the inverse first-order reliability method for SOH and RUL prediction, along with the corresponding confidence intervals.
+% Bressel等人\cite{7386653} propose an extended Kalman filter-based algorithm integrated with the inverse first-order reliability method for SOH and RUL prediction, along with the corresponding confidence intervals.
+文献\cite{7386653}中，Bressel~等人提出了一种基于观测器的预测方法，所提出的方法通过扩展卡尔曼滤波器（Extended Kalman Filter, EKF）建模设备的健康状态和退化动态，基于逆一阶可靠度方法（Inverse First-Order Reliability Method, IFORM）外推健康状态轨迹直至触发预设的失效阈值，从而实现对变功率负载工况下的质子交换膜燃料电池的剩余使用寿命预测，并给出90\%置信区间作为对预测结果的不确定性的量化。
 % 2021
-Kim等人\cite{9032349} propose a prognostic model utilizing a dynamic particle filter which quantifies the uncertainty associated with the battery's end-of-life and adaptively adjusts the parameters of the degradation model.
+% Kim等人\cite{9032349} propose a prognostic model utilizing a dynamic particle filter which quantifies the uncertainty associated with the battery's end-of-life and adaptively adjusts the parameters of the degradation model.
+文献\cite{9032349}中，Kim~等人结合异常检测技术和基于粒子滤波（Particle Filter, PF）的预测方法提出了一种平移核粒子滤波（Shifting Kernel Particle Filter, SKPF）算法，解决了特定循环阶段带有异常退化轨迹的电池的突变特征辨识问题，实现了兼具精度和稳健性的剩余使用寿命预测，所提出方法同样给出预测结果的置信区间。
 % 2021
-Haque and Choi \cite{9113648} propose a prognostic model utilizing a sparse kernel ridge regression-assisted particle filter and quantifie abrupt changes in degradation trajectories by accounting for noise uncertainty.
+% Haque and Choi \cite{9113648} propose a prognostic model utilizing a sparse kernel ridge regression-assisted particle filter and quantifie abrupt changes in degradation trajectories by accounting for noise uncertainty.
+晶体管的可靠应用依赖剩余使用寿命预测，晶体管性能退化具有不确定性、突变性和样本贫化性，这与电池性能退化在数据表现上一致，文献\cite{9113648}中，Haque~和~Choi~提出了一种稀疏核岭回归辅助的粒子滤波（Sparse Kernel Ridge Regression Assisted Particle Filter, SKRR-PF）算法，通过在后验概率密度函数估计的重采样环节引入稀疏核岭回归机制，实现了对晶体管器件导通电阻轨迹突变的识别和剩余使用寿命的预测。
 % 2022
-Ahwiadi and Wang \cite{AHWIADI2022110817} propose an enhanced particle filter model based on evolutionary fuzzy predictors to mitigate sample degeneracy and impoverishment issues while achieving high-precision remaining useful life interval estimation.
+% Ahwiadi and Wang \cite{AHWIADI2022110817} propose an enhanced particle filter model based on evolutionary fuzzy predictors to mitigate sample degeneracy and impoverishment issues while achieving high-precision remaining useful life interval estimation.
+文献\cite{AHWIADI2022110817}中，Ahwiadi~和~Wang~提出了一种增强型粒子滤波（Enhanced Particle Filter, EPF）框架，通过融合增强型粒子机制和演化模糊预测器（Evolving Fuzzy Predictor, EFP），克服基于传统~PF~方法进行电池系统状态估计和寿命预测时由权值退化和粒子多样性丧失导致的建模不确定性，从而实现准确且鲁棒的电池系统健康状态估计和剩余寿命预测。
 % 2023
-Rezaei等人\cite{REZAEI2023107883} develope a fuzzy robust two-stage unscented Kalman filter to estimate cycle capacity and quantify uncertainty in a phased manner using the noise covariance matrix.
+% Rezaei等人\cite{REZAEI2023107883} develope a fuzzy robust two-stage unscented Kalman filter to estimate cycle capacity and quantify uncertainty in a phased manner using the noise covariance matrix.
+文献\cite{REZAEI2023107883}中，Rezaei~等人提出了一种模糊鲁棒两阶段无迹卡尔曼滤波器（Fuzzy Robust Two-Stage Unscented Kalman Filter, FRTSUKF），实现对缺乏先验统计特性的电池模型进行不确定性建模，其在第一阶段基于模糊推理系统剔除测量噪声，初步估计电池模型状态变量，在第二阶段进行不确定性量化，并基于量化结果补偿电池性能退化向状态变量引入的不确定性。
 % 2024
-Cui等人\cite{10385053} design a prognostic model based on dual unscented particle filters to address uncertainties in dynamic degradation trajectories and achieve robust prediction.
+% Cui等人\cite{10385053} design a prognostic model based on dual unscented particle filters to address uncertainties in dynamic degradation trajectories and achieve robust prediction.
+旋转机械设备维护过程同样存在状态估计和寿命预测需求，且设备性能退化行为与电池系统一致。文献\cite{10385053}中，Cui~等人提出了一种双无迹粒子滤波器（Dual Unscented Particle Filter, DUPF），通过集成双流异构模型并设计全局融合策略，实现跨时间尺度轴承退化特征，并通过显式量化动态贝叶斯最大失效概率提升了预测分布的统计可靠性。
 % 2024
-Wang等人\cite{10672556} propose a zonotopic Kalman filter-based method with physics constraints to achieve online capacity interval estimation.
+% Wang等人\cite{10672556} propose a zonotopic Kalman filter-based method with physics constraints to achieve online capacity interval estimation.
+文献\cite{10672556}中，为了实现电池在线容量估计，Wang~等人提出了一种物理约束中心对称多胞形卡尔曼滤波器（Physics-Constrained Zonotopic Kalman Filter, PCZKF），其中所提出的滤波器实现电池模型的参数及其区间估计的联合更新，所提出的物理约束则用于应对电池容量再生挑战，所提出的方法相比传统基于~KF~的方法能够输出更加精确容量预测轨迹和更加收敛的容量置信区间。
 
 （2）Uncertainty-aware Data-driven Prognostic Models % \label{subsec:data-driven_models}
 
 Uncertainty-aware data-driven prognostic models can be classified into statistical learning-based methods \cite{van2021bayesian, gruber2025sourcesuncertaintysupervisedmachine} and deep learning-based methods \cite{ABDAR2021243}. Statistical learning approaches rely on explicit probabilistic models for analytical or approximate inference. In contrast, deep learning methods address uncertainty by leveraging the statistical properties of randomized parameter spaces or output distributions.
 % 
-Wang等人\cite{rvr_rul_9552552} introduce a prognostic method based on relevance vector regression (RVR), while Richardson等人\cite{gpr_soh_8263147} employ Gaussian process regression (GPR) for SOH estimation.
+相关向量回归（Relevance Vector Regression, RVR）和高斯过程回归（Gaussian Process Regression, GPR）是两种典型的具有不确定性量化能力的统计学习方法，被广泛应用在状态估计和寿命预测问题中。
+% Wang等人\cite{rvr_rul_9552552} introduce a prognostic method based on relevance vector regression (RVR), while Richardson等人\cite{gpr_soh_8263147} employ Gaussian process regression (GPR) for SOH estimation.
+文献\cite{rvr_rul_9552552}中，Wang~等人针对传统~RVR~方法局限于一维退化过程和单变量观测数据的问题，提出了一种基于动态多元相关向量回归（Dynamic Multivariate Relevance Vector Regression, DMRVR）的退化轨迹跟踪和剩余寿命预测框架，所提出方法考虑多元物理环境因素，构建多步回归架构以表征退化动力学，并依据RVR中间结果的矩阵分布基于加速梯度算法优化求解过程。
 % 
-Zhang等人\cite{bbb_rul_9738999} develop a Bayesian mixture neural network (BMNN) to capture the distribution of prediction results. 
+文献\cite{gpr_soh_8263147}中，Richardson~等人面向恒流充放电工况提出了一种基于高斯过程回归的原位容量数据驱动诊断方法（Gaussian Process Regression for \textit{In Situ} Capacity Estimation, GP-ICE），其在特定的电压窗口内，仅需提取短至十秒的连续恒流工况片段即可实现高精度电池健康状态估计。所提出的方法是一种贝叶斯非参数化回归方法，能够输出预测结果的不确定性作为对数据复杂性的表征。
+% 
+% Zhang等人\cite{bbb_rul_9738999} develop a Bayesian mixture neural network (BMNN) to capture the distribution of prediction results. 
+文献\cite{bbb_rul_9738999}中，Zhang~等人提出了一种贝叶斯混合神经网络（Bayesian Mixture Neural Network, BMNN）以应对因内部反应非线性和高混杂性导致的剩余寿命预测不确定性大的问题。所提出网络引入准格雷姆角场（Quasi-Gramian Angular Field, Q-GAF）进行信号预处理以增强先验分布辨识能力，并融合贝叶斯卷积神经网络（Bayesian Convolutional Neural Network, BCNN）和贝叶斯长短期记忆网络（Bayesian Long Short-Term Memory Network, B-LSTM），由变分贝叶斯推断层输出预测结果的后验概率分布。
 %
-Li等人\cite{capsnet_rul_li2024sensor} propose a dropout-based remaining useful life (RUL) prediction framework ，命名为SACN.
+% Li等人\cite{capsnet_rul_li2024sensor} propose a dropout-based remaining useful life (RUL) prediction framework ，命名为SACN.
+为了解决考虑不确定性的预测方法存在的模型合理性和可解释性欠缺的问题，文献\cite{capsnet_rul_li2024sensor}中，Li~等人提出了一种考虑传感器的胶囊神经网络（Sensor-Aware Capsule Neural Network, SACN），这一工作提出了基于胶囊神经元激活水平的蒙特卡洛随机失活机制（Capsule-Activation-Based Monte-Carlo Dropout, CA-MCD），并开展了考虑跨传感器相关特征分布的不确定性归因研究。
 %
-Zhang等人\cite{ensemble2_soh_10102497} combine a multi-model fusion method and a deep ensemble neural network to quantify SOH estimation uncertainty，命名为DeNN.
+% Zhang等人\cite{ensemble2_soh_10102497} combine a multi-model fusion method and a deep ensemble neural network to quantify SOH estimation uncertainty，命名为DeNN.
+文献\cite{ensemble2_soh_10102497}中，Zhang~等人针对包含复杂环境噪声的动力电池循环信号，提出一种面向任意使用工况的数据驱动多模型融合健康状态评估方法，命名为DeNN。该方法利用模型集成（Model Ensemble, ME）技术并利用~KF~实现多个模型的输出的融合，既实现了多样负载工况下准确的健康状态估计，又实现了不确定性量化。
 %
-Zhou等人\cite{mcdropout_autoencoder_10412192} design a Bayesian deep autoencoder (BDAE) with Monte Carlo dropout (MCD) and variational inference to measure the uncertainty in SOH estimates.
+% Zhou等人\cite{mcdropout_autoencoder_10412192} design a Bayesian deep autoencoder (BDAE) with Monte Carlo dropout (MCD) and variational inference to measure the uncertainty in SOH estimates.
+文献\cite{mcdropout_autoencoder_10412192}中，Zhou~等人提出了一种基于MCD的贝叶斯深度自编码器（Bayesian Deep Autoencoder, BDAE）以克服锂离子电池复杂且高度时变的实际运行工况带来的健康诊断挑战。该编码器首先进行自动化退化特征提取，继而开展优选输入数据筛选并构建回归模型，最后对预测结果关联的不确定性实施定量表征。
 %
-Nemani等人\cite{nemani2023uncertainty} propose a strategy focusing on the spectral-normalized neural Gaussian process (SNGP) for deterministic uncertainty quantification.
+% Nemani等人\cite{nemani2023uncertainty} propose a strategy focusing on the spectral-normalized neural Gaussian process (SNGP) for deterministic uncertainty quantification.
+基于蒙特卡洛随机失活机制（Monte-Carlo Dropout, MCD）的确定性-随机模型变换方法需要多次后采样，不利于深度学习模型的实时应用。文献\cite{nemani2023uncertainty}中，Nemani~等人综述了BDL的主要分支，并提出了一种基于谱归一化神经高斯过程（Spectral-Normalized Neural Gaussian Process, SNGP）的考虑不确定性的寿命预测框架。该框架将铺归一化应用于模型隐藏的残差层并使用高斯过程层替换全连接层，从而实现不确定性量化，并具有与单一确定性网络相当的推理延迟水平。
 %
-Lin and Li\cite{9729404} introduce a Bayesian neural networks (BNN) framework utilizing Concrete Dropout for RUL prediction, in which an iterative calibration is integrated by combining isotonic regression with standard deviation (STD) scaling.
+% Lin and Li\cite{9729404} introduce a Bayesian neural networks (BNN) framework utilizing Concrete Dropout for RUL prediction, in which an iterative calibration is integrated by combining isotonic regression with standard deviation (STD) scaling.
+文献\cite{9729404}中，Lin~和~Li~面向可靠性决策对模型预测结果全局置信水平准确量化的需求，提出了一种基于贝叶斯深度学习（Bayesian Deep Learning, BDL）的剩余使用寿命预测框架。所提出的框架首先给出认知不确定性和偶然不确定性的数学表征和解耦方法，继而建立基于长短期记忆神经网络（Long-Short Term Memory Network, LSTM）的贝叶斯模型，该框架最后提出了一种迭代式校准策略，基于保序回归和标准差缩放（Standard Deviation Scaling, SDS）技术实现对认知不确定性、偶尔不确定性和全局预测不确定性的联合校准。
 %
-Ke等人\cite{10217044} develop a MCD-based BNN model for LIBs' knee capacity prediction and also used the STD scaling method for uncertainty calibration.
+% Ke等人\cite{10217044} develop a MCD-based BNN model for LIBs' knee capacity prediction and also used the STD scaling method for uncertainty calibration.
+文献\cite{10217044}中，Ke~等人提出了一种基于贝叶斯神经网络（Bayesian Neural Network, BNN）的拐点-拐点容量早期预测框架。该框架引入一种基于容量矩阵滑动窗口的退化特征提取机制，继而基于BNN和MCD实现锂离子电池缓慢老化-加速老化拐点的容量预测及对应的不确定性量化，最后基于SDS技术标定所量化的不确定性。
 %
-Jiang等人\cite{10391265} present a neural network based on Bayes-by-Backprop strategy with uncertainty calibration to estimate SOH of second-life batteries.
+% Jiang等人\cite{10391265} present a neural network based on Bayes-by-Backprop strategy with uncertainty calibration to estimate SOH of second-life batteries.
+储能系统是锂离子电池的一个重要应用领域，其使用电动汽车退役锂电池，也即梯次利用锂电池。在这个应用场景中，大规模处于不同生命周期的锂电池通过串联或并联在一起提供均衡稳定电能。储能系统中电池初始健康状态不尽相同，且不同局部的锂电池经历不同的充放电工况，导致了数据驱动的健康状态估计模型的评估不确定性。
+针对此，文献\cite{10391265}中，Jiang~等人提出了一种梯次利用锂离子电池健康状态评估方法，该方法设计了一种联合特征提取策略以从电池循环序列中结构包含工况无关退化机理的健康状态表征信息，随后，基于具备不确定性校准能力的BNN生成全局健康状态估计结果，并定量表征模型评估过程的不确定性。
 
 （3）研究的局限性
 
