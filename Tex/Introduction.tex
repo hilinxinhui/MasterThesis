@@ -98,32 +98,48 @@ To address the aforementioned issues, we propose HSSTT, a method for trustworthy
 
 \subsection{面向分布漂移的退化建模方法研究现状}\label{subsec:degradation_modeling}
 
-（1）{Pretraining-finetuning-based Degradation Modeling}
+（1）{基于预训练-微调范式的退化建模}
 
 % In \cite{LI2021116410}, Li等人 propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
-In \cite{9343713}, Che等人 introduce an online self-calibrating model for RUL prediction using Gaussian process regression, long short-term memory neural network (LSTM), and a pretraining-finetuning strategy.
-In \cite{LIU2025115347}, Liu等人 fine-tune a bidirectional LSTM-Mamba2 model with differential voltage features to achieve SOH estimation across batteries with different operating conditions and electrode materials.
-In \cite{D2EE01676A}, Ma等人 propose a real-time personalized battery degradation modeling framework named CRNN, achieving joint prediction of SOH and RUL across operating conditions.
-In \cite{wang2024physics}, Wang等人 propose a physics-informed neural network (PINN) for battery degradation modeling and achieve cross-dataset battery health state prediction using the pretraining-finetuning paradigm.
+针对在线电池容量估计对轻量化模型的需求，文献\cite{LI2021116410}中，Li~等人提出了一种轻量化且可泛化的卷积神经网络（Convolutional Neural Networks, CNN），该方法基于快速递归算法对目标电池上的CNN模型执行后剪枝，通过基于预训练-微调的策略实现从大规模电池数据集训练所得CNN模型参数到目标电池稀缺数据集的定向迁移，加强模型部署时轻量化。
+电动汽车运行过程中存在的多种噪声扰动影响数据驱动模型状态估计的鲁棒性，文献\cite{9372902}中，Bhattacharjee~等人讨论了这种潜在的影响并提出了一种基于一维~CNN和预训练-微调策略的迁移学习框架，仅利用少量目标域的观测数据即完成充分的特征空间映射，实现了跨数据集的电池荷电状态估计。
+% In \cite{9343713}, Che等人 introduce an online self-calibrating model for RUL prediction using Gaussian process regression, long short-term memory neural network (LSTM), and a pretraining-finetuning strategy.
+文献\cite{9343713}中，Che~等人面向设备前瞻性维护和电池梯次利用提出一种基于优化健康因子与融合迁移学习的在线模型校正剩余寿命预测方法，该方法基于GPR自动搜索电池服役寿命终点（End of Life, EOL），通过微调门控循环神经网络（Gated Recurrent Neural Network, GRNN）实现高精度剩余寿命预测，并提出一种自校正策略迭代式提高模型在系统运行周期内预测能力。
+% In \cite{LIU2025115347}, Liu等人 fine-tune a bidirectional LSTM-Mamba2 model with differential voltage features to achieve SOH estimation across batteries with different operating conditions and electrode materials.
+为了应对多源电池数据特征分布异质性和实验室工况和实际运行工况之间存在显著差异的现状，文献\cite{LIU2025115347}中，Liu~等人融合双向长短期记忆神经网络（Bidirectional Long Short-Term Memory, Bi-LSTM）和~Mamba2~架构以同时捕捉长期和短期退化特征，同时通过在目标域上的精细微调，实现了有效退化知识迁移。
+% In \cite{D2EE01676A}, Ma等人 propose a real-time personalized battery degradation modeling framework named CRNN, achieving joint prediction of SOH and RUL across operating conditions.
+文献\cite{D2EE01676A}中，Ma~等人提出面向健康状态和剩余寿命联合预测的电芯个性化估计框架，命名为~CRNN。该方法针对实际应用中用例偏好差异、运行模式多样以及历史观测有限等问题，引入基于预训练-微调范式的深度迁移结构，从多电池充放电轨迹中抽取时序退化特征，并在有限循环数据条件下对新放电策略下的健康状态与剩余可用寿命进行在线推断，从而实现对个体电芯的实时健康管理。
+% In \cite{wang2024physics}, Wang等人 propose a physics-informed neural network (PINN) for battery degradation modeling and achieve cross-dataset battery health state prediction using the pretraining-finetuning paradigm.
+文献\cite{wang2024physics}中，Wang~等人提出基于物理信息神经网络（Physics-Informed Neural Network, PINN）的可学习动力学模块。该方法从经验退化机理和状态方程描述电池老化，并由神经网络学习退化动力学，使模型在不同电池类型及充放电条件下保持高精度与稳定性，同时，将这种方法应用在退化模式迁移问题中，基于预训练-微调范式实现跨数据集健康状态迁移估计。
+出于隐私保护的需求，来自不同设备或系统的电池的异构循环数据不可直接共享，通常通过联邦学习（Federated Learning, FL）策略训练具有全局泛化能力的模型。为了解决异构电池系统聚合过程中存在的数据统计异构性、模型动态适应性、复杂噪声扰动和网络安全工具防御韧性等挑战，文献\cite{10886998}中，Wang~等人提出了一种异构电池集群的隐私保护鲁棒健康状态估计方法。首先，该方法提出了一种融合统计特征和系统效用的客户端选择机制，基于~Epsilon~贪心策略吸纳异构节点，其次，提出了一种基于基于性能差异的加权聚合机制，最后，引入基于差异分布的个性化机制增强本地模型的性能。
 
-（2）{Domain Adaptation-based Degradation Modeling}
+（2）{基于域自适应范式的退化建模}
 
-In \cite{9788003}, Ma等人 propose a method named ConvMMD that aligns source and target domains by minimizing the maximum mean discrepancy of lower-order moments between them.
-In \cite{HAN2022230823}, Han等人 present a model requiring only a few target samples, achieved by incorporating a domain adaptation layer into LSTM, known as LSTM-DA.
-In \cite{9560040}, Ye等人 design a method named DDAN that realizes unsupervised degradation feature alignment via adversarial training across domains.
-In \cite{10029904}, Lu等人 develop a two-stage prognostic framework named DKTL, which combines degradation mechanisms and achieves knowledge transfer of degradation patterns from synthetic data to real data.
-In \cite{WANG2023108897}, Wang等人 develope a model with a domain invariant-specific feature decoupling strategy and a degradation trend preservation strategy to align degradation patterns, known as DR-Net.
+% In \cite{9788003}, Ma等人 propose a method named ConvMMD that aligns source and target domains by minimizing the maximum mean discrepancy of lower-order moments between them.
+文献\cite{9788003}中，Ma~等人提出跨工况的电池个性化退化预测模型，命名为~ConvMMD。该方法基于知识迁移思想，利用卷积式深度网络从原始充电电压轨迹中自动提取特征，并通过最大均值差异（Maximum Mean Discrepancy, MMD）度量构造域间对齐的连续量预测形式，以缩减源电池与目标电池数据分布差异。
+% In \cite{HAN2022230823}, Han等人 present a model requiring only a few target samples, achieved by incorporating a domain adaptation layer into LSTM, known as LSTM-DA.
+文献\cite{HAN2022230823}中，Han~等人构建电池跨域容量预测方法，命名为~LSTM-DA。该方法针对训练与测试电池退化轨迹分布不一致的问题，引入深层长短记忆结构从端电压与工作电流序列中学习容量演化特征，并在高层特征空间叠加基于均值匹配的~MMD~对齐模块，以缓解源域与目标域退化表征之间的偏移，从而实现对不同电池个体的跨域在线容量评估。
+% In \cite{9560040}, Ye等人 design a method named DDAN that realizes unsupervised degradation feature alignment via adversarial training across domains.
+文献\cite{9560040}中，Ye~和Yu~针对锂离子电池退化预测中的跨工况分布偏移问题，提出基于深层跨域对抗结构的预测模型，命名为~DDAN。该模型通过构建无标注特征对齐指标将 MMD 与相关结构对齐机制联合，并辅以生成式对抗训练策略，引导特征编码器学习跨域稳定表征，同时采用稠密双向门控循环单元（Dense Bidirectional Gated Recurrent Unit, D-BiGRU）从传感信号中抽取时序退化特征，从而提升在多工况场景下的电池退化预测能力。
+% In \cite{10029904}, Lu等人 develop a two-stage prognostic framework named DKTL, which combines degradation mechanisms and achieves knowledge transfer of degradation patterns from synthetic data to real data.
+文献\cite{10029904}中，Lu~等人提出结合退化知识迁移的预测方法，命名为~DKTL。该方法利用退化机理与工况条件构建面向性能完好度估计的条件时序对抗生成网络，并针对合成与真实锂离子电池循环数据分布不匹配的问题，构建退化机理回归模型，通过基于二阶统计矩对齐的跨域策略实现源域与目标域退化表征的一致化。
+% In \cite{WANG2023108897}, Wang等人 develope a model with a domain invariant-specific feature decoupling strategy and a degradation trend preservation strategy to align degradation patterns, known as DR-Net.
+针对锂离子电池在多种化学体系及工况下容量评估的跨域偏移问题，文献\cite{WANG2023108897}，Wang~等人提出特征解缠与趋势保持网络，命名为~DR-Net。该网络从监测电压电流序列中抽取特征，在表征空间中区分域无关共享表征与域特异私有表征，并保留容量退化趋势信息，从而在训练域与应用域分布不一致时仍能实现稳健容量预测。
 
-（3）{Domain Generalization-based Degradation Modeling}
+（3）{基于域泛化的退化建模}
 
 Domain generalization paradigm involves three main categories, namely data manipulation, representation learning, and specific learning strategy \cite{9782500}.
 % In \cite{CHEN2024234696}, Chen等人 develop a dual-branch feature extractor to process domain samples with mixed and separated sources. By leveraging a domain discriminator and a health state estimator, their approach enables domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
 In \cite{CHEN2024234696}, Chen等人 develop a dual-branch network, a domain discriminator and a health state estimator to learn domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
 In \cite{TAN2024103725}, Tan等人 design a meta learning-based domain generalization method named MAGNet. It couples a two-phase meta-optimization strategy with RUL-driven health prediction, enforcing domain-invariant representation learning through task-aligned gradient synchronization. % promoting the learning of cross-domain consistent representations.
-In \cite{liu2024itransformer}, Liu等人 propose a method designed to obtain robust representations against OOD temporal patterns through the inclusion of a transposed attention module and a feed-forward module, known as iTransformer.
-In \cite{nie2023a}, Nie等人 present a sequence modeling framework resistant to pattern drift known as PatchTST.
-% The model employs subsequence segmentation and channel-independent modeling to enhance its adaptability to dynamic temporal patterns.
-In \cite{chen2023tsmixer}, Chen等人 develop a linear model capable of efficiently extracting spatio-temporal dependencies without relying on task-specific prior knowledge, known as TSMixer.
+% In \cite{liu2024itransformer}, Liu等人 propose a method designed to obtain robust representations against OOD temporal patterns through the inclusion of a transposed attention module and a feed-forward module, known as iTransformer.
+% 文献\cite{liu2024itransformer}中，Liu~等人提出倒置结构的~Transformer~预测框架。该方法通过重排时间维和变量维，将时间点嵌入为变量片段，在片段上施加自注意以刻画多元相关性，并在片段中配置前馈子网络提取非线性表征，从而缓解传统基于时间片表示的~Transformer~在长观测窗口下的混叠与算力开销。
+文献\cite{TAN2024103725}中，Tan~等人针对电池退化轨迹的可靠预测面临的挑战，构建了一种基于元学习的退化泛化方法，命名为MAGNet。该方法以基于~Transformer~的网络作为骨干网络以高效提取退化特征。该方法通过元划分模拟跨工况分布差异，通过多阶段交叉训练和误差联合最小化策略驱动骨干网络学习全局鲁棒退化表征。该方法设计并嵌入了任务驱动的域泛化模块，基于多任务联合学习，将退化先验注入骨干网络，从而增强模型分布外泛化能力。
+% In \cite{nie2023a}, Nie等人 present a sequence modeling framework resistant to pattern drift known as PatchTST.
+% % The model employs subsequence segmentation and channel-independent modeling to enhance its adaptability to dynamic temporal patterns.
+文献\cite{nie2023a}中，Nie~等人构建序列依赖的片段化时序~Transformer~框架，命名为~PatchTST。该方法通过将原始时间序列划分为若干子序列片段单元作为注意编码网络的输入，并采用通道独立建模策略在各变量间共享嵌入映射与注意权重，从而在保留局部语义结构的同时显著降低注意映射的计算与存储开销并扩展可感知的历史数据范围。
+% In \cite{chen2023tsmixer}, Chen等人 develop a linear model capable of efficiently extracting spatio-temporal dependencies without relying on task-specific prior knowledge, known as TSMixer.
+文献\cite{chen2023tsmixer}中，Chen~等人提出多序列混合器，命名为~TSMixer，通过堆叠多层前馈网络并在时间轴与特征维度上执行混合变换，分别进行时间混合和特征混合，并通过时序投影步骤生成连续或单一时间步信息，从而有效挖掘跨序列信息。该方法结构上完全基于前馈网络，在迁移效率上具有显著优势。
 
 （4）研究的局限性
 

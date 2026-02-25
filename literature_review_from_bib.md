@@ -139,7 +139,6 @@
 - **摘要**: Remaining useful life (RUL) is one of the essential ingredients in the battery management system. However, due to the characteristic of the dynamic and time-varying electrochemical system with nonlinear and complicated internal mechanisms, the uncertainty of RUL estimation has been expanded, and it is difficult to give an accurate time to reach the end of life. This article proposes the Bayesian mixture neural network (BMNN), a probabilistic deep learning method, to obtain more accurate RUL prediction and provide uncertainty estimation, while the quasi-Gramian angular field (Q-GAF) beneficial to identify prior distribution is utilized to transform time-series sequence into temporal images. BMNN consists of the Bayesian convolutional neural network (BCNN) extracting features in temporal images and Bayesian long short-term memory (B-LSTM) learning correlation between retention capacity and other degradation inducements. After concatenating two terms, the variational Bayesian neural network outputs the distribution of prediction results. In the experimental stage, the performance of the proposed method is validated on four different lithium-ion battery datasets and demonstrates higher stability, lower uncertainty, and more accuracy than other methods.
 - **论文中的描述**: Zhang et al. develop a Bayesian mixture neural network (BMNN) to capture the distribution of prediction results.
 <!-- 文献\cite{bbb_rul_9738999}中，Zhang~等人提出了一种贝叶斯混合神经网络（Bayesian Mixture Neural Network, BMNN）以应对因内部反应非线性和高混杂性导致的剩余寿命预测不确定性大的问题。所提出网络引入准格雷姆角场（Quasi-Gramian Angular Field, Q-GAF）进行信号预处理以增强先验分布辨识能力，并融合贝叶斯卷积神经网络（Bayesian Convolutional Neural Network, BCNN）和贝叶斯长短期记忆网络（Bayesian Long Short-Term Memory Network, B-LSTM），由变分贝叶斯推断层输出预测结果的后验概率分布。 -->
-  
 
 ### [11] capsnet_rul_li2024sensor
 - **标题**: Sensor-aware CapsNet: Towards trustworthy multisensory fusion for remaining useful life prediction
@@ -266,8 +265,9 @@
 - **卷期**: 285 ()
 - **页码**: 
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Online battery capacity estimation is a critical task for battery management system to maintain the battery performance and cycling life in electric vehicles and grid energy storage applications. Convolutional Neural Networks, which have shown great potentials in battery capacity estimation, have thousands of parameters to be optimized and demand a substantial number of battery aging data for training. However, these parameters require massive memory storage while collecting a large volume of aging data is time-consuming and costly in real-world applications. To tackle these challenges, this paper proposes a novel framework incorporating the concepts of transfer learning and network pruning to build compact Convolutional Neural Network models on a relatively small dataset with improved estimation performance. First, through the transfer learning technique, the Convolutional Neural Network model pre-trained on a large battery dataset is transferred to a small dataset of the targeted battery to improve the estimation accuracy. Then a contribution-based neuron selection method is proposed to prune the transferred model using a fast recursive algorithm, which reduces the size and computational complexity of the model while maintaining its performance. The proposed model is capable of achieving fast online capacity estimation at any time, and its effectiveness is verified on a target dataset collected from four Lithium iron phosphate battery cells, and the performance is compared with other Convolutional Neural Network models. The test results confirm that the proposed model outperforms other models in terms of accuracy and computational efficiency, achieving up to 68.34% model size reduction and 80.97% computation savings.
 - **论文中的描述**: Li et al. propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
+<!-- 针对在线电池容量估计对轻量化模型的需求，文献\cite{LI2021116410}中，Li~等人提出了一种轻量化且可泛化的卷积神经网络（Convolutional Neural Networks, CNN），该方法基于快速递归算法对目标电池上的CNN模型执行后剪枝，通过基于预训练-微调的策略实现从大规模电池数据集训练所得CNN模型参数到目标电池稀缺数据集的定向迁移，加强模型部署时轻量化。 -->
 
 ### [2] 9372902
 - **标题**: Estimating State of Charge for xEV Batteries Using 1D Convolutional Neural Networks and Transfer Learning
@@ -277,8 +277,9 @@
 - **卷期**: 70 (4)
 - **页码**: 3123-3135
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: In this paper we propose a one-dimensional convolutional neural network (CNN)-based state of charge estimation algorithm for electric vehicles. The CNN is trained using two publicly available battery datasets. The influence of different types of noises on the estimation capabilities of the CNN model has been studied. Moreover, a transfer learning mechanism is proposed in order to make the developed algorithm generalize better and estimate with an acceptable accuracy when a battery with different chemical characteristics than the one used for training the model, is used. It has been observed that using transfer learning, the model can learn sufficiently well with significantly less amount of battery data. The proposed method fares well in terms of estimation accuracy, learning speed and generalization capability.
 - **论文中的描述**: Bhattacharjee et al. utilize finetune 1D CNN to facilitate state estimation for varying battery chemistries.
+<!-- 电动汽车运行过程中存在的多种噪声扰动影响数据驱动模型状态估计的鲁棒性，文献\cite{9372902}中，Bhattacharjee~等人讨论了这种潜在的影响并提出了一种基于一维~CNN和预训练-微调策略的迁移学习框架，仅利用少量目标域的观测数据即完成充分的特征空间映射，实现了跨数据集的电池荷电状态估计。 -->
 
 ### [3] 9343713
 - **标题**: Predictive Battery Health Management With Transfer Learning and Online Model Correction
@@ -288,8 +289,10 @@
 - **卷期**: 70 (2)
 - **页码**: 1269-1277
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Significant progress has been made in transportation electrification in recent years. As the main energy storage device, lithium-ion batteries are one of the key components that need to be properly managed. The remaining useful life, which represents battery health, has attracted increasing attention. Because accurate and robust predictions provide important information for predictive maintenance and cascade utilization. This paper proposes a novel method to predict remaining useful life based on the optimized health indicators and online model correction with transfer learning. Gaussian process regression is used to optimize the threshold for health indicators to determine the end of life, and a usefulness evaluation strategy is proposed to assess the health indicators. Then, a combination of transfer learning and gated recurrent neural network is designed to predict the remaining useful life based on the optimized health indicators directly, which can promote online applications. The prediction model initially trained based on a relevant battery is further fine-tuned according to the early degradation cycling data of the test battery to provide accurate predictions. Moreover, a self-correction strategy is proposed to retrain the regression models so that the models can gradually reach the optimal prediction performance during the operating cycles, which could not be achieved by traditional methods. The recommended input sequence lengths for potential applications are discussed. The method is verified by experiments of a batch of batteries under fast charging conditions, and the results show that, after fine-tuning, the proposed method predicts remaining useful life with an error of fewer than 5 cycles.
 - **论文中的描述**: Che et al. introduce an online self-calibrating model for RUL prediction based on Gaussian process regression, long short-term memory neural network, and a pretraining-finetuning strategy.
+
+文献\cite{9343713}中，Che~等人面向设备前瞻性维护和电池梯次利用提出一种基于优化健康因子与融合迁移学习的在线模型校正剩余寿命预测方法，该方法基于GPR自动搜索电池服役寿命终点（End of Life, EOL），通过微调门控循环神经网络（Gated Recurrent Neural Network, GRNN）实现高精度剩余寿命预测，并提出一种自校正策略迭代式提高模型在系统运行周期内预测能力。
 
 ### [4] LIU2025115347
 - **标题**: Battery state of health estimation using a novel BiLSTM-Mamba2 network with differential voltage features and transfer learning
@@ -299,8 +302,9 @@
 - **卷期**: 110 ()
 - **页码**: 
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Currently, most data-driven methods for estimating the state of health (SOH) of lithium-ion batteries extract features directly from charge-discharge cycles. However, these features often fail to accurately reflect the battery's internal aging mechanisms. Furthermore, significant differences in feature distributions across various battery datasets, along with the challenge of obtaining sufficient cycle data from practical applications, limit the generalization ability of conventional models. To address these challenges, we first introduce a novel differential voltage feature, extracted from partial charging data. Additionally, considering the coupling between the state of charge (SOC) and SOH, we employ the new Mamba2 model to thoroughly explore both local and global features of SOH, achieving efficient SOH estimation. Finally, using a fine-tuning strategy, we effectively eliminate differences in sample distributions across datasets, enabling successful transfer learning from the source domain to the target domain. Experimental results show that our model achieved MAE and RMSE of 1.31 % and 1.71 %, respectively, for SOH estimation in the source domain, demonstrating higher accuracy compared to other methods. In the target domain, the model generated 1,226,900 sets of prediction samples, with 78.5 % of the samples having an absolute error within 3 %, indicating the model's strong generalization capability.
 - **论文中的描述**: Liu et al. fine-tune a bidirectional long short-term memory (BiLSTM)-Mamba2 model based on differential voltage features to achieve SOH estimation across batteries with different operating conditions and electrode materials.
+<!-- 为了应对多源电池数据特征分布异质性和实验室工况和实际运行工况之间存在显著差异的现状，文献\cite{LIU2025115347}中，Liu~等人融合双向长短期记忆神经网络（bidirectional long short-term memory, Bi-LSTM）和~Mamba2~架构以同时捕捉长期和短期退化特征，同时通过在目标域上的精细微调，实现了有效退化知识迁移。 -->
 
 ### [5] D2EE01676A
 - **标题**: Real-time personalized health status prediction of lithium-ion batteries using deep transfer learning
@@ -310,8 +314,9 @@
 - **卷期**: 15 ()
 - **页码**: 4083-4094
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Real-time and personalized lithium-ion battery health management is conducive to safety improvement for end-users. However, personalized prognostic of the battery health status is still challenging due to diverse usage interests, dynamic operational patterns and limited historical data. We generate a comprehensive dataset consisting of 77 commercial cells (77 discharge protocols) with over 140 000 charge–discharge cycles—the largest dataset to our knowledge of its kind, and develop a transfer learning framework to realize real-time personalized health status prediction for unseen battery discharge protocols, at any charge–discharge cycle. Our method can achieve mean testing errors of 0.176% and 8.72% for capacity estimation and remaining useful life (RUL) prediction, respectively. Additionally, the proposed framework can leverage the knowledge from two other well-known battery datasets, with a variety of charge configurations and a different battery chemistry respectively, to reliably estimate the capacity (0.328%/0.193%) and predict the RUL (9.80%/9.90%) of our cells. This study allows end users to tailor battery consumption plans and motivates manufacturers to improve battery designs.
 - **论文中的描述**: Ma et al. propose a real-time personalized battery degradation modeling framework named CRNN, based on convolutional-recurrent neural network, achieving joint prediction of SOH and RUL across operating conditions.
+<!-- 文献\cite{D2EE01676A}中，Ma~等人提出面向健康状态和剩余寿命联合预测的电芯个性化估计框架，命名为~CRNN。该方法针对实际应用中用例偏好差异、运行模式多样以及历史观测有限等问题，引入基于预训练-微调范式的深度迁移结构，从多电池充放电轨迹中抽取时序退化特征，并在有限循环数据条件下对新放电策略下的健康状态与剩余可用寿命进行在线推断，从而实现对个体电芯的实时健康管理。 -->
 
 ### [6] wang2024physics
 - **标题**: Physics-informed neural network for lithium-ion battery degradation stable modeling and prognosis
@@ -321,8 +326,10 @@
 - **卷期**: 15 ()
 - **页码**: 
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Accurate state-of-health (SOH) estimation is critical for reliable and safe operation of lithium-ion batteries. However, reliable and stable battery SOH estimation remains challenging due to diverse battery types and operating conditions. In this paper, we propose a physics-informed neural network (PINN) for accurate and stable estimation of battery SOH. Specifically, we model the attributes that affect the battery degradation from the perspective of empirical degradation and state space equations, and utilize neural networks to capture battery degradation dynamics. A general feature extraction method is designed to extract statistical features from a short period of data before the battery is fully charged, enabling our method applicable to different battery types and charge/discharge protocols. Additionally, we generate a comprehensive dataset consisting of 55 lithium-nickel-cobalt-manganese-oxide (NCM) batteries. Combined with three other datasets from different manufacturers, we use a total of 387 batteries with 310,705 samples to validate our method. The mean absolute percentage error (MAPE) is 0.87%. Our proposed PINN has demonstrated remarkable performance in regular experiments, small sample experiments, and transfer experiments when compared to alternative neural networks. This study highlights the promise of physics-informed machine learning for battery degradation modeling and SOH estimation.
 - **论文中的描述**: Wang et al. propose a physics-informed neural network (PINN) for battery degradation modeling and achieve cross-dataset battery health state prediction using the pretraining-finetuning paradigm.
+
+<!-- 文献\cite{wang2024physics}中，Wang~等人提出基于物理信息神经网络（Physics-Informed Neural Network, PINN）的可学习动力学模块。该方法从经验退化机理和状态方程描述电池老化，并由神经网络学习退化动力学，使模型在不同电池类型及充放电条件下保持高精度与稳定性，同时，将这种方法应用在退化模式迁移问题中，基于预训练-微调范式实现跨数据集健康状态迁移估计。 -->
 
 ### [7] 10886998
 - **标题**: Robust State of Health Estimation for Heterogeneous Batteries With Privacy Preserving
@@ -332,8 +339,9 @@
 - **卷期**: 74 (6)
 - **页码**: 8921-8937
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: The state-of-the-art approaches to state of health (SOH) estimation typically generate models tailored to specific battery datasets, requiring retraining for other battery types and failing to construct a universally robust model across diverse battery data. Challenges in achieving a robust model span statistical heterogeneity, adaptability, and resilience to noise and cyber-attacks. This study introduces a novel, privacy-preserving robust SOH estimation for heterogeneous batteries using customized federated learning (FL). The approach aggregates local SOH models into a global model while preserving data privacy at the source. It leverages statistical and system utility indicators for battery management system client selection, incorporating the Epsilon-Greedy method to dynamically include new clients and adjust the participant count based on global model efficacy. Additionally, a performance-discrepancy weighted aggregation mechanism is designed by using the L2 distance and loss indices as weights for local models. A discrepancy-based personalization method further refines the number of personalization layers, enhancing local model performance. Through detailed case analysis, the proposed algorithm is shown to surpass conventional FL, centralized, and local training methods across scenarios of varied battery types, data inaccuracies, communication errors, and operational risks, demonstrating superior adaptability and robustness.
 - **论文中的描述**: Wang et al. propose a decentralized framework to achieve robust SOH estimation across heterogeneous battery datasets.
+出于隐私保护的需求，来自不同设备或系统的电池的异构循环数据不可直接共享，通常通过联邦学习（Federated Learning, FL）策略训练具有全局泛化能力的模型。为了解决异构电池系统聚合过程中存在的数据统计异构性、模型动态适应性、复杂噪声扰动和网络安全工具防御韧性等挑战，文献\cite{10886998}中，Wang~等人提出了一种异构电池集群的隐私保护鲁棒健康状态估计方法。首先，该方法提出了一种融合统计特征和系统效用的客户端选择机制，基于~Epsilon~贪心策略吸纳异构节点，其次，提出了一种基于基于性能差异的加权聚合机制，最后，引入基于差异分布的个性化机制增强本地模型的性能。
 
 ### [8] 9788003
 - **标题**: A Transfer Learning-Based Method for Personalized State of Health Estimation of Lithium-Ion Batteries
@@ -345,6 +353,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Ma et al. propose a method named ConvMMD that aligns source and target domains by minimizing the maximum mean discrepancy of lower-order moments between them, facilitating a condition-robust estimation of SOH of batteries.
+<!-- 文献\cite{9788003}中，Ma~等人提出跨工况的电池个性化退化预测模型，命名为~ConvMMD。该方法基于知识迁移思想，利用卷积式深度网络从原始充电电压轨迹中自动提取特征，并通过最大均值差异（Maximum Mean Discrepancy, MMD）度量构造域间对齐的连续量预测形式，以缩减源电池与目标电池数据分布差异。 -->
 
 ### [9] HAN2022230823
 - **标题**: End-to-end capacity estimation of Lithium-ion batteries with an enhanced long short-term memory network considering domain adaptation
@@ -357,6 +366,8 @@
 - **摘要**: *(待添加)*
 - **论文中的描述**: Han et al. present a high-precision degradation model requiring only a few target domain samples, achieved by incorporating a domain adaptation layer into long short-term memory neural networks, known as LSTM-DA.
 
+<!-- 文献\cite{HAN2022230823}中，Han~等人构建电池跨域容量预测方法，命名为~LSTM-DA。该方法针对训练与测试电池退化轨迹分布不一致的问题，引入深层长短记忆结构从端电压与工作电流序列中学习容量演化特征，并在高层特征空间叠加基于均值匹配的~MMD~对齐模块，以缓解源域与目标域退化表征之间的偏移，从而实现对不同电池个体的跨域在线容量评估。 -->
+
 ### [10] 9560040
 - **标题**: State-of-Health Estimation for Lithium-Ion Batteries Using Domain Adversarial Transfer Learning
 - **作者**: Ye, Zhuang and Yu, Jianbo
@@ -367,6 +378,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Ye et al. design a method named DDAN that realizes unsupervised degradation feature alignment via adversarial training across source and target domains, enabling a transferable prognostic model.
+<!-- 文献\cite{9560040}中，Ye~和Yu~针对锂离子电池退化预测中的跨工况分布偏移问题，提出基于深层跨域对抗结构的预测模型，命名为~DDAN。该模型通过构建无标注特征对齐指标将 MMD 与相关结构对齐机制联合，并辅以生成式对抗训练策略，引导特征编码器学习跨域稳定表征，同时采用稠密双向门控循环单元（Dense Bidirectional Gated Recurrent Unit, D-BiGRU）从传感信号中抽取时序退化特征，从而提升在多工况场景下的电池退化预测能力。 -->
 
 ### [11] 10029904
 - **标题**: State of Health Estimation of Lithium Iron Phosphate Batteries Based on Degradation Knowledge Transfer Learning
@@ -378,6 +390,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Lu et al. develop a two-stage prognostic framework named DKTL, which combines degradation mechanisms and achieves knowledge transfer of degradation patterns from synthetic data to real data.
+<!-- 文献\cite{10029904}中，Lu~等人提出结合退化知识迁移的预测方法，命名为~DKTL。该方法利用退化机理与工况条件构建面向性能完好度估计的条件时序对抗生成网络，并针对合成与真实锂离子电池循环数据分布不匹配的问题，构建退化机理回归模型，通过基于二阶统计矩对齐的跨域策略实现源域与目标域退化表征的一致化。 -->
 
 ### [12] WANG2023108897
 - **标题**: Feature disentanglement and tendency retainment with domain adaptation for Lithium-ion battery capacity estimation
@@ -389,6 +402,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Wang et al. develop a dual-branch model with a domain invariant-specific feature decoupling strategy and a degradation trend preservation strategy to align degradation patterns across domains, known as DR-Net.
+<!-- 针对锂离子电池在多种化学体系及工况下容量评估的跨域偏移问题，文献\cite{WANG2023108897}，Wang~等人提出特征解缠与趋势保持网络，命名为~DR-Net。该网络从监测电压电流序列中抽取特征，在表征空间中区分域无关共享表征与域特异私有表征，并保留容量退化趋势信息，从而在训练域与应用域分布不一致时仍能实现稳健容量预测。 -->
 
 ### [13] 9782500
 - **标题**: Generalizing to Unseen Domains: A Survey on Domain Generalization
@@ -411,6 +425,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Chen et al. develop a dual-branch feature extractor to process domain samples with mixed and separated sources. By leveraging a domain discriminator and a health state estimator, their approach enables domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
+文献\cite{CHEN2024234696}中，Chen~等人提出了一种名为~DGSOH~的可泛化健康状态估计器，该方法融和CNN和GRNN作为多源异构退化特征提取器，同时创建了一个预判别器对成对的数据进行所属域分类。该方法具有一种两支的结构，第一个独立分支保留输入样本的域信息，第二个混杂分支则将所有输入数据混杂在一起，通过最小化两个分支的估计损失和独立分支的判别损失构成的总损失，该方法实现了退化模式泛化。
 
 ### [15] TAN2024103725
 - **标题**: Forecasting battery degradation trajectory under domain shift with domain generalization
@@ -420,8 +435,10 @@
 - **卷期**: 72 ()
 - **页码**: 
 - **DOI**: 
-- **摘要**: *(待添加)*
+- **摘要**: Rechargeable batteries play a pivotal role in the carbon-neutral green environment by electrifying transportation and mitigating the intermittency of renewable energies. Forecasting the degradation of batteries is crucial for the optimal usage of batteries, while predicting battery degradation is not trivial due to diverse working conditions and complex failure mechanisms. To address this challenge, we develop a deep learning model that treats differences in operating conditions as domain shifts and utilizes meta-learning-based and task-driven domain generalization techniques to attack the domain shifts. The model effectiveness is demonstrated on three datasets comprising 203 cells of various operating conditions and chemistries, with improvements in prediction accuracy ranging from 18.1% to 30.0% (23.8% on average). Moreover, the model has gained some generalization capability via learning the correlation between domain gaps in the model and the degradation modes behind various operating conditions. Collectively, our work not only showcases the promise of the high-reliability data-driven model for diverse conditions and chemistries by exploiting domain generalization, but also spotlights the potential interplay between artificial intelligence and domain knowledge.
 - **论文中的描述**: Tan et al. design a meta learning-based domain generalization method named MAGNet. It couples a two-phase meta-optimization strategy (training/testing cycles) with RUL-driven health prediction, enforcing domain-invariant representation learning through task-aligned gradient synchronization.
+
+文献\cite{TAN2024103725}中，Tan~等人针对电池退化轨迹的可靠预测面临的挑战，构建了一种基于元学习的退化泛化方法，命名为MAGNet。该方法以基于~Transformer~的网络作为骨干网络以高效提取退化特征。该方法通过元划分模拟跨工况分布差异，通过多阶段交叉训练和误差联合最小化策略驱动骨干网络学习全局鲁棒退化表征。该方法设计并嵌入了任务驱动的域泛化模块，基于多任务联合学习，将退化先验注入骨干网络，从而增强模型分布外泛化能力。
 
 ### [16] liu2024itransformer
 - **标题**: iTransformer: Inverted Transformers Are Effective for Time Series Forecasting
@@ -433,6 +450,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Liu et al. propose a method designed to obtain robust sequence representations against OOD temporal patterns through the inclusion of a transposed attention module and a feed-forward network module, known as iTransformer.
+<!-- 文献\cite{liu2024itransformer}中，Liu~等人提出倒置结构的~Transformer~预测框架。该方法通过重排时间维和变量维，将时间点嵌入为变量片段，在片段上施加自注意以刻画多元相关性，并在片段中配置前馈子网络提取非线性表征，从而缓解传统基于时间片表示的~Transformer~在长观测窗口下的混叠与算力开销。 -->
 
 ### [17] nie2023a
 - **标题**: A Time Series is Worth 64 Words: Long-term Forecasting with Transformers
@@ -444,6 +462,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Nie et al. present a time-series modeling framework resistant to pattern drift known as PatchTST. The model employs subsequence segmentation and channel-independent modeling to enhance its adaptability to dynamic temporal patterns.
+<!-- 文献\cite{nie2023a}中，Nie~等人构建序列依赖的片段化时序~Transformer~框架，命名为~PatchTST。该方法通过将原始时间序列划分为若干子序列片段单元作为注意编码网络的输入，并采用通道独立建模策略在各变量间共享嵌入映射与注意权重，从而在保留局部语义结构的同时显著降低注意映射的计算与存储开销并扩展可感知的历史数据范围。 -->
 
 ### [18] chen2023tsmixer
 - **标题**: TSMixer: An All-MLP Architecture for Time Series Forecasting
@@ -455,6 +474,7 @@
 - **DOI**: 
 - **摘要**: *(待添加)*
 - **论文中的描述**: Chen et al. develop a purely linear model capable of efficiently extracting spatio-temporal dependencies without relying on task-specific prior knowledge, known as TSMixer.
+文献\cite{chen2023tsmixer}中，Chen~等人提出多序列混合器，命名为~TSMixer，通过堆叠多层前馈网络并在时间轴与特征维度上执行混合变换，分别进行时间混合和特征混合，有效挖掘跨序列信息。该方法结构上完全基于前馈网络，在迁移效率上具有显著优势。
 
 ### [19] 10980357
 - **标题**: Advancing Electric Vehicle Battery Management: A Data-Driven Digital Twin Approach for Real-Time Monitoring and Performance Enhancement
