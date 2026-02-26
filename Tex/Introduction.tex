@@ -129,12 +129,16 @@ To address the aforementioned issues, we propose HSSTT, a method for trustworthy
 （3）{基于域泛化的退化建模}
 
 Domain generalization paradigm involves three main categories, namely data manipulation, representation learning, and specific learning strategy \cite{9782500}.
+
+（Domain Generalization, DG）
+
 % In \cite{CHEN2024234696}, Chen等人 develop a dual-branch feature extractor to process domain samples with mixed and separated sources. By leveraging a domain discriminator and a health state estimator, their approach enables domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
-In \cite{CHEN2024234696}, Chen等人 develop a dual-branch network, a domain discriminator and a health state estimator to learn domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
-In \cite{TAN2024103725}, Tan等人 design a meta learning-based domain generalization method named MAGNet. It couples a two-phase meta-optimization strategy with RUL-driven health prediction, enforcing domain-invariant representation learning through task-aligned gradient synchronization. % promoting the learning of cross-domain consistent representations.
+% In \cite{CHEN2024234696}, Chen等人 develop a dual-branch network, a domain discriminator and a health state estimator to learn domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
+文献\cite{CHEN2024234696}中，Chen~等人提出了一种名为~DGSOH~的可泛化健康状态估计器，该方法融和CNN和GRNN作为多源异构退化特征提取器，同时创建了一个预判别器对成对的数据进行所属域分类。该方法具有一种两支的结构，第一个独立分支保留输入样本的域信息，第二个混杂分支则将所有输入数据混杂在一起，通过最小化两个分支的估计损失和独立分支的判别损失构成的总损失，该方法实现了退化模式泛化。
+% In \cite{TAN2024103725}, Tan等人 design a meta learning-based domain generalization method named MAGNet. It couples a two-phase meta-optimization strategy with RUL-driven health prediction, enforcing domain-invariant representation learning through task-aligned gradient synchronization. % promoting the learning of cross-domain consistent representations.
+文献\cite{TAN2024103725}中，Tan~等人针对电池退化轨迹的可靠预测面临的挑战，构建了一种基于元学习的退化泛化方法，命名为MAGNet。该方法以基于~Transformer~的网络作为骨干网络以高效提取退化特征。该方法通过元划分模拟跨工况分布差异，通过多阶段交叉训练和误差联合最小化策略驱动骨干网络学习全局鲁棒退化表征。该方法设计并嵌入了任务驱动的~DG~模块，基于多任务联合学习，将退化先验注入骨干网络，从而增强模型分布外泛化能力。
 % In \cite{liu2024itransformer}, Liu等人 propose a method designed to obtain robust representations against OOD temporal patterns through the inclusion of a transposed attention module and a feed-forward module, known as iTransformer.
-% 文献\cite{liu2024itransformer}中，Liu~等人提出倒置结构的~Transformer~预测框架。该方法通过重排时间维和变量维，将时间点嵌入为变量片段，在片段上施加自注意以刻画多元相关性，并在片段中配置前馈子网络提取非线性表征，从而缓解传统基于时间片表示的~Transformer~在长观测窗口下的混叠与算力开销。
-文献\cite{TAN2024103725}中，Tan~等人针对电池退化轨迹的可靠预测面临的挑战，构建了一种基于元学习的退化泛化方法，命名为MAGNet。该方法以基于~Transformer~的网络作为骨干网络以高效提取退化特征。该方法通过元划分模拟跨工况分布差异，通过多阶段交叉训练和误差联合最小化策略驱动骨干网络学习全局鲁棒退化表征。该方法设计并嵌入了任务驱动的域泛化模块，基于多任务联合学习，将退化先验注入骨干网络，从而增强模型分布外泛化能力。
+文献\cite{liu2024itransformer}中，Liu~等人提出倒置结构的~Transformer~预测框架。该方法通过重排时间维和变量维，将时间点嵌入为变量片段，在片段上施加自注意以刻画多元相关性，并在片段中配置前馈子网络提取非线性表征，从而缓解传统基于时间片表示的~Transformer~在长观测窗口下的混叠与算力开销。
 % In \cite{nie2023a}, Nie等人 present a sequence modeling framework resistant to pattern drift known as PatchTST.
 % % The model employs subsequence segmentation and channel-independent modeling to enhance its adaptability to dynamic temporal patterns.
 文献\cite{nie2023a}中，Nie~等人构建序列依赖的片段化时序~Transformer~框架，命名为~PatchTST。该方法通过将原始时间序列划分为若干子序列片段单元作为注意编码网络的输入，并采用通道独立建模策略在各变量间共享嵌入映射与注意权重，从而在保留局部语义结构的同时显著降低注意映射的计算与存储开销并扩展可感知的历史数据范围。
@@ -153,42 +157,73 @@ To address these issues, we propose RODTNet, a novel model for OOD degradation p
 
 \subsection{幻觉鲁棒的故障诊断方法研究现状}\label{subsec:fault_diagnosis}
 
+% 分为三类：
+% （1）
+% （2）
+% （3）
+
 （1）{CDLMs and LLMs for Mitigating Statistical Bias}
 
-In \cite{Peng_Liu_Du_Gao_Wang_2025}, H. Peng等人 design a cross-dataset diagnostic LLM, termed BearLLM.
-In \cite{VGCDM}, X. Liu等人 introduce pulse-voltage embeddings into the diffusion process for controllable vibration synthesis.
-In \cite{DCGAN}, K. Zhou等人 develop a balanced generator-discriminator architecture to diagnose gear defects, termed DCGAN.
-In \cite{WOS:000688310200005}, T. Han等人 propose a hybrid network that combines class constraints with adversarial domain regularization to capture transferable features.
-In \cite{10478558}, M. Vu等人 propose a dual-branch diagnostic framework that enhances fault classification accuracy in sparse-label scenarios.
-In \cite{QSCGAN}, W. Wan等人 embed self-attention and spectral normalization within generator-discriminator architectures to augment rocket bearing data, termed QSCGAN.
-In \cite{VQVAE}, Q. Zheng等人 combine degradation stage partitioning and vector quantized augmentation to enrich degradation features, termed VQVAE.
+% In \cite{Peng_Liu_Du_Gao_Wang_2025}, H. Peng等人 design a cross-dataset diagnostic LLM, termed BearLLM.
+文献\cite{Peng_Liu_Du_Gao_Wang_2025}中，Peng~等人提出了一种融合多模态大语言模型的轴承健康管理框架，命名为~BearLLM，仅需加载一套预训练权重即可实现跨数据集高精度故障诊断。该框架首先提出了一种先验知识增强的统一振动信号表征机制；进一步地，预训练一个故障分类网络捕获信号深度表征；最后，基于所标注的大规模振动信号-文本描述对，将所提取的时序特征映射对齐到词嵌入空间，通过大语言模型联合推理。
+% In \cite{VGCDM}, X. Liu等人 introduce pulse-voltage embeddings into the diffusion process for controllable vibration synthesis.
+文献\cite{VGCDM}中，Liu~等人针对基于对抗生成网络（Generative Adversarial Networks, GANs）生成仿真数据过程中存在训练过程不稳定和动力学特征刻画不精准的问题，提出了一种电压信号引导的条件扩散模型（Voltage-Guided Conditional Diffusion Model, VGCDM），该模型基于序列化~U-Net~架构和渐进式多步去噪扩散机制合成铁路转向架故障信号，并基于交叉注意力机制引入控制脉冲电压，实现面向变速度事变复杂工况的鲁棒故障诊断。
+% In \cite{DCGAN}, K. Zhou等人 develop a balanced generator-discriminator architecture to diagnose gear defects, termed DCGAN.
+为了提升基于代理模型的故障诊断方法对未见故障模式的鲁棒性和可靠性，文献\cite{DCGAN}中，Zhou~等人提出了一种基于深度卷积对抗网络（Deep Convolutional Generative Adversarial Network, DCGAN）的故障诊断框架，该框架基于半监督学习范式，从无标签数据中提取指向多源未见故障的特征指纹，并挖掘未见故障模式与已知故障模式在底层物理机制上的映射关联，提升了数据驱动故障诊断模型的泛化能力。
+% In \cite{WOS:000688310200005}, T. Han等人 propose a hybrid network that combines class constraints with adversarial domain regularization to capture transferable features.
+文献\cite{WOS:000688310200005}中，Han~等人面向源域和目标域存在显著分布差异，目标域先验完全缺失的故障诊断问题，提出了一种基于~DG~的混合诊断架构，旨在实现模型向未知服役工况的高效部署。该架构通过最小化三元组损失，刻画具备强泛化能力的类别决策边界；通过实施对抗训练实现域级政策化，避免模型对特定源域的过拟合风险。
+% In \cite{10478558}, M. Vu等人 propose a dual-branch diagnostic framework that enhances fault classification accuracy in sparse-label scenarios.
+小样本场景下数据分布差异显著、故障类别繁杂且采集工况多变，为此，文献\cite{10478558}中，Vu~等人提出了一种端到端轴承故障诊断框架。该框架首先通过多尺度大卷积核模块提取故障特征，继而建立了一个包含两支结构的联合建模网络，分别基于交叉注意力和基于~Mahalanobis~距离的度量学习技术强化特征空间泛化能力。最后，全局-局部信息经过集成融入，实现高精度诊断决策。
+% In \cite{QSCGAN}, W. Wan等人 embed self-attention and spectral normalization within generator-discriminator architectures to augment rocket bearing data, termed QSCGAN.
+文献\cite{QSCGAN}中，Wan~等人针对数据驱动轴承故障诊断问题中数据匮乏和标签缺失的双重挑战，提出了一种基于快速自注意力卷积对抗生成网络（Quick Self-Attention Convolutional Generative Adversarial Network, QSCGAN）的无监督诊断方法。该方法由生成器、判别器和分类器协同，其中生成器和判别器构成对抗博弈对，将隐空间噪声分布映射为真实数据分布，合成逼真的原始机械振动信号，以此对分类器的训练集进行数据增强。
+% In \cite{VQVAE}, Q. Zheng等人 combine degradation stage partitioning and vector quantized augmentation to enrich degradation features, termed VQVAE.
+为了解决将数据增强和域不变特征表示技术应用在未知工况健康管理时面临的长时序列内在时序一致性不足的问题，文献\cite{VQVAE}中，Zhang~等人提出了一种融合不变性和特异性特征表示的泛化网络框架，命名为~VQVAE。具体地，通过引入时间序列向量量化变分自编码网络针对设备退化阶段生成多样化样本，继而分别提取源域间共享共性特征和各源域专属特征，最后加权融合所提取的两种特征，实现高精度跨域寿命预测结果。
 
 （2）{CDLMs and LLMs for Rejecting Undesired Inputs}
 
 %MDCC=DSRC+马氏距离
 %WDSN=DANN+马氏距离
-In \cite{ZHAO2022108672}, C. Zhao等人 employ a triplet loss and a boundary adaptation method to learn compact features and optimal class boundaries.
-In \cite{10262196}, Z. Zhu等人 develop an adversarially trained open-set classifier to identify unknown classes and out-of-domain samples.
-In \cite{10214410}, J. Long等人 develop a domain-generalized unseen fault diagnosis method by fusing a meta-learning block with the Mahalanobis metric, termed MLMM.
-In \cite{ZHANG2023109518}, X. Zhang等人 introduce a domain-adaptive approach that disentangles private and shared features to diagnose unseen faults, termed WDSN.
-In \cite{10382502}, B. Lu等人 design a contrastive embedding-based diagnostic strategy that jointly preserves domain-specific and domain-invariant features, termed MDCC.
-In \cite{20242516270368}, B. Liu等人 benchmark LLaMA-series LLMs for undesired input detection and design a cosine distance-based detector using isotropic embeddings, termed LLM-OOD.
+% In \cite{ZHAO2022108672}, C. Zhao等人 employ a triplet loss and a boundary adaptation method to learn compact features and optimal class boundaries.
+开放集故障诊断（Open-set Fault Diagnosis, OSFD）是一类典型的涉及拒绝非期望输入的问题。文献\cite{ZHAO2022108672}中，Zhao~和Shen~提出了一种自适应开放集领域泛化网络（Adaptive Open Set Domain Generalization Network, AOSDGN），以解决实际应用场景中未知故障频发的问题。该方法设计了一种局部类聚类策略，通过最小化三元组损失挖掘领域不变的特征表征空间；并引入异常值检测模块，学习类别独立的特征空间决策边界，从而实现划分已知类别和识别未知故障。
+% In \cite{10262196}, Z. Zhu等人 develop an adversarially trained open-set classifier to identify unknown classes and out-of-domain samples.
+文献\cite{10262196}中，Zhu~等人面向开放集故障诊断问题，提出了一种多对抗学习域适应（Multi-Adversarial Learning Domain Adaption, MALDA）方法，该方法通过引入可迁移权重条件对抗网络，实现特征与类别的联合分布对齐，实现源域-目标域共享健康状态辨识和潜在的位置故障模式识别。
+% In \cite{10214410}, J. Long等人 develop a domain-generalized unseen fault diagnosis method by fusing a meta-learning block with the Mahalanobis metric, termed MLMM.
+文献\cite{10214410}中，Long~等人针对基于小样本学习的迁移模型面对伴随域漂移现象的位置复杂工况时存在的泛化能力不足的问题，提出了一种定制化元学习框架，命名为MLMM。该方法首先设计一种融合深度特征的学习策略，整合时间、频率和时频信号以提高故障特征的判别性；继而，融合元学习策略和基于域漂移学习的特征变换层，通过特征调制实现特征迁移；最后构建基于~Mahalanobis~距离的度量函数并学习各类故障模式的分布方法，提供预测过程的准确性和鲁棒性。
+% In \cite{ZHANG2023109518}, X. Zhang等人 introduce a domain-adaptive approach that disentangles private and shared features to diagnose unseen faults, termed WDSN.
+开放集故障诊断方法往往倾向于开展全局的特征对齐而忽略了各个数据域的私有特征表达，且检测未知类别是依赖基于先验知识的判定阈值。针对此，文献\cite{ZHANG2023109518}中，Zhang~等人提出了一种加权域分离网络（Weighted Domain Separation Network, WDSN），引入二元分类器自适应构建已知故障类别和未知故障类别的划分边界以规避人工预设阈值，同时剥离多个源域的私有特征空间，并基于此提取跨域共享的纯净特征表示。
+% In \cite{10382502}, B. Lu等人 design a contrastive embedding-based diagnostic strategy that jointly preserves domain-specific and domain-invariant features, termed MDCC.
+文献\cite{10382502}中，Lu~等人面向开放集域泛化问题，提出了一种多域对比编码（Multidomain Contrastive Coding, MDCC）框架。该框架通过设计对比编码任务和对应的损失函数驱动模型学习故障信息，实现在有效保留各数据域专属特异性知识的同时同步实现全局跨域知识的高效泛化。
+% In \cite{20242516270368}, B. Liu等人 benchmark LLaMA-series LLMs for undesired input detection and design a cosine distance-based detector using isotropic embeddings, termed LLM-OOD.
+LLMs~在模型参数规模、预训练目标和推理范式上与传统模型存在显著差异，基于后者开展的~OOD~检测研究的结论适用性有限。文献\cite{20242516270368}中，Liu~等人针对~LLMs~的~OOD~检测能力开展了实证研究，评估了各类主流~OOD~检测器在零梯度和微调场景下的性能表现，并基于~LLMs~嵌入空间的各向同性特质，提出了一种基于余弦距离的~OOD~检测器，命名为~LLM-OOD。
 
 （3）{LLMs for Detecting Sequence-Level Hallucinations}
 
-%请检查LLM-check中具体用到的特征，确保与实验一致。
-%请检查\cite{azaria-mitchell-2023-internal}是否是秒杀级对比算法 <- 这篇论文没开源
-%请检查这篇论文Detecting Hallucinations in Large Language Model Generation: A Token Probability Approach，参考文献中有好多利用中间层信息进行幻觉检测的文献。
-%请检查Unsupervised Real-Time Hallucination Detection based on the Internal States of Large Language Models是否是秒杀级对比算法 <- 使用LLM-Check-HiddenScore实现
-In \cite{20251218102787}, G. Sriramanan等人 design a compute-efficient detector that leverages the model's internal attention maps, termed LLM-Check.
-In \cite{20243917091282}, J. Duan等人 develop a hallucination quantification approach by reweighting token- and sequence-level relevance.
-In \cite{20240715556058}, T. Zhang等人 introduce a retrieval-free detector that quantifies hallucinations through token-level uncertainty.
-In \cite{selfcheckgpt}, P. Manakul等人 propose SelfCheckGPT, which assesses hallucinations by sampling multiple black-box LLM responses and measuring their mutual consistency.
-% In \cite{azaria-mitchell-2023-internal}, A. Azaria等人 design a hallucination classifier using LLM hidden activations.
-In \cite{su-etal-2024-unsupervised}, W. Su等人 propose a real-time and annotation-free hallucination detection framework using the internal states of LLMs, termed MIND.
-In \cite{10.1007/978-3-031-86623-4_13}, E. Quevedo等人 propose a supervised approach that utilizes an auxiliary detector trained on resource-efficient numerical features, termed SHalluDetect.
-% In \cite{20242516270368}, B. Liu等人 highlight the isotropic nature of LLMs and design a cosine distance-based hallucination detector, termed LLM-OOD.
-In \cite{li-etal-2023-halueval}, J. Li等人 develop a benchmark via sampling-then-filtering and annotation for hallucination analysis.
+% %请检查LLM-check中具体用到的特征，确保与实验一致。
+% %请检查\cite{azaria-mitchell-2023-internal}是否是秒杀级对比算法 <- 这篇论文没开源
+% %请检查这篇论文Detecting Hallucinations in Large Language Model Generation: A Token Probability Approach，参考文献中有好多利用中间层信息进行幻觉检测的文献。
+% %请检查Unsupervised Real-Time Hallucination Detection based on the Internal States of Large Language Models是否是秒杀级对比算法 <- 使用LLM-Check-HiddenScore实现
+% In \cite{20251218102787}, G. Sriramanan等人 design a compute-efficient detector that leverages the model's internal attention maps, termed LLM-Check.
+% In \cite{20243917091282}, J. Duan等人 develop a hallucination quantification approach by reweighting token- and sequence-level relevance.
+% In \cite{20240715556058}, T. Zhang等人 introduce a retrieval-free detector that quantifies hallucinations through token-level uncertainty.
+% In \cite{selfcheckgpt}, P. Manakul等人 propose SelfCheckGPT, which assesses hallucinations by sampling multiple black-box LLM responses and measuring their mutual consistency.
+% % In \cite{azaria-mitchell-2023-internal}, A. Azaria等人 design a hallucination classifier using LLM hidden activations.
+% In \cite{su-etal-2024-unsupervised}, W. Su等人 propose a real-time and annotation-free hallucination detection framework using the internal states of LLMs, termed MIND.
+% In \cite{10.1007/978-3-031-86623-4_13}, E. Quevedo等人 propose a supervised approach that utilizes an auxiliary detector trained on resource-efficient numerical features, termed SHalluDetect.
+% % In \cite{20242516270368}, B. Liu等人 highlight the isotropic nature of LLMs and design a cosine distance-based hallucination detector, termed LLM-OOD.
+% In \cite{li-etal-2023-halueval}, J. Li等人 develop a benchmark via sampling-then-filtering and annotation for hallucination analysis.
+传统~LLMs~幻觉检测需要获取多轮模型响应或依赖庞大外部数据库而难以部署在实际环境中的问题，文献\cite{20251218102787}中，Sriramanan~等人提出了一种利用~LLMs~隐状态、注意力映射图集输出预测概率分布实现在黑盒和白盒的双重设定下，仅使用单次模型响应即可实现幻觉识别的方法，命名为~LLM-Check。所提出方法可以拓展至具备真实参考文本的特定应用场景，如检索增强生成范式下的幻觉检测问题。
+% 
+不确定性量化技术是实现~LLMs~幻觉检测的一种具有应用前景的途径，但对~LLMs~响应开展不确定性评估存在精确性不足的问题，这主要来源于语言的冗余性，即自回归文本生成过程中并非所有词元等价地承载语义信息。针对此，文献\cite{20243917091282}中，Duan~等人提出了一种高相关性注意力转移（Shifting Attention to more Relevant, SAR）机制，通过对词元级别和句子级别的相关性进行重赋权，该方法实现了更精确的不确定性量化，并将量化结果应用在~LLMs~幻觉检测问题上。
+% 
+文献\cite{20240715556058}中，Zhang~等人提出了一种无参考的、基于不确定性量化的幻觉检测方法，其核心是一种认知聚焦机制。具体地，这种机制在幻觉检测过程中首先聚焦于包含关键语义信息的核心词元；其次排除历史上下文中潜在的不可靠词元从而阻断其可能诱发的级联幻觉效应；最后分析词元类型和词元频次等固有属性对生成结果可靠性的影响。
+% 
+事实核查是实现~LLMs~幻觉检测的合理方法，但传统的基于事实核查的方法一方面难以被应用在闭源系统中，另一方面高度依赖外部数据库且通常需要通过结构复杂的独立模块进行交互。为了解决这些问题，文献\cite{selfcheckgpt}中，Manakul~等人提出一种基于简单采样的无资源事实核查机制，命名为~SelfCheckGPT。该方法基于语言模型确切掌握概念内在知识的启发性假设，依据对~LLMs~多次采样结果的一致性评估进行模型幻觉检测。
+% 
+传统的基于后处理范式的~LLMs~幻觉检测方法因为独立于模型的推理过程，存在计算开销大的问题。为了克服这一局限性，文献\cite{su-etal-2024-unsupervised}中，Su~等人提出了一种无需人工标注且直接利用~LLMs~内部隐状态的实时幻觉检测机制，命名为MIND。这一工作同时构建了名为~HELM~的基准评估体系，不仅包含高度多样化的模型输出文本，同时记录了模型在推理过程时内部隐状态的演化轨迹。
+% 
+为了实现模型无关幻觉检测，文献\cite{10.1007/978-3-031-86623-4_13}中，Quevedo~等人提出了一种基于监督学习的幻觉检测方法，命名为~SHalluDetect，旨在基于大型~LLMs~的无幻觉或少幻觉推理结果评估小型~LLMs~输出的幻觉水平。该方法通过部署两个浅层分类器，以基于上述两种不同规模~LLMs~推理结果中的词元分布构造的四个数值特征为输入，实现跨模型架构的高精度幻觉检测。
+% 
+为了评估~LLMs~在何种内容和何种程度上容易产生幻觉，文献\cite{li-etal-2023-halueval}中，Li~等人构建了一个基准测试，提出了一种基于~ChatGPT~的先采样后过滤的两阶段数据生成框架，通过人工操作对模型响应中潜在的幻觉进行审查和标注，证明通过引入外部事实知识或在模型内部增加显示逻辑推理步骤可以提升模型自身的幻觉识别能力。
 
 （4）研究的局限性
 
