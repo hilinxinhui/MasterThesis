@@ -504,7 +504,8 @@
 - **摘要**: We propose a bearing health management framework leveraging large language models (BearLLM), a novel multimodal model that unifies multiple bearing-related tasks by processing user prompts and vibration signals. Specifically, we introduce a prior knowledge-enhanced unified vibration signal representation to handle various working conditions across multiple datasets. This involves adaptively sampling the vibration signals based on the sampling rate of the sensor, incorporating the frequency domain to unify input dimensions, and using a fault-free reference signal as an auxiliary input. To extract features from vibration signals, we first train a fault classification network, then convert and align the extracted features into word embedding, and finally concatenate these with text embedding as input to an LLM. To evaluate the performance of the proposed method, we constructed the first large-scale multimodal bearing health management (MBHM) dataset, including paired vibration signals and textual descriptions. With our unified vibration signal representation, BearLLM using one set of pre-trained weights achieves state-of-the-art performance on nine publicly available fault diagnosis benchmarks, outperforming specific methods designed for individual datasets. We provide a dataset, our model, and code to inspire future research on building more capable industrial multimodal models.
 - **论文中的描述**: H. Peng et al. design a cross-dataset diagnostic LLM, termed BearLLM.
 
-文献\cite{}中，
+文献\cite{Peng_Liu_Du_Gao_Wang_2025}中，
+Peng~等人
 
 ### [2] VGCDM
 - **标题**: Generating HSR Bogie Vibration Signals via Pulse Voltage-Guided Conditional Diffusion Model
@@ -517,7 +518,8 @@
 - **摘要**: Generative Adversarial Networks (GANs) for generating realistic data, have substantially improved fault diagnosis algorithms in various Internet of Things (IoT) systems. However, challenges such as training instability and dynamical inaccuracy limit their utility in high-speed rail (HSR) bogie fault diagnosis. To address these challenges, we introduce the Pulse Voltage-Guided Conditional Diffusion Model (VGCDM). Unlike traditional implicit GANs, VGCDM adopts a sequential U-Net architecture, facilitating multi-steps denoising diffusion for generation, which bolsters training stability and mitigate convergence issues. VGCDM also incorporates control pulse voltage by cross-attention mechanism to ensure the alignment of vibration with voltage signals, enhancing the Conditional Diffusion Model’s progressive controlablity. Consequently, solely straightforward sampling of control voltages, ensuring the efficient transformation from Gaussian Noise to vibration signals. This adaptability remains robust even in scenarios with time-varying speeds. To validate the effectiveness, we conducted two case studies using SQ dataset and high-simulation HSR bogie dataset. The results of our experiments unequivocally confirm that VGCDM outperforms other generative models, achieving the best RSME, PSNR, and FSCS, showing its superiority in conditional HSR bogie vibration signal generation. For access, our code is available at https://github.com/xuanliu2000/VGCDM.
 - **论文中的描述**: X. Liu et al. introduce pulse-voltage embeddings into the diffusion process for controllable vibration synthesis.
 
-文献\cite{}中，
+文献\cite{VGCDM}中，
+Liu~等人
 
 ### [3] DCGAN
 - **标题**: Deep convolutional generative adversarial network with semi-supervised learning enabled physics elucidation for extended gear fault diagnosis under data limitations
@@ -530,7 +532,8 @@
 - **摘要**: Fault detection and diagnosis of gear systems using vibration measurements play an important role in ensuring their functional reliability and safety. Computational intelligence, leveraging upon classification through various surrogate models, has recently demonstrated certain level of success. Major challenge however remains. The establishment of surrogate models generally requires large size of training data with specific labels corresponding to explicitly known gear fault conditions, which may not be available in practical applications. Both the size of available data and the respective labels may be quite limited due to the high cost, which hinders the diagnosis of unseen/unexpected faults with desired reliability. In this research we synthesize a deep convolutional generative adversarial network (DCGAN) to tackle this challenge. This new approach follows the semi-supervised learning concept, the performance of which is significantly enhanced by introducing additionally the inexpensive unlabeled data. The balanced adversarial effect between the discriminator and generator in DCGAN is realized by appropriately designing their architectures, which as a result can enable the high accuracy of diagnosis with scarce labeled data. More importantly, by taking full advantage of the rich fault signatures in the unlabeled data that point to the diverse unseen faults, the intrinsic correlation of underlying physics between the unseen and known faults can be implicitly elucidated via unique semi-supervised learning strategy featured in DCGAN. Therefore, the extended capability in diagnosing the unseen faults that are beyond the known faults in training dataset can be realized, which bears practical significance. Systematic case studies using experimental data acquired from a lab-scale gear system are carried out to validate the new diagnosis framework.
 - **论文中的描述**: K. Zhou et al. develop a balanced generator-discriminator architecture to diagnose gear defects, termed DCGAN.
 
-文献\cite{}中，
+文献\cite{DCGAN}中，
+Zhou~等人
 
 ### [4] WOS:000688310200005
 - **标题**: A Hybrid Generalization Network for Intelligent Fault Diagnosis of Rotating Machinery under Unseen Working Conditions
@@ -543,7 +546,8 @@
 - **摘要**: The data-driven methods in machinery fault diagnosis have become increasingly popular in the past two decades. However, the wide applications of this scheme are generally compromised in real-world conditions because of the discrepancy between the training data and testing data. Although the recently emerging transfer fault diagnosis can learn transferable features from relevant source data and adapt the diagnostic model to the target data, these methods still only work on the target domain with a priori data distribution. The generalization capability of the transferred model cannot be guaranteed for unseen domains. Since the working conditions of machinery are varying during operation, the generalization capability of the diagnosis methods is crucial in this case. To tackle this challenge, this article proposes a domain generalization-based hybrid diagnosis network for deploying to unseen working conditions. The main idea is to regularize the discriminant structure of the deep network with both intrinsic and extrinsic generalization objectives such that the diagnostic model can learn robust features and generalize to unseen domains. The triplet loss minimization of intrinsic multisource data is implemented to facilitate the intraclass compactness and the interclass separability at the class level, leading to a more generalized decision boundary. The extrinsic domain-level regularization is achieved by using adversarial training to further reduce the risk of overfitting. Extensive cross-domain diagnostic experiments on planetary gearbox demonstrate the effectiveness of the proposed method.
 - **论文中的描述**: T. Han et al. propose a hybrid network that combines class constraints with adversarial domain regularization to capture transferable features.
 
-文献\cite{}中，
+文献\cite{WOS:000688310200005}中，
+Han~等人
 
 ### [5] 10478558
 - **标题**: Few-Shot Bearing Fault Diagnosis Via Ensembling Transformer-Based Model With Mahalanobis Distance Metric Learning From Multiscale Features
@@ -556,7 +560,8 @@
 - **摘要**: Advanced deep-learning models have shown excellent performance in the task of fault-bearing diagnosis over traditional machine learning and signal-processing techniques. Few-shot learning approach has also been attracting a lot of attention in this task to address the problem of limited training data. Nevertheless, cutting-edge models for fault-bearing diagnosis are often based on convolutional neural networks (CNNs) that emphasize local features of input data. Besides, accurate classification of fault-bearing signals is still nontrivial due to the variations of data, fault types, acquisition conditions, and extremely limited data, leaving space for research on this topic. In this study, we propose a novel end-to-end approach for fault-bearing diagnosis even in the case of limited data with artificial and real faults. In particular, we propose a module for automatic feature extraction from input data namely multiscale large kernel feature extraction. The extracted features are then fed into a two-branch model including a global and a local branch. The global one includes a transformer architecture with cross-attention to handle global context and obtain the correlation between the query and support sets. The local branch is a metric-based model consisting of Mahalanobis distance for separating local features from the support set. The outputs from the two branches are then ensembled for classification purposes. Intensive experiments and ablation studies have been made on the two public datasets including CWRU and PU. Qualitative and quantitative results with different degrees of training samples by the proposed model in comparison with other state-of-the-arts have shown the superior performance of the proposed approach. Our code will be published at https://github.com/HungVu307/Few-shot-via-ensembling-Transformer-with-Mahalanobis-distance
 - **论文中的描述**: M. Vu et al. propose a dual-branch diagnostic framework that enhances fault classification accuracy in sparse-label scenarios.
 
-文献\cite{}中，
+文献\cite{10478558}中，
+Vu~等人
 
 ### [6] QSCGAN
 - **标题**: QSCGAN: An Un-Supervised Quick Self-Attention Convolutional GAN for LRE Bearing Fault Diagnosis Under Limited Label-Lacked Data
@@ -569,7 +574,8 @@
 - **摘要**: For the fault diagnosis of rolling bearings in the liquid rocket engine (LRE), the fault data is scarce due to the high cost of doing experiments and lacks labels due to the unsure occurrence time of faults. Aiming at the above problem, in this article, an unsupervised fault diagnosis method based on quick self-attention convolutional generative adversarial network (QSCGAN) is proposed. QSCGAN consists of three convolutional sub-networks: a generator (G), a discriminator (D), and a classifier (C). G–D pair can map the noise distribution to the actual data distribution and then generate raw mechanical signals to enhance the training dataset of C. Finally, well-trained C finishes the task of fault diagnosis. By adding a self-attention (SA) layer to D and G, the network acquires a solid ability to mine features of the sample deeply. The spectral normalization (SN) to each layer parameter of G and D improves the stability and the convergence rate of the model. The experimental results on three cases of bearing fault diagnosis (CWRU, SQ, and the data of bearings in LREs) evaluate the effectiveness of the proposed method for fault diagnosis under small samples: get average accuracy of 99.73%, 98.74%, and 95.47%, respectively. The superiority of the proposed method is showed and discussed via comparing with related researches.
 - **论文中的描述**: W. Wan et al. embed self-attention and spectral normalization within generator-discriminator architectures to augment rocket bearing data, termed QSCGAN.
 
-文献\cite{}中，
+文献\cite{QSCGAN}中，
+Wan~等人
 
 ### [7] VQVAE
 - **标题**: A generalized network with domain invariance and specificity representation for bearing remaining useful life prediction under unknown conditions
@@ -582,7 +588,8 @@
 - **摘要**: The requirement to satisfy the assumption of identically and independently distributed data limits the practical application of traditional remaining useful life (RUL) prediction methods. In domain generalization methods, data augmentation and domain-invariant representations face the challenges of maintaining sequence consistency for long time-series data and prognosticating RUL under unknown operating conditions. A novel generalized network with invariance and specificity representation is proposed to address these issues. First, the run-to-failure bearing data were divided into healthy and degraded stages. Next, the time-vector quantized variational autoencoder network generates diverse data from the degradation stage. Subsequently, the domain invariant and domain-specific feature representation network (DIDSR) is proposed for cross-condition prediction of rolling bearing RUL. The DIDSR network is divided into two parts: the domain-invariant component and the domain-specific component. The former extracts shared features from multiple source domains, while the latter learns the characteristics of each source domain through a domain classifier and weights them to obtain the final prediction. Ultimately, the proposed method is extensively evaluated on two bearing run-to-failure datasets. Comparative and ablation experiments validate the effectiveness and superiority of the approach.
 - **论文中的描述**: Q. Zheng et al. combine degradation stage partitioning and vector quantized augmentation to enrich degradation features, termed VQVAE.
 
-文献\cite{}中，
+文献\cite{VQVAE}中，
+Zhang~等人
 
 ### [8] ZHAO2022108672
 - **标题**: Adaptive open set domain generalization network: Learning to diagnose unknown faults under unknown working conditions
@@ -595,7 +602,7 @@
 - **摘要**: Recently, domain generalization techniques have been introduced to enhance the generalization capacity of fault diagnostic models under unknown working conditions. Most existing studies assume consistent machine health states between the training and testing data. However, fault modes in the testing phase are unpredictable, and unknown fault modes usually occur, hindering the wide applications of domain generalization-based fault diagnosis methods in industries. To address such problems, this paper proposes an adaptive open set domain generalization network to diagnose unknown faults under unknown working conditions. A local class cluster module is implemented to explore domain-invariant representation space and obtain discriminative representation structures by minimizing triplet loss. An outlier detection module learns optimal decision boundaries for individual class representation spaces to classify known fault modes and recognize unknown fault modes. Extensive experimental results on two test rigs demonstrated the effectiveness and superiority of the proposed method.
 - **论文中的描述**: C. Zhao et al. employ a triplet loss and a boundary adaptation method to learn compact features and optimal class boundaries.
 
-文献\cite{}中，
+文献\cite{ZHAO2022108672}中，
 Zhao~和Shen~
 
 ### [9] 10262196
@@ -609,7 +616,8 @@ Zhao~和Shen~
 - **摘要**: Adversarial domain adaptation and transfer learning have been widely applied in the field of cross-domain fault diagnosis. However, the effectiveness of existing domain adaptation-based diagnostic methods relies on the assumption that both the source and the target domain data share the same label space. In practice, it is impossible to predict the failure mode during testing, and new failure types may appear in the target domain samples. This is an open-set fault diagnosis issue. To address this problem, we propose a multi-adversarial learning domain adaption (MALDA) model for open-set cross-domain intelligent bearing fault diagnosis. The transferable features and target sample weights are obtained in adversarial learning. By introducing a transfer weight conditional adversarial network to align the joint feature-category distributions and obtain a transferable index, the identifiable predictive information from the classifier output to further adjust and optimize the model. Selective interterritory distribution alignment is achieved by weighted adversarial learning networks, and domain partition adversarial learning can accurately identify shared health states and unknown failure modes. The validity and practicality of the proposed MALDA model are validated by three experimental cases.
 - **论文中的描述**: Z. Zhu et al. develop an adversarially trained open-set classifier to identify unknown classes and out-of-domain samples.
 
-文献\cite{}中，
+文献\cite{10262196}中，
+Zhu~等人
 
 ### [10] 10214410
 - **标题**: A Customized Meta-Learning Framework for Diagnosing New Faults From Unseen Working Conditions With Few Labeled Data
@@ -622,7 +630,8 @@ Zhao~和Shen~
 - **摘要**: Few-shot fault diagnosis aims to detect novel faults with only a few labeled samples in each category. Most of the few-shot learning (FSL)–based fault diagnosis models use meta-learning frameworks because of their effectiveness and simplicity. However, these models often fail to be generalized in unseen working conditions that exhibit domain shifts. This study focuses on the few-shot fault diagnosis while addressing the challenges in domain-shift scenarios by developing a customized meta-learning framework, which consists of three key contributions: 1) a fused deep feature learning strategy is designed using multidomain signals in time, frequency, and time–frequency to extract more discriminative features from a few labeled samples; 2) a domain shift–learned feature transformation layer is introduced by modulating the feature activations with affine transformations into the meta-learner to tackle challenges due to domain shifts under unseen working conditions; and 3) a Mahalanobis distance–based metric function is constructed leveraging an additional neural network to learn the spread variance of each fault pattern to ensure an accurate and robust label prediction. The proposed framework is tested using real-world datasets and the ablation study demonstrates the effectiveness of its key components. The results also show that the proposed framework outperforms the state-of-the-art FSL algorithms that fail to consider the domain-shift scenarios.
 - **论文中的描述**: J. Long et al. develop a domain-generalized unseen fault diagnosis method by fusing a meta-learning block with the Mahalanobis metric, termed MLMM.
 
-文献\cite{}中，
+文献\cite{10214410}中，
+Long~等人
 
 ### [11] ZHANG2023109518
 - **标题**: Weighted domain separation based open set fault diagnosis
@@ -635,7 +644,8 @@ Zhao~和Shen~
 - **摘要**: Cross domain fault diagnosis based on deep learning is of great significance for improving the reliability and safety of mechanical equipment. Generally, it assumes that the label sets of training data (source domain) and test data (target domain) are consistent. However, the test data usually contain unknown classes that are unseen in the training data due to unpredictable fault modes in real industrial scenarios. Therefore, the open set fault diagnosis (OSFD) where the training label set is a part of the test label set appeared. However, most previous studies directly aligned the source domain and target domain without considering the private features of each domain and required prior knowledge to set the threshold for unknown class detection. Thus, a weighted domain separation network (WDSN) is proposed. First, the unknown samples are detected by establishing the boundary between known class and unknown class by a binary classifier without setting a threshold. Then, the private features of each domain are separated to obtain the shared domain, thereby avoiding interference of unknown classes and noise during feature alignment. Results on two datasets demonstrate that the proposed method outperforms state-of-the-art methods and has more prospects for ensuring the reliability of mechanical equipment.
 - **论文中的描述**: X. Zhang et al. introduce a domain-adaptive approach that disentangles private and shared features to diagnose unseen faults, termed WDSN.
 
-文献\cite{}中，
+文献\cite{ZHANG2023109518}中，
+Zhang~等人
 
 ### [12] 10382502
 - **标题**: A Novel Multidomain Contrastive-Coding-Based Open-Set Domain Generalization Framework for Machinery Fault Diagnosis
@@ -648,7 +658,8 @@ Zhao~和Shen~
 - **摘要**: Domain generalization detection of fault categories in industrial equipment diagnosis is a challenging problem, as it demands a model with high generalization performance. Previous methods have primarily focused on a closed set, implying that the label spaces of the training and testing sets are identical. However, this approach is insufficient to reason about the intricate industrial dynamics. In this article, we fuse domain generalization and open-set recognition to introduce a new domain generalization fault diagnosis scenario, called open-set domain generalization. It learns from different source domains to achieve high performance on unknown target domains, where the distribution and label set can be different for each source and target domain. The problem can be more applicable to real-world industrial applications. In addition, we propose a multidomain contrastive coding (MDCC) framework to learn open-set domain generalizable representations. We conduct multidomain contrastive coding by designing a new contrastive coding task and loss to preserve domain-unique knowledge and generalize knowledge across domains simultaneously. Experimental results on two multidomain datasets demonstrate that the proposed MDCC framework outperforms prior methods in open-set domain generalization.
 - **论文中的描述**: B. Lu et al. design a contrastive embedding-based diagnostic strategy that jointly preserves domain-specific and domain-invariant features, termed MDCC.
 
-文献\cite{}中，
+文献\cite{10382502}中，
+Lu~等人
 
 ### [13] 20242516270368
 - **标题**: How Good Are LLMs at Out-of-Distribution Detection?
@@ -661,7 +672,8 @@ Zhao~和Shen~
 - **摘要**: Out-of-distribution (OOD) detection plays a vital role in enhancing the reliability of machine learning models. As large language models (LLMs) become more prevalent, the applicability of prior research on OOD detection that utilized smaller-scale Transformers such as BERT, RoBERTa, and GPT-2 may be challenged, due to the significant differences in the scale of these models, their pre-training objectives, and the paradigms used for inference. This paper initiates a pioneering empirical investigation into the OOD detection capabilities of LLMs, focusing on the LLaMA series ranging from 7B to 65B in size. We thoroughly evaluate commonly used OOD detectors, examining their performance in both zero-grad and fine-tuning scenarios. Notably, we alter previous discriminative in-distribution fine-tuning into generative fine-tuning, aligning the pre-training objective of LLMs with downstream tasks. Our findings unveil that a simple cosine distance OOD detector demonstrates superior efficacy, outperforming other OOD detectors. We provide an intriguing explanation for this phenomenon by highlighting the isotropic nature of the embedding spaces of LLMs, which distinctly contrasts with the anisotropic property observed in smaller BERT family models. The new insight enhances our understanding of how LLMs detect OOD data, thereby enhancing their adaptability and reliability in dynamic environments. We have released the source code at https://github.com/Awenbocc/LLM-OOD for other researchers to reproduce our results.
 - **论文中的描述**: B. Liu et al. benchmark LLaMA-series LLMs for undesired input detection and design a cosine distance-based detector using isotropic embeddings, termed LLM-OOD.
 
-文献\cite{}中，
+文献\cite{20242516270368}中，
+Liu~等人
 
 ### [14] 20251218102787
 - **标题**: LLM-Check: Investigating Detection of Hallucinations in Large Language Models
@@ -674,7 +686,8 @@ Zhao~和Shen~
 - **摘要**: While Large Language Models (LLMs) have become immensely popular due to their outstanding performance on a broad range of tasks, these models are prone to producing hallucinations— outputs that are fallacious or fabricated yet often appear plausible or tenable at a glance. In this paper, we conduct a comprehensive investigation into the nature of hallucinations within LLMs and furthermore explore effective techniques for detecting such inaccuracies in various real-world settings. Prior approaches to detect hallucinations in LLM outputs, such as consistency checks or retrieval-based methods, typically assume access to multiple model responses or large databases. These techniques, however, tend to be computationally expensive in practice, thereby limiting their applicability to real-time analysis. In contrast, in this work, we seek to identify hallucinations within a single response in both white-box and black-box settings by analyzing the internal hidden states, attention maps, and output prediction probabilities of an auxiliary LLM. In addition, we also study hallucination detection in scenarios where ground-truth references are also available, such as in the setting of Retrieval-Augmented Generation (RAG). We demonstrate that the proposed detection methods are extremely compute-efficient, with speedups of up to 45x and 450x over other baselines, while achieving significant improvements in detection performance over diverse datasets.
 - **论文中的描述**: G. Sriramanan et al. design a compute-efficient detector that leverages the model's internal attention maps, termed LLM-Check.
 
-文献\cite{}中，
+文献\cite{20251218102787}中，
+Sriramanan~等人
 
 ### [15] 20243917091282
 - **标题**: Shifting Attention to Relevance: Towards the Predictive Uncertainty Quantification of Free-Form Large Language Models
@@ -687,7 +700,8 @@ Zhao~和Shen~
 - **摘要**: Large Language Models (LLMs) show promising results in language generation and instruction following but frequently “hallucinate”, making their outputs less reliable. Despite Uncertainty Quantification’s (UQ) potential solutions, implementing it accurately within LLMs is challenging. Our research introduces a simple heuristic: not all tokens in auto-regressive LLM text equally represent the underlying meaning, as “linguistic redundancy” often allows a few keywords to convey the essence of long sentences. However, current methods underestimate this inequality when assessing uncertainty, causing tokens with limited semantics to be equally or excessively weighted in UQ. To correct this, we propose Shifting Attention to more Relevant (SAR) components at both token- and sentence-levels for better UQ. We conduct extensive experiments involving a range of popular “off-the-shelf” LLMs, such as Vicuna, WizardLM, and LLaMA-2-chat, with model sizes extending up to 33B parameters. We evaluate various free-form question-answering tasks, encompassing domains such as reading comprehension, science Q&A, and medical Q&A. Our experimental results, coupled with a comprehensive demographic analysis, demonstrate the superior performance of SAR. The code is available at https://github.com/jinhaoduan/SAR.
 - **论文中的描述**: J. Duan et al. develop a hallucination quantification approach by reweighting token- and sequence-level relevance.
 
-文献\cite{}中，
+文献\cite{20243917091282}中，
+Duan~等人
 
 ### [16] 20240715556058
 - **标题**: Enhancing Uncertainty-Based Hallucination Detection with Stronger Focus
@@ -700,7 +714,8 @@ Zhao~和Shen~
 - **摘要**: Large Language Models (LLMs) have gained significant popularity for their impressive performance across diverse fields. However, LLMs are prone to hallucinate untruthful or nonsensical outputs that fail to meet user expectations in many real-world applications. Existing works for detecting hallucinations in LLMs either rely on external knowledge for reference retrieval or require sampling multiple responses from the LLM for consistency verification, making these methods costly and inefficient. In this paper, we propose a novel reference-free, uncertainty-based method for detecting hallucinations in LLMs. Our approach imitates human focus in factuality checking from three aspects: 1) focus on the most informative and important keywords in the given text; 2) focus on the unreliable tokens in historical context which may lead to a cascade of hallucinations; and 3) focus on the token properties such as token type and token frequency. Experimental results on relevant datasets demonstrate the effectiveness of our proposed method, which achieves state-of-the-art performance across all the evaluation metrics and eliminates the need for additional information.
 - **论文中的描述**: T. Zhang et al. introduce a retrieval-free detector that quantifies hallucinations through token-level uncertainty.
 
-文献\cite{}中，
+文献\cite{20240715556058}中，
+Zhang~等人
 
 ### [17] selfcheckgpt
 - **标题**: SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models
@@ -713,7 +728,8 @@ Zhao~和Shen~
 - **摘要**: Generative Large Language Models (LLMs) such as GPT-3 are capable of generating highly fluent responses to a wide variety of user prompts. However, LLMs are known to hallucinate facts and make non-factual statements which can undermine trust in their output. Existing fact-checking approaches either require access to the output probability distribution (which may not be available for systems such as ChatGPT) or external databases that are interfaced via separate, often complex, modules. In this work, we propose "SelfCheckGPT", a simple sampling-based approach that can be used to fact-check the responses of black-box models in a zero-resource fashion, i.e. without an external database. SelfCheckGPT leverages the simple idea that if an LLM has knowledge of a given concept, sampled responses are likely to be similar and contain consistent facts. However, for hallucinated facts, stochastically sampled responses are likely to diverge and contradict one another. We investigate this approach by using GPT-3 to generate passages about individuals from the WikiBio dataset, and manually annotate the factuality of the generated passages. We demonstrate that SelfCheckGPT can: i) detect non-factual and factual sentences; and ii) rank passages in terms of factuality. We compare our approach to several baselines and show that our approach has considerably higher AUC-PR scores in sentence-level hallucination detection and higher correlation scores in passage-level factuality assessment compared to grey-box methods.
 - **论文中的描述**: P. Manakul et al. propose SelfCheckGPT, which assesses hallucinations by sampling multiple black-box LLM responses and measuring their mutual consistency.
 
-文献\cite{}中，
+文献\cite{selfcheckgpt}中，
+Manakul~等人
 
 ### [18] su-etal-2024-unsupervised
 - **标题**: Unsupervised Real-Time Hallucination Detection based on the Internal States of Large Language Models
@@ -726,7 +742,8 @@ Zhao~和Shen~
 - **摘要**: Hallucinations in large language models (LLMs) refer to the phenomenon of LLMs producing responses that are coherent yet factually inaccurate. This issue undermines the effectiveness of LLMs in practical applications, necessitating research into detecting and mitigating hallucinations of LLMs. Previous studies have mainly concentrated on post-processing techniques for hallucination detection, which tend to be computationally intensive and limited in effectiveness due to their separation from the LLM’s inference process. To overcome these limitations, we introduce MIND, an unsupervised training framework that leverages the internal states of LLMs for real-time hallucination detection without requiring manual annotations. Additionally, we present HELM, a new benchmark for evaluating hallucination detection across multiple LLMs, featuring diverse LLM outputs and the internal states of LLMs during their inference process. Our experiments demonstrate that MIND outperforms existing state-of-the-art methods in hallucination detection.
 - **论文中的描述**: W. Su et al. propose a real-time and annotation-free hallucination detection framework using the internal states of LLMs, termed MIND.
 
-文献\cite{}中，
+文献\cite{su-etal-2024-unsupervised}中，
+Su~等人
 
 ### [19] 10.1007/978-3-031-86623-4_13
 - **标题**: Detecting Hallucinations in Large Language Model Generation: A Token Probability Approach
@@ -739,7 +756,8 @@ Zhao~和Shen~
 - **摘要**: Concerns regarding the propensity of Large Language Models (LLMs) to produce inaccurate outputs, also known as hallucinations, have escalated. Detecting them is vital for ensuring the reliability of applications relying on LLM-generated content. Current methods often demand substantial resources and rely on extensive LLMs or employ supervised learning with multidimensional features or intricate linguistic and semantic analyses difficult to reproduce and largely depend on using the same LLM that hallucinated. This paper introduces a supervised learning approach employing two simple classifiers utilizing only four numerical features derived from tokens and vocabulary probabilities obtained from other LLM evaluators, which are not necessarily the same. The method yields promising results, surpassing state-of-the-art outcomes in multiple tasks across three different benchmarks. Additionally, we provide a comprehensive examination of the strengths and weaknesses of our approach, highlighting the significance of the features utilized and the LLM employed as an evaluator. We have released our code publicly at this https URL.
 - **论文中的描述**: E. Quevedo et al. propose a supervised approach that utilizes an auxiliary detector trained on resource-efficient numerical features, termed SHalluDetect.
 
-文献\cite{}中，
+文献\cite{10.1007/978-3-031-86623-4_13}中，
+Quevedo~等人
 
 ### [20] li-etal-2023-halueval
 - **标题**: HaluEval: A Large-Scale Hallucination Evaluation Benchmark for Large Language Models
@@ -753,4 +771,5 @@ Zhao~和Shen~
 
 - **论文中的描述**: J. Li et al. develop a benchmark via sampling-then-filtering and annotation for hallucination analysis.
 
-文献\cite{}中，
+文献\cite{li-etal-2023-halueval}中，
+Li~等人
