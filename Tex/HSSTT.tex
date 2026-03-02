@@ -1,4 +1,4 @@
-\chapter{}\label{chap:HSSTT}
+\chapter{基于层次化随机时空Transformer的锂离子电池健康状态可信估计方法}\label{chap:HSSTT}
 
 \section{引言}\label{sec:HSSTT_introduction}
 
@@ -40,7 +40,7 @@ To address these issues, we propose a \textbf{H}ierarchical \textbf{S}tochastic 
   \item We conduct comprehensive experiments on three public datasets to evaluate the performance of HSSTT, and experimental results confirm the effectiveness and superiority of HSSTT for trustworthy SOH estimation.
 \end{enumerate}
 
-\section{锂离子电池健康状态估计方法}\label{sec:HSSTT_methodology}
+\section{基于层次化随机时空Transformer的状态估计方法}\label{sec:HSSTT_methodology}
 
 In this section, we elaborate on the proposed HSSTT framework, provide an in-depth analysis of the deployment of HSSTT in practical industrial scenarios, and detail the methodology for achieving trustworthy SOH estimation. As depicted in Fig.~\ref{fig:hsstt_framework}, correlation information between tokens are aggregated by the proposed stochastic self-attention. And degradation dynamics are captured by the designed uncertainty-aware spatial-temporal feature encoder and mapped to SOH through the downstream regressor. Model uncertainty is quantified employing Monte Carlo sampling and further calibrated by the proposed principled auxiliary model.
 

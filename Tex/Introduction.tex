@@ -98,6 +98,126 @@ To address the aforementioned issues, we propose HSSTT, a method for trustworthy
 
 \subsection{面向分布漂移的退化建模方法研究现状}\label{subsec:degradation_modeling}
 
+\begin{table}[htbp]
+\centering
+\caption{本节主要符号说明}  % 或：域适应场景符号定义
+\label{tab:symbols}
+\renewcommand{\arraystretch}{1.4} 
+\setlength{\tabcolsep}{8pt}
+\begin{tabularx}{\textwidth}{@{\hspace{0.5em}}>{\centering\arraybackslash}m{1.8cm}XX@{\hspace{0.5em}}}
+\toprule
+{符号} & \multicolumn{1}{c}{{定义}} & \multicolumn{1}{c}{{说明}} \\
+\midrule
+$\mathcal{X}, \mathcal{Y}$ 
+& 特征空间 $\mathcal{X} \subset \mathbb{R}^d$，标签空间 $\mathcal{Y}$ 形式视具体任务而定
+& 退化建模任务中 $\mathcal{Y} \subseteq \mathbb{R}^m$，故障诊断任务中 $\mathcal{Y} = \{1, 2, \dots, K\}$ \\
+
+$d, m, K$ 
+& 空间维数与类别总数参量 
+& $d$ 为输入特征维数，$m$ 为退化指标维数，$K$ 为故障类型总数 \\
+
+$X, Y$ 
+& 取值于 $\mathcal{X}$ 与 $\mathcal{Y}$ 的随机变量 
+& 服从特定的联合概率分布 $P(X,Y)$ \\
+
+$D_S, D_T$ 
+& 源域数据集与目标域数据集 
+& 分布漂移形式化为 $P_S(X,Y) \neq P_T(X,Y)$ \\
+
+$D_{T_L}, D_{T_U}$ 
+& 目标域有标签子集与无标签子集 
+& 满足 $D_T = D_{T_L} \cup D_{T_U}$ 且 $D_{T_L} \cap D_{T_U} = \emptyset$ \\
+
+$P_S, P_T$ 
+& 源域与目标域联合概率分布 
+& 包含边缘分布 $P(X)$ 及条件分布 $P(Y|X)$ \\
+
+$f_\theta$ 
+& 参数为 $\theta$ 的映射函数 $\mathcal{X} \to \mathcal{Y}$ 
+& 不失一般性地，可分解为特征提取器 $g$ 和预测头 $h$，有 $f_\theta = h \circ g$ \\
+
+$\theta_S$ 
+& 源域预训练模型参数 
+& 依据 $\theta_S = \arg\min_\theta \hat{\mathcal{R}}(f_\theta, D_S)$ 优化获得 \\
+
+$\ell(\hat{y}, y)$ 
+& 单样本的预测误差损失函数 
+& 退化建模任务通常采用均方误差损失，故障诊断任务通常采用交叉熵损失 \\
+
+$\hat{\mathcal{R}}(f_\theta, D)$ 
+& 模型 $f_\theta$ 在数据集 $D$ 上的经验风险 
+& 形式化为 $\hat{\mathcal{R}} = \frac{1}{|D|}\sum_{(x,y)\in D} \ell(f_\theta(x), y)$ \\
+
+$d(P_1, P_2)$ 
+& 概率分布 $P_1$ 与 $P_2$ 间的散度度量 
+& 依据特征对齐策略选取特定度量函数 \\
+
+$\mathcal{H}(p)$ 
+& 概率分布 $p$ 的信息熵 
+& 定义为 $\mathcal{H}(p) = -\sum p \log p$，针对故障诊断任务估计类别不确定性 \\
+
+$\text{supp}(P)$ 
+& 分布 $P$ 的支撑集 
+& 随机变量概率密度严格大于零的取值域 \\
+
+$\Omega, \mathcal{L}$ 
+& 正则化项与辅助损失函数 
+& 依据具体自适应或泛化约束任务严格设定 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{按目标域数据可访问性区分的~PHM~典型场景}
+\label{tab:generalization_framework}
+\renewcommand{\arraystretch}{2.0} 
+\setlength{\tabcolsep}{10pt}  % 增加列间距（默认约6pt）
+\renewcommand{\tabularxcolumn}[1]{m{#1}}  % 使X列内容垂直居中
+\newcolumntype{C}{>{\centering\arraybackslash}X}  % 定义水平居中的X列
+\begin{tabularx}{\textwidth}{@{\hspace{0.6em}}>{\centering\arraybackslash}m{0.14\textwidth}CCC@{\hspace{0.6em}}}
+\toprule
+\multicolumn{1}{c}{{访问层级}} & \multicolumn{1}{c}{{任务设定}} & \multicolumn{1}{c}{{退化建模问题}} & \multicolumn{1}{c}{{故障诊断问题}} \\
+\midrule
+{完全监督微调} 
+& 给定 $D_S$ 与大规模 $D_{T_L}$，有 $P_S \neq P_T$ 且 $\mathcal{Y}_S = \mathcal{Y}_T$ 
+& $\min_{\theta} \hat{\mathcal{R}}(f_\theta, D_{T_L}) + \Omega(\theta, \theta_S)$ 
+& $\min_{\theta} \hat{\mathcal{R}}(f_\theta, D_{T_L}) + \Omega(\theta, \theta_S)$ \\
+\midrule
+{半监督自适应} 
+& 给定 $D_S$、少量 $D_{T_L}$ 与大量 $D_{T_U}$，$\mathcal{Y}_S = \mathcal{Y}_T$ 
+& $\min_{\theta}[\hat{\mathcal{R}}(D_S) + \lambda_1 \hat{\mathcal{R}}(D_{T_L}) + \lambda_2 \mathcal{L}_{\text{ada}}]$ 
+& $\min_{\theta}[\hat{\mathcal{R}}(D_S) + \lambda_1 \hat{\mathcal{R}}(D_{T_L}) + \lambda_2 \mathcal{L}_{\text{ada}}]$ \\
+\midrule
+{标准无监督自适应} 
+& 给定全量 $D_S$ 与 $D_{T_U}$，目标域无标注，即 $D_{T_L} = \emptyset$
+& $\min_{\theta} \hat{\mathcal{R}}(D_S) + \lambda d(P_S(X), P_T(X))$ \newline $P_S(X) \neq P_T(X)$ 且 $P_S(Y|X) = P_T(Y|X)$ 
+& $\min_{\theta} \hat{\mathcal{R}}(D_S) + \lambda d(P_S(X), P_T(X))$ \newline $\mathcal{Y}_S = \mathcal{Y}_T$ (闭集) / $\mathcal{Y}_T \subset \mathcal{Y}_S$ (局部) / $\mathcal{Y}_S \subset \mathcal{Y}_T$ (开集) \\
+\midrule
+{无源域自适应} 
+& 仅给定参数 $\theta_S$ 与 $D_{T_U}$，源域 $D_S$ 不可访问 
+& $\theta_0 = \theta_S$ \newline $\min_{\theta} \mathcal{L}_{\text{con}}(f_\theta, X_{T_U})$ 
+& $\theta_0 = \theta_S$ \newline $\min_{\theta} \mathcal{H}(f_\theta(X_{T_U})) - \mathcal{H}(\mathbb{E}[f_\theta(X_{T_U})])$ \\
+\midrule
+{测试期自适应} 
+& 仅给定 $\theta_S$，流式无标签数据 $x_t \sim P_T(X)$ 仅能单次遍历 
+& $\theta_t \leftarrow \theta_{t-1} - \eta \nabla_\theta \|f_{\theta_{t-1}}(x_t) - \tilde{y}_t\|^2$ 
+& $\theta_t \leftarrow \theta_{t-1} - \eta \nabla_\theta \mathcal{H}(f_{\theta_{t-1}}(x_t))$ \\
+\midrule
+{域泛化} 
+& 访问 $N_S$ 个源域 $\{D_{S_i}\}_{i=1}^{N_S}$，目标域 $D_T$ 为完全黑盒 
+& $\min_{\theta} \sum_{i=1}^{N_S} \hat{\mathcal{R}}(D_{S_i}) + \lambda\mathcal{L}_{\text{str}}$ \newline $\text{supp}(P_T(Y)) \not\subset \cup_{i} \text{supp}(P_{S_i}(Y))$ 
+& $\min_{\theta} \sum_{i=1}^{N_S} \hat{\mathcal{R}}(D_{S_i}) + \lambda\mathcal{L}_{\text{inv}}$ \newline $\mathcal{Y}_{test} \setminus (\cup_{i} \mathcal{Y}_{S_i}) \neq \emptyset$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+现有面向~PHM~的泛化研究工作包含多种技术范式和应用场景，本节对已有方法进行系统性归纳和形式化表示以便后续讨论。
+% 
+表~\ref{tab:symbols}~定义了所需的数学符号，表~\ref{tab:generalization_framework}~从两个维度划分现有工作，第一个维度是任务属性，即~PHM~领域涉及的退化建模问题和故障诊断问题，第二个维度是模型在不同阶段，尤其是测试阶段，对目标域数据的可访问性，以此划分出六种典型场景。
+% 
+如~表~\ref{tab:generalization_framework}所示，在目标域数据有标签可用时，直接微调基于源域训练的模型参数即可；当目标域数据只有少量有标签而大部分无标签时，往往通过设计域适应正则项 $\mathcal{L}_{\text{ada}}$ 对齐数据分布；若在通常的泛化问题上添加特殊的设定，如源域数据不可访问或目标域的无标签数据随时间流式、单次地给出，即得到无源域自适应问题和测试时自适应问题，前者的研究挑战转变为设计自监督信号，例如设置一致性正则项 $\mathcal{L}_{\text{con}}$，后者的参数更新则往往采用在线的形式；当目标域数据完全不可用时，优化目标在于学习域不变表征以分别应对退化趋势外推预测与未知故障辨识的挑战。具体地，对退化建模问题，通常涉及结构正则项 $\mathcal{L}_{\text{str}}$，对故障诊断问题则通常引入不变性风险惩罚项 $\mathcal{L}_{\text{inv}}$。
+
 （1）{基于预训练-微调范式的退化建模}
 
 % In \cite{LI2021116410}, Li等人 propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
