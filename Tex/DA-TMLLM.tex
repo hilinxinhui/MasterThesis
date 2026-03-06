@@ -55,7 +55,7 @@ The contributions of DA-TMLLM are as follows:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/whole_framework.eps}
+    \includegraphics[width=1\textwidth]{Img/DA-TMLLM_figures/trans/whole_framework.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:da-tmllm_framework}
 \end{figure}
@@ -148,8 +148,8 @@ During diffusion model training, the ControlNet's encoder and classifier weights
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.3in]{Img/DA-TMLLM_figures/trans/ControlNet.eps}
-	\caption{The architecture of ControlNet.}
+	\includegraphics[width=0.8\textwidth]{Img/DA-TMLLM_figures/trans/ControlNet.eps}
+	\caption{}{The architecture of ControlNet.}
 	\label{fig_controlnet}
 \end{figure}
 
@@ -316,8 +316,8 @@ Accordingly, we adopt $\mathit{Token}_{\delta-1}$ as our key token for undesired
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.5in]{Img/DA-TMLLM_figures/trans/correlation.eps}
-	\caption{The point-biserial correlation coefficient $r_{\mathrm{pb}}$ and two-sided $p$-value $p_{\text{two-sided}}$ between the binary input type and the token-energy sequence within $\pm L_{\mathrm{win}}$ centered on $\mathit{Token}_{\delta}$. Based on the combined theoretical basis and statistical evidence, $\mathit{Token}_{\delta-1}$ is selected as the key token for undesired input detection.}
+	\includegraphics[width=0.8\textwidth]{Img/DA-TMLLM_figures/trans/correlation.eps}
+	\caption{}{The point-biserial correlation coefficient $r_{\mathrm{pb}}$ and two-sided $p$-value $p_{\text{two-sided}}$ between the binary input type and the token-energy sequence within $\pm L_{\mathrm{win}}$ centered on $\mathit{Token}_{\delta}$. Based on the combined theoretical basis and statistical evidence, $\mathit{Token}_{\delta-1}$ is selected as the key token for undesired input detection.}
 	\label{fig_correlation}
 \end{figure}
 
@@ -362,8 +362,8 @@ $\tilde{\operatorname{NLL}}(\mathit{Token}_k)$, then the uncertainty of the key 
 
 \begin{figure}[!t]
 	\centering
-	\includegraphics[width=3.5in]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
-	\caption{Illustration of the key token-driven uncertainty reweighting strategy.}
+	\includegraphics[width=0.8\textwidth]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
+	\caption{}{Illustration of the key token-driven uncertainty reweighting strategy.}
 	\label{fig_strategy}
 \end{figure}
 
@@ -482,7 +482,7 @@ The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{Ma
 \setlength{\tabcolsep}{5pt}
 \begin{table*}[!htbp]
 	\footnotesize
-	\caption{Datasets overview}
+	\caption{}{Datasets overview}
 	\centering
 	\label{tab:Detailed datasets} % Give a unique label
 	\begin{tabular}{lccccccccccc} % 10 列
@@ -631,25 +631,42 @@ Eight metrics are utilized for comprehensive evaluation of DA-TMLLM and comparat
 
 We evaluate the hallucination-resilient fault diagnosis performance of DA-TMLLM and the eleven baseline models on the MBHM, MaFaulDa, and UP dataset. Table~\ref{tab:comparison result1} demonstrates the results for scenario 1, 2, and 3 using five metrics, including DS-ACC, G-ACC, AUROC, FAR@95, and AUPR. The experimental results underscore the superiority of DA-TMLLM, which substantially and consistently outperforms all baseline models. In Scenario 1, our model improves DS-ACC and G-ACC by 4.05\% and 5.51\% over the second-best model while achieving ideal detection performance. This dominance is maintained in the complex mixed-domain setting of Scenario 3, where it again secures state-of-the-art results across all metrics. The single exception is in Scenario 2, where DA-TMLLM is marginally second to WDSN on the AUPR metric. Nevertheless, it still leads in G-ACC and delivers a 98.95\% FAR@95 reduction from the closest baseline. Averaging a 6.85\% improvement in G-ACC and a 99.65\% reduction in FAR@95 against the strongest competitors, DA-TMLLM effectively demonstrates its capacity for concurrently performing high-accuracy fault diagnosis and robust hallucination detection. In contrast, baseline models exhibit limitations. VQVAE, DCGAN, QSCGAN, and BearLLM, lacking explicit hallucination detection capability, cannot reliably distinguish between domain-specific and undesired inputs, evidenced by a sharp degradation from DS-ACC to G-ACC and poor AUROC and AUPR scores. Among baselines with detection capabilities, a performance trade-off can be observed. The CDLMs, including MLMM, WDSN, and MDCC, generally prove more adept at hallucination detection. Conversely, LLM-based approaches, including LLMCheck, MIND, SHalluDetect, and LLM-OOD, demonstrate superior in-distribution classification. Both categories tend to misclassify valid domain-specific samples as undesired while being overly conservative in processing inputs flagged as hallucinations.
 
-To illustrate hallucination-resilient diagnosis performance across varying decision thresholds, we plot the receiver operating characteristic (ROC) and precision-recall (PR) curves, as depicted in Fig.~\ref{fig:Performance_Comparison_2}. These visualizations graphically corroborate the quantitative findings in Table~\ref{tab:comparison result1}. The ROC curve for DA-TMLLM consistently occupies the ideal top-left corner across all scenarios, signifying superior separability, which aligns with its AUROC and FAR@95 scores. Similarly, the PR curves show our model positioned closest to the top-right corner, maintaining exceptionally high precision across the recall spectrum and confirming its AUPR values. In stark contrast, the curves for baseline models are substantially inferior, reinforcing the conclusion that DA-TMLLM achieves more robust and reliable hallucination detection.
+To illustrate hallucination-resilient diagnosis performance across varying decision thresholds, we plot the receiver operating characteristic (ROC) and precision-recall (PR) curves, as depicted in Fig.~\ref{ig:DA-TMLLM_Performance_Comparison}. These visualizations graphically corroborate the quantitative findings in Table~\ref{tab:comparison result1}. The ROC curve for DA-TMLLM consistently occupies the ideal top-left corner across all scenarios, signifying superior separability, which aligns with its AUROC and FAR@95 scores. Similarly, the PR curves show our model positioned closest to the top-right corner, maintaining exceptionally high precision across the recall spectrum and confirming its AUPR values. In stark contrast, the curves for baseline models are substantially inferior, reinforcing the conclusion that DA-TMLLM achieves more robust and reliable hallucination detection.
 
 \begin{figure*}[htbp]
-	\centering
-	\subfloat[ROC curves in three scenarios]{
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/ROC_s1.eps}
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/ROC_s2.eps}
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/ROC_s3.eps}
-	}
-	\hfil
-	\subfloat[PR curves in three scenarios]{
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/PR_s1.eps}
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/PR_s2.eps}
-		\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/PR_s3.eps}
-	}
-	\hfil
-	% \caption{ROC and PR curves comparing the proposed DA-TMLLM with baseline models for hallucination-resilient diagnosis across the three scenarios.}
-	\caption{Comparison of ROC and PR curves between the proposed DA-TMLLM and baseline models for hallucination-resilient diagnosis across the three scenarios.}
-	\label{fig:Performance_Comparison_2}
+    \centering
+    \subfloat[Scenario 1]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/ROC_s1.eps}
+    }
+    \hfill
+    \subfloat[Scenario 2]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/ROC_s2.eps}
+    }
+    
+    \vspace{2em}
+    \subfloat[Scenario 3]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/ROC_s3.eps}
+    }
+    \caption{Comparison of ROC curves between the proposed DA-TMLLM and baseline models across the three scenarios.}
+    \label{fig:DA-TMLLM_ROC_comparison}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfloat[Scenario 1]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/PR_s1.eps}
+    }
+    \hfill
+    \subfloat[Scenario 2]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/PR_s2.eps}
+    }
+    
+    \vspace{2em}
+    \subfloat[Scenario 3]{
+        \includegraphics[width=0.46\linewidth]{Img/DA-TMLLM_figures/trans/PR_s3.eps}
+    }
+    \caption{Comparison of PR curves between the proposed DA-TMLLM and baseline models across the three scenarios.}
+    \label{fig:DA-TMLLM_PR_comparison}
 \end{figure*}
 
 As shown in Fig.~\ref{fig:Performance_Comparison_3}, we further utilize the expanded confusion matrices of DA-TMLLM and the baseline models to quantify the two critical error types in hallucination‐resilient diagnosis, namely erroneous acceptance of undesired inputs and erroneous rejection of domain‐specific samples.
@@ -657,38 +674,84 @@ The expanded confusion matrices jointly present hallucination‐detection outcom
 
 % "As a baseline, we evaluated a model with no specific capability for undesired sample detection. As expected, its FAR@95 score was extremely high, approaching 1. This is because to achieve the 95% recall target, the model's decision threshold must be lowered to a point where it misclassifies nearly all domain-specific samples. This result serves as a sanity check and highlights the challenging nature of the task. In contrast, our proposed model achieves a significantly lower FAR@95 of X.XX, demonstrating its superior ability to distinguish undesired samples with minimal false alarms."
 
-\begin{figure*}[htbp]
-	\centering
-	% --- 第一行 ---
-	\subfloat[BearLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/1_BearLLM.eps} \label{fig:sub1}}
-	\hfil
-	\subfloat[DCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/2_DCGAN.eps} \label{fig:sub2}}
-	\hfil
-	\subfloat[QSCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/3_QSCGAN.eps} \label{fig:sub3}}
+% \begin{figure*}[htbp]
+% 	\centering
+% 	% --- 第一行 ---
+% 	\subfloat[BearLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/1_BearLLM.eps} \label{fig:sub1}}
+% 	\hfil
+% 	\subfloat[DCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/2_DCGAN.eps} \label{fig:sub2}}
+% 	\hfil
+% 	\subfloat[QSCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/3_QSCGAN.eps} \label{fig:sub3}}
 	
-	% --- 第二行 ---
-	\subfloat[VQVAE]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/4_VQVAE.eps} \label{fig:sub4}}
-	\hfil
-	\subfloat[MLMM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/5_MLMM.eps} \label{fig:sub5}}
-	\hfil
-	\subfloat[WDSN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/6_WDSN.eps} \label{fig:sub6}}
+% 	% --- 第二行 ---
+% 	\subfloat[VQVAE]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/4_VQVAE.eps} \label{fig:sub4}}
+% 	\hfil
+% 	\subfloat[MLMM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/5_MLMM.eps} \label{fig:sub5}}
+% 	\hfil
+% 	\subfloat[WDSN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/6_WDSN.eps} \label{fig:sub6}}
 	
-	% --- 第三行 ---
-	\subfloat[MDCC]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/7_MDCC.eps} \label{fig:sub7}}
-	\hfil
-	\subfloat[LLM-Check]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/8_LLM-Check.eps} \label{fig:sub8}}
-	\hfil
-	\subfloat[MIND]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/9_MIND.eps} \label{fig:sub9}}
+% 	% --- 第三行 ---
+% 	\subfloat[MDCC]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/7_MDCC.eps} \label{fig:sub7}}
+% 	\hfil
+% 	\subfloat[LLM-Check]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/8_LLM-Check.eps} \label{fig:sub8}}
+% 	\hfil
+% 	\subfloat[MIND]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/9_MIND.eps} \label{fig:sub9}}
 	
-	% --- 第四行 ---
-	\subfloat[SHalluDetect]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/10_SHalluDetect.eps} \label{fig:sub10}}
-	\hfil
-	\subfloat[LLM-OOD]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/11_LLM-OOD.eps} \label{fig:sub11}}
-	\hfil
-	\subfloat[DA-TMLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/12_DA-TMLLM.eps} \label{fig:sub12}}
+% 	% --- 第四行 ---
+% 	\subfloat[SHalluDetect]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/10_SHalluDetect.eps} \label{fig:sub10}}
+% 	\hfil
+% 	\subfloat[LLM-OOD]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/11_LLM-OOD.eps} \label{fig:sub11}}
+% 	\hfil
+% 	\subfloat[DA-TMLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/12_DA-TMLLM.eps} \label{fig:sub12}}
 
-	\caption{Expanded confusion matrices comparing DA-TMLLM with the baseline models for hallucination-resilient diagnosis in the scenario 3.}
-	\label{fig:Performance_Comparison_3}
+% 	\caption{Expanded confusion matrices comparing DA-TMLLM with the baseline models for hallucination-resilient diagnosis in the scenario 3.}
+% 	\label{fig:Performance_Comparison_3}
+% \end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    % 第一行
+    \subfloat[BearLLM]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/1_BearLLM.eps} \label{fig:BearLLM}}
+    \hfill
+    \subfloat[DCGAN]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/2_DCGAN.eps} \label{fig:DCGAN}}
+    
+    \vspace{1em}
+    % 第二行
+    \subfloat[QSCGAN]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/3_QSCGAN.eps} \label{fig:QSCGAN}}
+    \hfill
+    \subfloat[VQVAE]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/4_VQVAE.eps} \label{fig:VQVAE}}
+    
+    \vspace{1em}
+    % 第三行
+    \subfloat[MLMM]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/5_MLMM.eps} \label{fig:MLMM}}
+    \hfill
+    \subfloat[WDSN]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/6_WDSN.eps} \label{fig:WDSN}}
+
+    \caption{Expanded confusion matrices comparing baseline models for hallucination-resilient diagnosis in scenario 3 Part 1.}
+    \label{fig:DA-TMLLM_Performance_Comparison_3_Part1}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    % 第一行
+    \subfloat[MDCC]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/7_MDCC.eps} \label{fig:MDCC}}
+    \hfill
+    \subfloat[LLM-Check]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/8_LLM-Check.eps} \label{fig:LLM-Check}}
+    
+    \vspace{1em}
+    % 第二行
+    \subfloat[MIND]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/9_MIND.eps} \label{fig:MIND}}
+    \hfill
+    \subfloat[SHalluDetect]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/10_SHalluDetect.eps} \label{fig:SHalluDetect}}
+    
+    \vspace{1em}
+    % 第三行
+    \subfloat[LLM-OOD]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/11_LLM-OOD.eps} \label{fig:LLM-OOD}}
+    \hfill
+    \subfloat[DA-TMLLM]{\includegraphics[width=0.45\linewidth]{Img/DA-TMLLM_figures/trans/12_DA-TMLLM.eps} \label{fig:DA-TMLLM}}
+
+    \caption{Expanded confusion matrices comparing DA-TMLLM with further baseline models for hallucination-resilient diagnosis in scenario 3 Part 2.}
+    \label{fig:DA-TMLLM_Performance_Comparison_3_Part2}
 \end{figure*}
 
 \subsection{消融实验}\label{subsec:DA-TMLLM_ablation_study}
@@ -748,28 +811,28 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/sa1.eps}
+    \includegraphics[width=0.7\textwidth]{Img/DA-TMLLM_figures/trans/sa1.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa1}
 \end{figure}
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/sa2.eps}
+    \includegraphics[width=0.7\textwidth]{Img/DA-TMLLM_figures/trans/sa2.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa2}
 \end{figure}
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/sa3.eps}
+    \includegraphics[width=0.7\textwidth]{Img/DA-TMLLM_figures/trans/sa3.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa3}
 \end{figure}
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/sa4.eps}
+    \includegraphics[width=0.7\textwidth]{Img/DA-TMLLM_figures/trans/sa4.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa4}
 \end{figure}
