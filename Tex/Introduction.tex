@@ -75,7 +75,7 @@ In this section, we review methods related to robust battery degradation modelin
 % In this section, we review the related methods including CDLMs and LLMs for mitigating statistical bias, CDLMs and LLMs for rejecting undesired data, and LLMs for detecting sequence-level hallucinations.
 In this section, we review the related methods including (1) CDLMs and LLMs for mitigating statistical bias, (2) CDLMs and LLMs for rejecting undesired inputs, and (3) LLMs for detecting sequence-level hallucinations.
 
-\subsection{计及不确定性的健康状态估计方法研究现状}\label{subsec:SOH_estimation}
+\subsection{计及不确定性的健康状态估计研究现状}\label{subsec:SOH_estimation}
 
 （1）Uncertainty-aware Physics-based Prognostic Models % \label{subsec:physics-based_models}
 
@@ -137,7 +137,7 @@ Uncertainty-aware data-driven prognostic models can be classified into statistic
 储能系统是锂离子电池的一个重要应用领域，其使用电动汽车退役锂电池，也即梯次利用锂电池。在这个应用场景中，大规模处于不同生命周期的锂电池通过串联或并联在一起提供均衡稳定电能。储能系统中电池初始健康状态不尽相同，且不同局部的锂电池经历不同的充放电工况，导致了数据驱动的健康状态估计模型的评估不确定性。
 针对此，文献\cite{10391265}中，Jiang~等人提出了一种梯次利用锂离子电池健康状态评估方法，该方法设计了一种联合特征提取策略以从电池循环序列中结构包含工况无关退化机理的健康状态表征信息，随后，基于具备不确定性校准能力的BNN生成全局健康状态估计结果，并定量表征模型评估过程的不确定性。
 
-（3）研究的局限性
+（3）计及不确定性的健康状态估计研究的局限性
 
 Though advancements, there remains several open issues in delivering prognostic results that are both highly accurate and free from bias.
 % 
@@ -149,11 +149,13 @@ Third, due to their approximate nature, uncertainty-aware prognostic models may 
 % 
 To address the aforementioned issues, we propose HSSTT, a method for trustworthy SOH estimation that leverages uncertainty modeling and incorporates a calibration process to enhance both attention aggregation and the extraction of spatial-temporal degradation dependencies.
 
-\subsection{面向分布漂移的退化建模方法研究现状}\label{subsec:degradation_modeling}
+\subsection{面向分布漂移的退化建模研究现状}\label{subsec:degradation_modeling}
+
+现有面向~PHM~的泛化研究工作包含多种技术范式和应用场景，本节对已有方法进行系统性归纳和形式化表示以便后续讨论。
 
 \begin{table}[htbp]
 \centering
-\caption{本节主要符号说明}  % 或：域适应场景符号定义
+\caption{PHM~典型场景划分表涉及的主要符号定义}  % 或：域适应场景符号定义
 \label{tab:symbols}
 \renewcommand{\arraystretch}{1.4} 
 \setlength{\tabcolsep}{8pt}
@@ -222,7 +224,7 @@ $\Omega, \mathcal{L}$
 
 \begin{table}[htbp]
 \centering
-\caption{按目标域数据可访问性区分的~PHM~典型场景}
+\caption{按目标域数据可访问性划分的~PHM~典型场景}
 \label{tab:generalization_framework}
 \renewcommand{\arraystretch}{2.0} 
 \setlength{\tabcolsep}{10pt}  % 增加列间距（默认约6pt）
@@ -265,8 +267,6 @@ $\Omega, \mathcal{L}$
 \end{tabularx}
 \end{table}
 
-现有面向~PHM~的泛化研究工作包含多种技术范式和应用场景，本节对已有方法进行系统性归纳和形式化表示以便后续讨论。
-% 
 表~\ref{tab:symbols}~定义了所需的数学符号，表~\ref{tab:generalization_framework}~从两个维度划分现有工作，第一个维度是任务属性，即~PHM~领域涉及的退化建模问题和故障诊断问题，第二个维度是模型在不同阶段，尤其是测试阶段，对目标域数据的可访问性，以此划分出六种典型场景。
 % 
 如~表~\ref{tab:generalization_framework}所示，在目标域数据有标签可用时，直接微调基于源域训练的模型参数即可；当目标域数据只有少量有标签而大部分无标签时，往往通过设计域适应正则项 $\mathcal{L}_{\text{ada}}$ 对齐数据分布；若在通常的泛化问题上添加特殊的设定，如源域数据不可访问或目标域的无标签数据随时间流式、单次地给出，即得到无源域自适应问题和测试时自适应问题，前者的研究挑战转变为设计自监督信号，例如设置一致性正则项 $\mathcal{L}_{\text{con}}$，后者的参数更新则往往采用在线的形式；当目标域数据完全不可用时，优化目标在于学习域不变表征以分别应对退化趋势外推预测与未知故障辨识的挑战。具体地，对退化建模问题，通常涉及结构正则项 $\mathcal{L}_{\text{str}}$，对故障诊断问题则通常引入不变性风险惩罚项 $\mathcal{L}_{\text{inv}}$。
@@ -275,7 +275,7 @@ $\Omega, \mathcal{L}$
 
 % In \cite{LI2021116410}, Li等人 propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
 针对在线电池容量估计对轻量化模型的需求，文献\cite{LI2021116410}中，Li~等人提出了一种轻量化且可泛化的卷积神经网络（Convolutional Neural Networks, CNN），该方法基于快速递归算法对目标电池上的CNN模型执行后剪枝，通过基于预训练-微调的策略实现从大规模电池数据集训练所得CNN模型参数到目标电池稀缺数据集的定向迁移，加强模型部署时轻量化。
-电动汽车运行过程中存在的多种噪声扰动影响数据驱动模型状态估计的鲁棒性，文献\cite{9372902}中，Bhattacharjee~等人讨论了这种潜在的影响并提出了一种基于一维~CNN和预训练-微调策略的迁移学习框架，仅利用少量目标域的观测数据即完成充分的特征空间映射，实现了跨数据集的电池荷电状态估计。
+电动汽车运行过程中存在的多种噪声扰动影响数据驱动模型状态估计的鲁棒性，文献\cite{9372902}中，Bhattacharjee~等人讨论了这种潜在的影响并提出了一种基于一维~CNN和预训练-微调策略的迁移学习框架，仅利用少量目标域的观测数据即完成充分的特征空间映射，实现了跨数据集的电池荷电状态（State of Charge, SOC）估计。
 % In \cite{9343713}, Che等人 introduce an online self-calibrating model for RUL prediction using Gaussian process regression, long short-term memory neural network (LSTM), and a pretraining-finetuning strategy.
 文献\cite{9343713}中，Che~等人面向设备前瞻性维护和电池梯次利用提出一种基于优化健康因子与融合迁移学习的在线模型校正剩余寿命预测方法，该方法基于GPR自动搜索电池服役寿命终点（End of Life, EOL），通过微调门控循环神经网络（Gated Recurrent Neural Network, GRNN）实现高精度剩余寿命预测，并提出一种自校正策略迭代式提高模型在系统运行周期内预测能力。
 % In \cite{LIU2025115347}, Liu等人 fine-tune a bidirectional LSTM-Mamba2 model with differential voltage features to achieve SOH estimation across batteries with different operating conditions and electrode materials.
@@ -318,7 +318,7 @@ Domain generalization paradigm involves three main categories, namely data manip
 % In \cite{chen2023tsmixer}, Chen等人 develop a linear model capable of efficiently extracting spatio-temporal dependencies without relying on task-specific prior knowledge, known as TSMixer.
 文献\cite{chen2023tsmixer}中，Chen~等人提出多序列混合器，命名为~TSMixer，通过堆叠多层前馈网络并在时间轴与特征维度上执行混合变换，分别进行时间混合和特征混合，并通过时序投影步骤生成连续或单一时间步信息，从而有效挖掘跨序列信息。该方法结构上完全基于前馈网络，在迁移效率上具有显著优势。
 
-（4）研究的局限性
+（4）面向分布漂移的退化建模研究的局限性
 
 Due to dependency on target domain data, pretraining-finetuning and domain adaptation paradigms face deployment constraints in scenarios with dynamic operating conditions and partial observability.
 % Representation learning and meta-learning strategies eliminate the need for target domain samples but often rely on precise domain labels or complex pretext tasks, limiting their effectiveness in intricate transportation environments.
@@ -328,7 +328,7 @@ While the representation learning-based and meta learning-based methods enable t
 Though promising, data manipulation-based method faces open issues in robust battery prognosis, including scarce spatiotemporal degradation information, statistics uncertainty in feature spaces due to domain shifts, and the long-tail degradation distributions across multi-source domains.
 To address these issues, we propose RODTNet, a novel model for OOD degradation pattern generalization. It generates continuous degradation patterns within a low-complexity latent feature space through heuristic feature reconstruction and probabilistic feature statistics generation. Furthermore, we propose RODTNet-LT, an enhanced variant of RODTNet, which incorporates statistical feature correction to specifically address the long-tail distribution challenge.
 
-\subsection{幻觉鲁棒的故障诊断方法研究现状}\label{subsec:fault_diagnosis}
+\subsection{幻觉鲁棒的故障诊断研究现状}\label{subsec:fault_diagnosis}
 
 % 分为三类：
 % （1）
@@ -398,7 +398,7 @@ LLMs~在模型参数规模、预训练目标和推理范式上与传统模型存
 % 
 为了评估~LLMs~在何种内容和何种程度上容易产生幻觉，文献\cite{li-etal-2023-halueval}中，Li~等人构建了一个基准测试，提出了一种基于~ChatGPT~的先采样后过滤的两阶段数据生成框架，通过人工操作对模型响应中潜在的幻觉进行审查和标注，证明通过引入外部事实知识或在模型内部增加显示逻辑推理步骤可以提升模型自身的幻觉识别能力。
 
-（4）研究的局限性
+（4）幻觉鲁棒的故障诊断研究的局限性
 
 However, several open issues remain in improving the performance of diagnostic LLMs.
 First, existing models overlook the compound statistical bias caused by inter-dataset discrepancies and class imbalance, often mistaking domain-specific features for stochastic noise.
@@ -437,18 +437,21 @@ To tackle these issues, we propose DA-TMLLM, which detects and mitigates LLM hal
 
 \section{论文组织结构}\label{sec:Intro_thesis_structure}
 
-本文一共分为六个章节，剩余章节的内容安排如下：
+本文一共分为五个章节，剩余章节的内容安排如下：
 
-第二章
-
+第二章面向锂离子电池的可信健康状态估计，提出层次化随机时空~Transforme。
+针对不确定性表征粒度粗糙、不确定性量化不完备，且模型估计性能与不确定性量化质量间关系不明的可信性不足问题，提出基于~GSR~的随机自注意力，并基于此设计针对多传感器多时间步健康状态估计的通道赋权和时间步聚类机制，阐述了基于采样的不确定性量化策略的开环性质及由此产生的模型估计误差和不确定性量化偏差间存在的权衡关系，并提出模型无关的不确定性后校准策略。
 通过多个数据集上的对比实验验证了所提出方法在健康状态估计精度和不确定性量化质量方面的有效性和先进性。
 
-第三章
-
+第三章面向锂离子电池的可泛化退化建模，提出拓扑约束下不确定性驱动特征调弈方法。
+针对退化信息稀疏性与退化特征流形内在维度冗余性间的矛盾，且分布外退化模式与退化特征统计量不确定性的关系、退化样本的长尾分布与退化特征偏置的关系均不明确的泛化性不足的问题，提出基于良泛化流形几何性质的启发式循环信号重构放大，提出了基于流形压缩和多元高斯分布的分布外退化特征生成方法，提出了基于邻域特征平滑的长尾校正方法。
 大量定性和定量的实验结果验证了所提出方法在退化模式泛化问题上的有效性和先进性。
 
-第四章
-
-所提出的方法在故障诊断精度和幻觉检测准确性方面稳定优于现有方法。
+第四章面向抗幻觉故障诊断，提出扩散增强可信多模态大语言模型。
+针对现有基于大语言模型的诊断方法受样本统计偏置和未见故障模式的影响易生成包含幻觉诊断结果，上述因素对幻觉的影响的定量规律以及模型置信度到事实真值间的一致性尚不明确从而对模型的幻觉检测存在不足的问题，设计了~ControlNet~引导的跨域条件扩散增强策略、基于能量显著性分析的关键 Token 定位策略和关键 Token 驱动的不确定性重加权幻觉检测策略。所提出的方法在故障诊断精度和幻觉检测准确性方面稳定优于现有方法。
 
 第五章对全文进行总结与展望。
+梳理围绕电动汽车动力系统~PHM~所提出的三项方法的理论与实现，概括其在多种测试数据集和场景下的精度、计算效率、鲁棒性和可拓展性等方面的优势，
+并讨论局限和未来方向，包括
+
+
