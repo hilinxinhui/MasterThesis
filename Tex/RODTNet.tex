@@ -533,119 +533,273 @@ We employ four metrics, namely Mean Absolute Error (MAE), Mean Square Error (MSE
 \subsection{性能对比试验}\label{subsec:RODTNet_comparison_experiment}
 
 % 4行2列展示包含RODTNet在内的方法的实验结果
-
 % 4行2列展示部分对比实验结果
-
 % 2行2列展示剩下的部分对比实验结果：iTransformer+、PatchTST+、TSMixer+和PINN+，这里视情况加入RODTNet直接在目标域上训练的结果
 
-% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
-% \begin{figure}[!htbp]
+% \begin{figure*}[h]
+% \captionsetup[subfloat]{font=scriptsize}
+% \centering
+% % --- Row 1 ---
+% \subfloat[iTransformer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer.eps}%
+%     \label{fig:rul_itransformer}} % Optional label for subfigure
+% % \hfill % Distribute space horizontally
+% \subfloat[PatchTST]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST.eps}%
+%     \label{fig:rul_patchtst}}
+% % \hfill
+% \subfloat[TSMixer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer.eps}%
+%     \label{fig:rul_tsmixer}}
+% % \hfill
+% \subfloat[MambaLithium]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps}%
+%     \label{fig:rul_mamba}}
+% % \hfill
+% \subfloat[PINN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN.eps}%
+%     \label{fig:rul_pinn}}
+
+% % --- Row 2 ---
+% \subfloat[iTransformer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps}%
+%     \label{fig:rul_itransformer_plus}}
+% % \hfill
+% \subfloat[PatchTST+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps}%
+%     \label{fig:rul_patchtst_plus}}
+% % \hfill
+% \subfloat[TSMixer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps}%
+%     \label{fig:rul_tsmixer_plus}}
+% % \hfill
+% \subfloat[CRNN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_CRNN.eps}%
+%     \label{fig:rul_crnn}}
+% % \hfill
+% \subfloat[PINN+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN+.eps}%
+%     \label{fig:rul_pinn_plus}}
+
+% % --- Row 3 ---
+% \subfloat[DeNN-bagging]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_bagging.eps}%
+%     \label{fig:rul_bagging}}
+% % \hfill
+% \subfloat[DeNN-fusion]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_fusion.eps}%
+%     \label{fig:rul_fusion}}
+% % \hfill
+% \subfloat[DeNN-voting]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_voting.eps}%
+%     \label{fig:rul_voting}}
+% % \hfill
+% \subfloat[ConvMMD]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps}%
+%     \label{fig:rul_convmmd}}
+% % \hfill
+% \subfloat[DRNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DRNet.eps}%
+%     \label{fig:rul_drnet}}
+
+% % --- Row 4 ---
+% \subfloat[DDAN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DDAN.eps}%
+%     \label{fig:rul_ddan}}
+% \subfloat[DKTL]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DKTL.eps}%
+%     \label{fig:rul_dktl}}
+% \subfloat[LSTM-DA]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps}%
+%     \label{fig:rul_lstmda}}
+% \subfloat[MAGNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MAGNet.eps}%
+%     \label{fig:rul_magnet}}
+% % Consider changing 'OURS' to your actual model name, e.g., 'RODTNet'
+% \subfloat[RODTNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_RODTNet.eps}%
+%     \label{fig:rul_ours}}
+
+% \caption{Comparison of RUL prediction performance between the proposed RODTNet and comparison models on OOD generalization Task 1. In each panel, Predicted RUL (y-axis) is plotted against True RUL (x-axis). The dashed line serves as the ideal reference, and points represent individual predictions for the respective method. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner.}
+% \label{fig:rul} % Overall figure label
+% \end{figure*}
+
+% \begin{figure*}[b!]
+% \captionsetup[subfloat]{font=scriptsize}
+% \centering
+% \subfloat[Generalization Performance Comparison \label{fig:soh}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_soh_radar_chart.eps}}}
+% \hspace{0.05\textwidth}
+% \subfloat[Generalization Efficiency Comparison \label{fig:comp}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_footprint.eps}}}
+% \caption{Comparative analysis of the proposed RODTNet-LT model against baseline methods for SOH estimation.
+% (a) Radar chart comparing the performance of RODTNet-LT and baseline models across 11 different SOH estimation generalization tasks.
+% (b) Comparison of model performance (MSE), inference speed (s), and parameter count on the OOD SOH estimation generalization task.}
+% \label{fig:soh_efficiency}
+% \end{figure*}
+
+
+% \begin{figure*}[htbp]
+%     \captionsetup[subfloat]{font=scriptsize}
 %     \centering
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_a}
-%       \caption{}
-%       \label{fig:oaspl_a}
-%     \end{subfigure}%
-%     ~%add desired spacing
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_b}
-%       \caption{}
-%       \label{fig:oaspl_b}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_c}
-%       \caption{}
-%       \label{fig:oaspl_c}
-%     \end{subfigure}%
-%     ~%add desired spacing
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_d}
-%       \caption{}
-%       \label{fig:oaspl_d}
-%     \end{subfigure}
-%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
-%     \label{fig:oaspl}
-% \end{figure}
+%     % 第一行
+%     \subfloat[ConvMMD]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps} \label{fig:rul_convmmd}}
+%     \hfill
+%     \subfloat[DRNet]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DRNet.eps} \label{fig:rul_drnet}}
 
-\begin{figure*}[h]
-\captionsetup[subfloat]{font=scriptsize}
-\centering
-% --- Row 1 ---
-\subfloat[iTransformer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer.eps}%
-    \label{fig:rul_itransformer}} % Optional label for subfigure
-% \hfill % Distribute space horizontally
-\subfloat[PatchTST]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST.eps}%
-    \label{fig:rul_patchtst}}
-% \hfill
-\subfloat[TSMixer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer.eps}%
-    \label{fig:rul_tsmixer}}
-% \hfill
-\subfloat[MambaLithium]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps}%
-    \label{fig:rul_mamba}}
-% \hfill
-\subfloat[PINN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN.eps}%
-    \label{fig:rul_pinn}}
+%     \vspace{1em}
+%     % 第二行
+%     \subfloat[DDAN]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DDAN.eps} \label{fig:rul_ddan}}
+%     \hfill
+%     \subfloat[DKTL]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DKTL.eps} \label{fig:rul_dktl}}
 
-% --- Row 2 ---
-\subfloat[iTransformer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps}%
-    \label{fig:rul_itransformer_plus}}
-% \hfill
-\subfloat[PatchTST+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps}%
-    \label{fig:rul_patchtst_plus}}
-% \hfill
-\subfloat[TSMixer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps}%
-    \label{fig:rul_tsmixer_plus}}
-% \hfill
-\subfloat[CRNN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_CRNN.eps}%
-    \label{fig:rul_crnn}}
-% \hfill
-\subfloat[PINN+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN+.eps}%
-    \label{fig:rul_pinn_plus}}
+%     \vspace{1em}
+%     % 第三行
+%     \subfloat[LSTM-DA]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps} \label{fig:rul_lstmda}}
+%     \hfill
+%     \subfloat[MAGNet]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_MAGNet.eps} \label{fig:rul_magnet}}
 
-% --- Row 3 ---
-\subfloat[DeNN-bagging]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_bagging.eps}%
-    \label{fig:rul_bagging}}
-% \hfill
-\subfloat[DeNN-fusion]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_fusion.eps}%
-    \label{fig:rul_fusion}}
-% \hfill
-\subfloat[DeNN-voting]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_voting.eps}%
-    \label{fig:rul_voting}}
-% \hfill
-\subfloat[ConvMMD]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps}%
-    \label{fig:rul_convmmd}}
-% \hfill
-\subfloat[DRNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DRNet.eps}%
-    \label{fig:rul_drnet}}
+%     \vspace{1em}
+%     % 第四行
+%     \subfloat[CRNN]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_CRNN.eps} \label{fig:rul_crnn}}
+%     \hfill
+%     \subfloat[RODTNet]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_RODTNet.eps} \label{fig:rul_ours}}
 
-% --- Row 4 ---
-\subfloat[DDAN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DDAN.eps}%
-    \label{fig:rul_ddan}}
-\subfloat[DKTL]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DKTL.eps}%
-    \label{fig:rul_dktl}}
-\subfloat[LSTM-DA]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps}%
-    \label{fig:rul_lstmda}}
-\subfloat[MAGNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MAGNet.eps}%
-    \label{fig:rul_magnet}}
-% Consider changing 'OURS' to your actual model name, e.g., 'RODTNet'
-\subfloat[RODTNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_RODTNet.eps}%
-    \label{fig:rul_ours}}
+%     \caption{Comparison of RUL prediction performance between the proposed RODTNet and domain adaptation baseline models on OOD generalization Task 1. In each panel, Predicted RUL is plotted against True RUL, with the dashed line serving as the ideal reference.}
+%     \label{fig:RODTNet_RUL_Comparison_Part1}
+% \end{figure*}
 
-\caption{Comparison of RUL prediction performance between the proposed RODTNet and comparison models on OOD generalization Task 1. In each panel, Predicted RUL (y-axis) is plotted against True RUL (x-axis). The dashed line serves as the ideal reference, and points represent individual predictions for the respective method. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner.}
-\label{fig:rul} % Overall figure label
+% \begin{figure*}[htbp]
+%     \captionsetup[subfloat]{font=scriptsize}
+%     \centering
+%     % 第一行
+%     \subfloat[iTransformer]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer.eps} \label{fig:rul_itransformer}}
+%     \hfill
+%     \subfloat[PatchTST]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST.eps} \label{fig:rul_patchtst}}
+
+%     \vspace{1em}
+%     % 第二行
+%     \subfloat[TSMixer]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer.eps} \label{fig:rul_tsmixer}}
+%     \hfill
+%     \subfloat[MambaLithium]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps} \label{fig:rul_mamba}}
+
+%     \vspace{1em}
+%     % 第三行
+%     \subfloat[PINN]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PINN.eps} \label{fig:rul_pinn}}
+%     \hfill
+%     \subfloat[DeNN-bagging]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_bagging.eps} \label{fig:rul_bagging}}
+
+%     \vspace{1em}
+%     % 第四行
+%     \subfloat[DeNN-fusion]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_fusion.eps} \label{fig:rul_fusion}}
+%     \hfill
+%     \subfloat[DeNN-voting]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_voting.eps} \label{fig:rul_voting}}
+
+%     \caption{Comparison of RUL prediction performance among standard time-series forecasting and ensemble baseline models on OOD generalization Task 1. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner of each panel.}
+%     \label{fig:RODTNet_RUL_Comparison_Part2}
+% \end{figure*}
+
+% \begin{figure*}[htbp]
+%     \captionsetup[subfloat]{font=scriptsize}
+%     \centering
+%     % 第一行
+%     \subfloat[iTransformer+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps} \label{fig:rul_itransformer_plus}}
+%     \hfill
+%     \subfloat[PatchTST+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps} \label{fig:rul_patchtst_plus}}
+
+%     \vspace{1em}
+%     % 第二行
+%     \subfloat[TSMixer+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps} \label{fig:rul_tsmixer_plus}}
+%     \hfill
+%     \subfloat[PINN+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PINN+.eps} \label{fig:rul_pinn_plus}}
+
+%     \caption{Comparison of RUL prediction performance for baseline models evaluated under the target domain training setting on OOD generalization Task 1.}
+%     \label{fig:RODTNet_RUL_Comparison_Part3}
+% \end{figure*}
+
+\begin{figure*}[htbp]
+    \captionsetup[subfloat]{font=scriptsize}
+    \centering
+    % 第一行
+    \subfloat[ConvMMD]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps} \label{fig:rodtnet_rul_convmmd}}
+    \hfill
+    \subfloat[DRNet]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_DRNet.eps} \label{fig:rodtnet_rul_drnet}}
+
+    \vspace{0.5em}
+    % 第二行
+    \subfloat[DDAN]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_DDAN.eps} \label{fig:rodtnet_rul_ddan}}
+    \hfill
+    \subfloat[DKTL]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_DKTL.eps} \label{fig:rodtnet_rul_dktl}}
+
+    \vspace{0.5em}
+    % 第三行
+    \subfloat[LSTM-DA]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps} \label{fig:rodtnet_rul_lstmda}}
+    \hfill
+    \subfloat[MAGNet]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_MAGNet.eps} \label{fig:rodtnet_rul_magnet}}
+
+    \caption{Comparison of RUL prediction performance between the proposed RODTNet and domain adaptation baseline models on OOD generalization Task 1, Part 1.}
+    \label{fig:rodtnet_RUL_Comparison_Part1_A}
 \end{figure*}
 
-\begin{figure*}[b!]
-\captionsetup[subfloat]{font=scriptsize}
-\centering
-\subfloat[Generalization Performance Comparison \label{fig:soh}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_soh_radar_chart.eps}}}
-\hspace{0.05\textwidth}
-\subfloat[Generalization Efficiency Comparison \label{fig:comp}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_footprint.eps}}}
-\caption{Comparative analysis of the proposed RODTNet-LT model against baseline methods for SOH estimation.
-(a) Radar chart comparing the performance of RODTNet-LT and baseline models across 11 different SOH estimation generalization tasks.
-(b) Comparison of model performance (MSE), inference speed (s), and parameter count on the OOD SOH estimation generalization task.}
-\label{fig:soh_efficiency}
+\begin{figure*}[htbp]
+    \ContinuedFloat
+    \captionsetup[subfloat]{font=scriptsize}
+    \centering
+    % 第四行
+    \subfloat[CRNN]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_CRNN.eps} \label{fig:rodtnet_rul_crnn}}
+    \hfill
+    \subfloat[RODTNet]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_RODTNet.eps} \label{fig:rodtnet_rul_ours}}
+
+    \caption{Comparison of RUL prediction performance between the proposed RODTNet and domain adaptation baseline models on OOD generalization Task 1, Part 2. In each panel, Predicted RUL is plotted against True RUL, with the dashed line serving as the ideal reference.}
+    \label{fig:rodtnet_RUL_Comparison_Part1_B}
 \end{figure*}
+
+\begin{figure*}[htbp]
+    \captionsetup[subfloat]{font=scriptsize}
+    \centering
+    % 第一行
+    \subfloat[iTransformer]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer.eps} \label{fig:rodtnet_rul_itransformer}}
+    \hfill
+    \subfloat[PatchTST]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST.eps} \label{fig:rodtnet_rul_patchtst}}
+
+    \vspace{0.5em}
+    % 第二行
+    \subfloat[TSMixer]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer.eps} \label{fig:rodtnet_rul_tsmixer}}
+    \hfill
+    \subfloat[MambaLithium]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps} \label{fig:rodtnet_rul_mamba}}
+
+    \vspace{0.5em}
+    % 第三行
+    \subfloat[PINN]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_PINN.eps} \label{fig:rodtnet_rul_pinn}}
+    \hfill
+    \subfloat[DeNN-bagging]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_bagging.eps} \label{fig:rodtnet_rul_bagging}}
+
+    \caption{Comparison of RUL prediction performance among standard time-series forecasting and ensemble baseline models on OOD generalization Task 1, Part 1.}
+    \label{fig:rodtnet_RUL_Comparison_Part2_A}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \ContinuedFloat
+    \captionsetup[subfloat]{font=scriptsize}
+    \centering
+    % 第四行
+    \subfloat[DeNN-fusion]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_fusion.eps} \label{fig:rodtnet_rul_fusion}}
+    \hfill
+    \subfloat[DeNN-voting]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_voting.eps} \label{fig:rodtnet_rul_voting}}
+
+    \caption{Comparison of RUL prediction performance among standard time-series forecasting and ensemble baseline models on OOD generalization Task 1, Part 2. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner of each panel.}
+    \label{fig:rodtnet_RUL_Comparison_Part2_B}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \captionsetup[subfloat]{font=scriptsize}
+    \centering
+    % 第一行
+    \subfloat[iTransformer+]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps} \label{fig:rodtnet_rul_itransformer_plus}}
+    \hfill
+    \subfloat[PatchTST+]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps} \label{fig:rodtnet_rul_patchtst_plus}}
+
+    \vspace{0.5em}
+    % 第二行
+    \subfloat[TSMixer+]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps} \label{fig:rodtnet_rul_tsmixer_plus}}
+    \hfill
+    \subfloat[PINN+]{\includegraphics[width=0.48\linewidth]{Img/RODTNet_figures/trans/fig4_PINN+.eps} \label{fig:rodtnet_rul_pinn_plus}}
+
+    \caption{Comparison of RUL prediction performance for baseline models evaluated under the target domain training setting on OOD generalization Task 1.}
+    \label{fig:rodtnet_RUL_Comparison_Part3}
+\end{figure*}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Img/RODTNet_figures/trans/fig5_soh_radar_chart.eps}
+    \caption{Radar chart comparing the generalization performance of the proposed RODTNet-LT and baseline models across 11 different SOH estimation tasks.}
+    \label{fig:RODTNet_SOH_Radar_Comparison}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Img/RODTNet_figures/trans/fig5_footprint.eps}
+    \caption{Comparison of model performance, inference speed, and parameter count between RODTNet-LT and baseline models on the OOD SOH estimation generalization task.}
+    \label{fig:RODTNet_SOH_Efficiency_Comparison}
+\end{figure}
 
 % RUL对比实验
 \begin{table*}[htbp]
@@ -868,88 +1022,68 @@ We observe RODTNet is generally insensitive to hyperparameters, except for the c
 
 \subsection{退化流形可视化分析}\label{subsec:RODTNet_manifold_analysis}
 
-% 最好是三张图，分别展示3D、2D和1D的RODTNet和对比实验的流行可视化结果
-
-% 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
-% \begin{figure}[!htbp]
-%     \centering
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_a}
-%       \caption{}
-%       \label{fig:oaspl_a}
-%     \end{subfigure}%
-%     ~%add desired spacing
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_b}
-%       \caption{}
-%       \label{fig:oaspl_b}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_c}
-%       \caption{}
-%       \label{fig:oaspl_c}
-%     \end{subfigure}%
-%     ~%add desired spacing
-%     \begin{subfigure}[b]{0.35\textwidth}
-%       \includegraphics[width=\textwidth]{oaspl_d}
-%       \caption{}
-%       \label{fig:oaspl_d}
-%     \end{subfigure}
-%     \bicaption{总声压级。(a) 这是子图说明信息，(b) 这是子图说明信息，(c) 这是子图说明信息，(d) 这是子图说明信息。}{OASPL.(a) This is the explanation of subfig, (b) This is the explanation of subfig, (c) This is the explanation of subfig, (d) This is the explanation of subfig.}
-%     \label{fig:oaspl}
-% \end{figure}
+%
+\begin{figure*}[htbp]
+    \centering
+    % 第一行：RODTNet 3D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_3d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_3d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_3d.eps}}
+    
+    \vspace{2em}
+    % 第二行：TSMixer 3D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_3d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_3d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_3d.eps}}
+    
+    \caption{Comparison of feature distributions visualized via PCA dimensionality reduction to 3D. The top row presents the features obtained from RODTNet, while the bottom row shows those from TSMixer. Points are colored based on ground truth labels.}
+    \label{fig:RODTNet_PCA_3D_Comparison}
+\end{figure*}
 
 \begin{figure*}[htbp]
-\centering
-\subfloat{
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_3d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_3d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_3d.eps}
+    \centering
+    % 第一行：RODTNet 2D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_2d.eps}}
     \hfill
-    \hspace{15pt} % 左侧间距加大
-    \smash{\begin{tikzpicture}
-        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in); % 缩短高度并上下留空
-    \end{tikzpicture}}
-    \hspace{15pt} % 右侧间距加大
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_2d.eps}}
     \hfill
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_3d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_3d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_3d.eps}
-}
-\hfil
-\subfloat{
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_2d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_2d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_2d.eps}
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_2d.eps}}
+    
+    \vspace{2em}
+    % 第二行：TSMixer 2D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_2d.eps}}
     \hfill
-    \hspace{15pt}
-    \smash{\begin{tikzpicture}
-        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
-    \end{tikzpicture}}
-    \hspace{15pt}
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_2d.eps}}
     \hfill
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_2d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_2d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_2d.eps}
-}
-\hfil
-\subfloat{
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_1d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_1d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_1d.eps}
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_2d.eps}}
+    
+    \caption{Comparison of feature distributions visualized via PCA dimensionality reduction to 2D. The top row presents the features obtained from RODTNet, while the bottom row shows those from TSMixer. Points are colored based on ground truth labels.}
+    \label{fig:RODTNet_PCA_2D_Comparison}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    % 第一行：RODTNet 1D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tri_1d.eps}}
     \hfill
-    \hspace{15pt}
-    \smash{\begin{tikzpicture}
-        \draw[gray!40, densely dashed, line width=0.6pt] (0,0.1in) -- (0,0.9in);
-    \end{tikzpicture}}
-    \hspace{15pt}
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_tongji_1d.eps}}
     \hfill
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_1d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_1d.eps}
-    \includegraphics[width=1in]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_1d.eps}
-}
-\caption{Comparison of feature distributions obtained from RODTNet (left) and TSMixer (right). Features are visualized via PCA dimensionality reduction to 3D (top row), 2D (middle row), and 1D (bottom row) and points are colored based on ground truth labels.}
-\label{fig:Performance_Comparison_2}
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_ours_hust_1d.eps}}
+    
+    \vspace{2em}
+    % 第二行：TSMixer 1D
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tri_1d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_tongji_1d.eps}}
+    \hfill
+    \subfloat{\includegraphics[width=0.32\linewidth]{Img/RODTNet_figures/trans/fig6_rul_manifold_others_hust_1d.eps}}
+    
+    \caption{Comparison of feature distributions visualized via PCA dimensionality reduction to 1D. The top row presents the features obtained from RODTNet, while the bottom row shows those from TSMixer. Points are colored based on ground truth labels.}
+    \label{fig:RODTNet_PCA_1D_Comparison}
 \end{figure*}
 
 To investigate the topology of degradation representations, we apply PCA for dimensionality reduction to three, two, and one dimensions to visualize feature maps from the RODTNet encoder, coloring points by labels. As depicted in Fig.~\ref{fig:Performance_Comparison_2}, the manifold obtained with the MCRDR strategy on the left exhibits a continuous distribution, well-preserved across dimensions, facilitating high-precision generalization. Conversely, the manifold without MCRDR, shown on the right, displays discontinuities appearing as holes and suffers from significant feature overlap between degradation stages upon dimensionality reduction, hindering such generalization.
