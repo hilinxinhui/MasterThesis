@@ -479,43 +479,37 @@ The domain-specific datasets comprise nine bearing datasets: PU \cite{PU}, JNU \
 Table \ref{tab:Detailed datasets} summarizes the nine domain-specific bearing datasets employed in this study, detailing their respective fault-location classes and sample counts.
 The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{MaFaulDa_dataset} datasets.
 
-\setlength{\tabcolsep}{5pt}
-\begin{table*}[!htbp]
-	\footnotesize
-	\caption{}{Datasets overview}
-	\centering
-	\label{tab:Detailed datasets} % Give a unique label
-	\begin{tabular}{lccccccccccc} % 10 列
-		\toprule[1pt]\noalign{\smallskip}
-		Fault Locations & PU & JNU & CWRU & JUST & DIRG & HIT & IMS & MFPT & XJTU &Total Sample& Training Sample\\
-		& \cite{PU} & \cite{s130608013} & \cite{15467457} & \cite{JUST} & \cite{DAGA2019252} & \cite{HIT} & \cite{IMS} & \cite{MFPT} & \cite{XJTU} &Count&Count\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Fault-Free (FF)& 1918 & 900 & 70 & 10932 & 1020 & 3816 & 43176 & 18 & 11014 & 72864 & 10000\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Minor Inner Ring (MiIR)& 954 & - & 310 & - & 1020 & - & 812 & - & 64 & 3160 &2736\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Moderate Inner Ring (MoIR)& 633 & 900 & 296 & 11124 & 1020 & 4032 & - & 21 & 28 & 18054 &10000\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Severe Inner Ring (SIR)& -\textsuperscript{1} & - & 350 & - & 1020 & - & - & - & 232 & 1602 &345\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Minor Ball (MiB)& - & - & 310 & - & 1020 & - & - & - & 30 & 1360 &45\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Moderate Ball (MoB)& - & 900 & 310 & 10956 & 1020 & - & 1000 & - & 60 & 14246 &10000\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Severe Ball (SB)& - & - & 350 & - & 1020 & - & 312 & - & 356 & 2038 &1005\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Minor Outer Ring (MiOR)& 2223 & - & 918 & - & - & - & 575 & - & 284 & 4000 & 4620 \\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Moderate Outer Ring (MoOR)& 1588 & 900 & 340 & 10974 & - & 1800 & 447 & 39 & 260 & 16348 &10000\\
-		\noalign{\smallskip}\hline\noalign{\smallskip}
-		Severe Outer Ring (SOR)& - & - & 678 & - & - & - & 158 & - & 1008 & 1844 &1764\\
-		\noalign{}\bottomrule[1pt]
-		\multicolumn{10}{l}{\textsuperscript{1} A dash (–) denotes that the corresponding fault-location class is absent from the dataset.}\\[-5pt]
-	\end{tabular}
+
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{table*}[htbp]
+    \centering
+    \caption{实验数据集详细概况统计（转置布局版）}
+    \label{tab:Detailed_datasets_transposed}
+    
+    \begin{tabular}{l c ccc ccc ccc}
+        \toprule
+        & & \multicolumn{3}{c}{内圈故障 (Inner)} & \multicolumn{3}{c}{滚珠故障 (Ball)} & \multicolumn{3}{c}{外圈故障 (Outer)} \\
+        \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11}
+        数据集 & 正常 (FF) & 轻微 & 中度 & 严重 & 轻微 & 中度 & 严重 & 轻微 & 中度 & 严重 \\
+        \midrule
+        PU \cite{PU} & 1918 & 954 & 633 & -- & -- & -- & -- & 2223 & 1588 & -- \\
+        JNU \cite{s130608013} & 900 & -- & 900 & -- & -- & 900 & -- & -- & 900 & -- \\
+        CWRU \cite{15467457} & 70 & 310 & 296 & 350 & 310 & 310 & 350 & 918 & 340 & 678 \\
+        JUST \cite{JUST} & 10932 & -- & 11124 & -- & -- & 10956 & -- & -- & 10974 & -- \\
+        DIRG \cite{DAGA2019252} & 1020 & 1020 & 1020 & 1020 & 1020 & 1020 & 1020 & -- & -- & -- \\
+        HIT \cite{HIT} & 3816 & -- & 4032 & -- & -- & -- & -- & -- & 1800 & -- \\
+        IMS \cite{IMS} & 43176 & 812 & -- & -- & -- & 1000 & 312 & 575 & 447 & 158 \\
+        MFPT \cite{MFPT} & 18 & -- & 21 & -- & -- & -- & -- & -- & 39 & -- \\
+        XJTU \cite{XJTU} & 11014 & 64 & 28 & 232 & 30 & 60 & 356 & 284 & 260 & 1008 \\
+        \midrule
+        \textbf{总样本计数} & \textbf{72864} & 3160 & 18054 & 1602 & 1360 & 14246 & 2038 & 4000 & 16348 & 1844 \\
+        \textbf{训练样本计数} & \textbf{10000} & 2736 & 10000 & 345 & 45 & 10000 & 1005 & 4620 & 10000 & 1764 \\
+        \bottomrule
+        \multicolumn{11}{l}{\footnotesize 注：表中数值表示样本数量；短横线（--）表示该数据集中缺失对应的故障类别。}
+    \end{tabular}
 \end{table*}
 
-
-\setlength{\tabcolsep}{6pt}
 
 To assess the model's robustness to hallucinations arising from statistical bias, we follow the extreme class imbalance setting of \cite{20243817051432} during training and validation, where the ratio between the largest and smallest classes exceeds 100.
 Additionally, we adopt a balanced domain-specific test subset so that each class contributes equally to the diagnostic performance. 
@@ -526,36 +520,35 @@ Scenario 1 uses a test set formed by combining the domain-specific subset with U
 Scenario 2 replaces UP with MaFaulDa, ensuring high semantic similarity to the training dataset.
 Scenario 3 employs a composite test set comprising the domain-specific subset, UP, and MaFaulDa, yielding a mixed-domain evaluation setting.
 
-\begin{table}[h!]
-	\footnotesize
-	\caption{Hyperparameter settings}
-	\centering
-	\label{tab:Hyperparameter}       % Give a unique label
-	% For LaTeX tables use
-	\begin{tabular}{lll}
-		\toprule[1pt]\noalign{}
-		Symbol&Description&Value \\
-		\noalign{}\hline\noalign{\smallskip}
-		$L_{f}$&Length of sample& $2400$ \\
-		$\rho$&Scaling factor of $\operatorname{SNorm}(\cdot)$& $0.01$ \\
-		$S$&Number of diffusion steps& $10$ \\
-		$\zeta$ & Noise scheduler of diffusion model & $Linear$ \\
-		$N_{h}$&Number of attention heads& $4$ \\
-		$N_{c}$&Number of sample categories& $10$ \\
-		$\lambda$&Transition threshold of $\operatorname{Huber}(\cdot)$& $1$ \\
-		$N_{t}$& Maximum length of output token & $2048$ \\
-		$\mathcal{M}_{tune}$ & Target module of fine-tuning & $all\_linear$\\
-		$r_{LoRA}$ & Rank of LoRA fine-tuning & 4 \\
-		$L_{\mathrm{win}}$&Length of token window& $\pm 3$ \\
-		$\omega$&Calibration coefficient for the key token& $50$ \\
-		$n_{diff}$&Batch size of diffusion& $32$ \\
-		$n_{tune}$&Batch size of fine-tuning & $1$ pre GPU\\
-		${N_\mathrm{dm}}$&Number of training epochs for CGCDM& $100$ \\
-		${N_\mathrm{llm}}$&Number of training epochs for TMLLM& $50$ \\
-		${n_{lr}}$&Learning rate& $1 \times 10^{-4}$ \\
-		${n_{dr}}$&Dropout rate& $0.1$ \\
-		\bottomrule[1pt]
-	\end{tabular}
+
+\begin{table}[htbp]
+  \centering
+  \caption{DA-TMLLM~模型的超参数设置}
+  \label{tab:Hyperparameter}
+  \begin{tabular}{lll}
+  \toprule
+  Symbol & Description & Value \\
+  \midrule
+  $L_{f}$ & Length of sample & $2400$ \\
+  $\rho$ & Scaling factor of $\operatorname{SNorm}(\cdot)$ & $0.01$ \\
+  $S$ & Number of diffusion steps & $10$ \\
+  $\zeta$ & Noise scheduler of diffusion model & $Linear$ \\
+  $N_{h}$ & Number of attention heads & $4$ \\
+  $N_{c}$ & Number of sample categories & $10$ \\
+  $\lambda$ & Transition threshold of $\operatorname{Huber}(\cdot)$ & $1$ \\
+  $N_{t}$ & Maximum length of output token & $2048$ \\
+  $\mathcal{M}_{tune}$ & Target module of fine-tuning & $all\_linear$ \\
+  $r_{LoRA}$ & Rank of LoRA fine-tuning & 4 \\
+  $L_{\mathrm{win}}$ & Length of token window & $\pm 3$ \\
+  $\omega$ & Calibration coefficient for the key token & $50$ \\
+  $n_{diff}$ & Batch size of diffusion & $32$ \\
+  $n_{tune}$ & Batch size of fine-tuning & $1$ pre GPU \\
+  ${N_\mathrm{dm}}$ & Number of training epochs for CGCDM & $100$ \\
+  ${N_\mathrm{llm}}$ & Number of training epochs for TMLLM & $50$ \\
+  ${n_{lr}}$ & Learning rate & $1 \times 10^{-4}$ \\
+  ${n_{dr}}$ & Dropout rate & $0.1$ \\
+  \bottomrule
+  \end{tabular}
 \end{table}
 
 All evaluations are performed using PyTorch on a workstation equipped with an NVIDIA RTX 4090 GPU.
@@ -582,52 +575,91 @@ Eight metrics are utilized for comprehensive evaluation of DA-TMLLM and comparat
 
 \subsection{性能对比试验}\label{subsec:DA-TMLLM_comparison_experiment}
 
-\setlength{\tabcolsep}{1.6pt}
-\begin{table*}[t!]
-	\footnotesize
-	% table caption is above the table
-	\caption{Experimental Results for Hallucination-Resilient Fault Diagnosis \textsuperscript{1}}
-	\renewcommand{\arraystretch}{1.5}
-	\centering
-	\label{tab:comparison result1}       % Give a unique label
-	% For LaTeX tables use
-	\begin{tabular}{c|ccccc|ccccc|ccccc}
-		\toprule[1pt]\noalign{\vspace{0.5pt}}
-		Scenario&\multicolumn{5}{c|}{Scenario 1 \textsuperscript{2}}&\multicolumn{5}{c|}{Scenario 2 \textsuperscript{3}}&\multicolumn{5}{c}{Scenario 3 \textsuperscript{4}}
-		\\\cmidrule(lr){2-6}\cmidrule(lr){7-11}\cmidrule(lr){12-16}
-		Metric&DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR \\\midrule[1pt]
-		VQVAE & 78.89\% & 72.82\% & 0.6812  & 0.8028  & 0.1490  & 78.89\% & 72.82\% & 0.5832  & 1.0000  & 0.0956  & 78.89\% & 67.62\% & 0.6322  & 0.8083  & 0.2047  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		DCGAN & 85.56\% & 78.97\% & 0.4596  & 0.7083  & 0.0678  & 85.56\% & 78.97\% & 0.7306  & 0.4861  & 0.1468  & 85.56\% & 73.33\% & 0.5951  & 0.6917  & 0.1730  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		QSCGAN & 83.89\% & 77.44\% & 0.5393  & 1.0000  & 0.0942  & 83.89\% & 77.44\% & 0.6821  & 0.6194  & 0.1261  & 83.89\% & 71.90\% & 0.6107  & 0.9139  & 0.1896  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		BearLLM & 88.33\% & 81.54\% & 0.5893  & 0.9083  & 0.0983  & 88.33\% & 81.54\% & 0.7328  & 0.7472  & 0.2326  & 88.33\% & 75.71\% & 0.6610  & \underline{0.2545}  & 0.8778  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		MLMM  & \underline{89.17\%} & \underline{88.46\%} & 0.9622  & 0.2722  & 0.8660  & 89.17\% & \underline{86.92\%} & 0.9181  & 0.2833  & 0.7464  & \underline{89.17\%} & \underline{86.43\%} & \underline{0.9401}  & 0.2722  & 0.8483  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		WDSN  & 71.94\% & 74.10\% & 0.9795  & 0.1000  & 0.9983  & 71.94\% & 72.56\% & 0.8139  & 0.9000  & \textbf{0.9806}  & 71.94\% & 74.29\% & 0.8888  & 0.4667  & \underline{0.9790}  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		MDCC  & 77.50\% & 79.23\% & \underline{0.9867}  & \underline{0.0333}  & \underline{0.9989}  & 77.50\% & 81.54\% & 0.7636  & 0.9000  & \underline{0.9749}  & 77.50\% & 78.81\% & 0.8722  & 0.5333  & 0.9735  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		LLMCheck & 85.28\% & 73.33\% & 0.5744  & 0.7000  & 0.5189  & 85.28\% & 71.03\% & 0.5567  & 0.6667  & 0.5641  & 85.28\% & 76.19\% & 0.6544  & 0.7500  & 0.5707  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		MIND  & 85.00\% & 82.05\% & 0.8611  & 0.6333  & 0.8641  & 85.00\% & 82.82\% & 0.8889  & \underline{0.2667}  & 0.8310  & 85.00\% & 78.57\% & 0.8206  & 0.4500  & 0.8088  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		SHalluDetect & \textbf{92.78\%} & 85.64\% & 0.6066  & 1.0000  & 0.9318  & \textbf{92.78\%} & 85.64\% & 0.6289  & 0.7333  & 0.9445  & \textbf{92.78\%} & 79.52\% & 0.5112  & 0.8333  & 0.8581  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		LLM-OOD & 85.28\% & 77.69\% & 0.8646  & 0.8038  & 0.8222  & 85.28\% & 78.46\% & \underline{0.9615}  & 0.8870  & 0.4222  & 85.28\% & 78.10\% & 0.9131  & 0.8688  & 0.6944  \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		DA-TMLLM & \textbf{92.78\%} & \textbf{93.33\% }& \textbf{1.0000}  & \textbf{0.0000}  & \textbf{1.0000}  & \textbf{92.78\%} & \textbf{92.82\%} & \textbf{0.9860}  & \textbf{0.0028}  & 0.9092  & \textbf{92.78\%} & \textbf{93.57\%} & \textbf{0.9942}  & \textbf{0.0000}  & \textbf{0.9887}  \\
-		\noalign{\vspace{0.5pt}}
-		\bottomrule[1pt]
-		\multicolumn{13}{l}{\textsuperscript{1} Best results: \textbf{bold}; second best: \underline{underlined}.}\\	[-5pt]
-		\multicolumn{13}{l}{\textsuperscript{2} Scenario 1 uses a test set formed by combining the domain-specific subset with UP.}\\	[-5pt]
-		\multicolumn{13}{l}{\textsuperscript{3} Scenario 2 replaces UP with MaFaulDa, ensuring high semantic similarity to the training dataset.}\\	[-5pt]
-		\multicolumn{16}{l}{\textsuperscript{4} Scenario 3 employs a composite test set comprising the domain-specific subset, UP, and MaFaulDa, yielding a mixed-domain evaluation setting.}\\	[-5pt]
-	\end{tabular}
-\end{table*}
-\setlength{\tabcolsep}{6pt}
+% --- 确保导言区包含：\usepackage{longtable, array, booktabs, caption} ---
+
+\clearpage
+\renewcommand{\arraystretch}{1.3} 
+\setlength{\tabcolsep}{8pt} 
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{\dimexpr 0.20\textwidth-2\tabcolsep} 
+    *{5}{>{\centering\arraybackslash}p{\dimexpr 0.16\textwidth-2\tabcolsep}}
+}
+    % === 第一页表头 ===
+    \caption{抗幻觉故障诊断在不同场景下的对比实验结果} \label{tab:full_hallucination_results} \\
+    \toprule
+    模型 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
+    \midrule
+    \endfirsthead
+
+    % === 续页表头 ===
+    \caption*{表 \ref{tab:full_hallucination_results}（续）：抗幻觉故障诊断在不同场景下的对比实验结果} \\
+    \toprule
+    模型 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
+    \midrule
+    \endhead
+
+    % === 续页页底 ===
+    \midrule
+    \multicolumn{6}{r}{续下页 \dots} \\
+    \endfoot
+
+    % === 最后一页注记 ===
+    \bottomrule
+    \multicolumn{6}{l}{注：}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{1} 加粗与下划线分别对应性能最优与次优的结果。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{2} 场景 1 将领域特定子集与 UP 组合为测试集。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{3} 场景 2 使用 MaFaulDa 替换 UP 以确保测试集与训练集的高语义相似性。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{4} 场景 3 采用由领域特定子集、UP 及 MaFaulDa 构成的复合测试集进行混合域评估。}\\
+    \endlastfoot
+
+    % --- 场景 1 数据区域 ---
+    \multicolumn{6}{l}{\textbf{场景 1}\textsuperscript{2}} \\ \midrule
+    VQVAE & 78.89\% & 72.82\% & 0.6812 & 0.8028 & 0.1490 \\
+    DCGAN & 85.56\% & 78.97\% & 0.4596 & 0.7083 & 0.0678 \\
+    QSCGAN & 83.89\% & 77.44\% & 0.5393 & 1.0000 & 0.0942 \\
+    BearLLM & 88.33\% & 81.54\% & 0.5893 & 0.9083 & 0.0983 \\
+    MLMM & \underline{89.17\%} & \underline{88.46\%} & 0.9622 & 0.2722 & 0.8660 \\
+    WDSN & 71.94\% & 74.10\% & 0.9795 & 0.1000 & 0.9983 \\
+    MDCC & 77.50\% & 79.23\% & \underline{0.9867} & \underline{0.0333} & \underline{0.9989} \\
+    LLMCheck & 85.28\% & 73.33\% & 0.5744 & 0.7000 & 0.5189 \\
+    MIND & 85.00\% & 82.05\% & 0.8611 & 0.6333 & 0.8641 \\
+    SHalluDetect & \textbf{92.78\%} & 85.64\% & 0.6066 & 1.0000 & 0.9318 \\
+    LLM-OOD & 85.28\% & 77.69\% & 0.8646 & 0.8038 & 0.8222 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{93.33\%} & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    \midrule
+
+    % --- 场景 2 数据区域 ---
+    \multicolumn{6}{l}{\textbf{场景 2}\textsuperscript{3}} \\ \midrule
+    VQVAE & 78.89\% & 72.82\% & 0.5832 & 1.0000 & 0.0956 \\
+    DCGAN & 85.56\% & 78.97\% & 0.7306 & 0.4861 & 0.1468 \\
+    QSCGAN & 83.89\% & 77.44\% & 0.6821 & 0.6194 & 0.1261 \\
+    BearLLM & 88.33\% & 81.54\% & 0.7328 & 0.7472 & 0.2326 \\
+    MLMM & 89.17\% & \underline{86.92\%} & 0.9181 & 0.2833 & 0.7464 \\
+    WDSN & 71.94\% & 72.56\% & 0.8139 & 0.9000 & \textbf{0.9806} \\
+    MDCC & 77.50\% & 81.54\% & 0.7636 & 0.9000 & \underline{0.9749} \\
+    LLMCheck & 85.28\% & 71.03\% & 0.5567 & 0.6667 & 0.5641 \\
+    MIND & 85.00\% & 82.82\% & 0.8889 & \underline{0.2667} & 0.8310 \\
+    SHalluDetect & \textbf{92.78\%} & 85.64\% & 0.6289 & 0.7333 & 0.9445 \\
+    LLM-OOD & 85.28\% & 78.46\% & \underline{0.9615} & 0.8870 & 0.4222 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{92.82\%} & \textbf{0.9860} & \textbf{0.0028} & 0.9092 \\
+    \midrule
+
+    % --- 场景 3 数据区域 ---
+    \multicolumn{6}{l}{\textbf{场景 3}\textsuperscript{4}} \\ \midrule
+    VQVAE & 78.89\% & 67.62\% & 0.6322 & 0.8083 & 0.2047 \\
+    DCGAN & 85.56\% & 73.33\% & 0.5951 & 0.6917 & 0.1730 \\
+    QSCGAN & 83.89\% & 71.90\% & 0.6107 & 0.9139 & 0.1896 \\
+    BearLLM & 88.33\% & 75.71\% & 0.6610 & \underline{0.2545} & 0.8778 \\
+    MLMM & \underline{89.17\%} & \underline{86.43\%} & \underline{0.9401} & 0.2722 & 0.8483 \\
+    WDSN & 71.94\% & 74.29\% & 0.8888 & 0.4667 & \underline{0.9790} \\
+    MDCC & 77.50\% & 78.81\% & 0.8722 & 0.5333 & 0.9735 \\
+    LLMCheck & 85.28\% & 76.19\% & 0.6544 & 0.7500 & 0.5707 \\
+    MIND & 85.00\% & 78.57\% & 0.8206 & 0.4500 & 0.8088 \\
+    SHalluDetect & \textbf{92.78\%} & 79.52\% & 0.5112 & 0.8333 & 0.8581 \\
+    LLM-OOD & 85.28\% & 78.10\% & 0.9131 & 0.8688 & 0.6944 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{93.57\%} & \textbf{0.9942} & \textbf{0.0000} & \textbf{1.0000} \\
+\end{longtable}
 
 We evaluate the hallucination-resilient fault diagnosis performance of DA-TMLLM and the eleven baseline models on the MBHM, MaFaulDa, and UP dataset. Table~\ref{tab:comparison result1} demonstrates the results for scenario 1, 2, and 3 using five metrics, including DS-ACC, G-ACC, AUROC, FAR@95, and AUPR. The experimental results underscore the superiority of DA-TMLLM, which substantially and consistently outperforms all baseline models. In Scenario 1, our model improves DS-ACC and G-ACC by 4.05\% and 5.51\% over the second-best model while achieving ideal detection performance. This dominance is maintained in the complex mixed-domain setting of Scenario 3, where it again secures state-of-the-art results across all metrics. The single exception is in Scenario 2, where DA-TMLLM is marginally second to WDSN on the AUPR metric. Nevertheless, it still leads in G-ACC and delivers a 98.95\% FAR@95 reduction from the closest baseline. Averaging a 6.85\% improvement in G-ACC and a 99.65\% reduction in FAR@95 against the strongest competitors, DA-TMLLM effectively demonstrates its capacity for concurrently performing high-accuracy fault diagnosis and robust hallucination detection. In contrast, baseline models exhibit limitations. VQVAE, DCGAN, QSCGAN, and BearLLM, lacking explicit hallucination detection capability, cannot reliably distinguish between domain-specific and undesired inputs, evidenced by a sharp degradation from DS-ACC to G-ACC and poor AUROC and AUPR scores. Among baselines with detection capabilities, a performance trade-off can be observed. The CDLMs, including MLMM, WDSN, and MDCC, generally prove more adept at hallucination detection. Conversely, LLM-based approaches, including LLMCheck, MIND, SHalluDetect, and LLM-OOD, demonstrate superior in-distribution classification. Both categories tend to misclassify valid domain-specific samples as undesired while being overly conservative in processing inputs flagged as hallucinations.
 
@@ -767,45 +799,111 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
 
 （）{w/o TMLLM} We remove the trustworthy multimodal large language module and thus eliminate the framework's hallucination detection capability, leading to a decline in the performance of undesired input identification. This outcome confirms that the proposed approach effectively quantifies uncertainties and provides trustworthy diagnostic answers.
 
-\setlength{\tabcolsep}{1pt}
-\begin{table*}[t!]
-	\footnotesize
-	% table caption is above the table
-	\caption{Experimental Results of the Ablation Study across the Three Scenarios\textsuperscript{1}}
-	\renewcommand{\arraystretch}{1.5}
-	\centering
-	\label{tab:ablation_study}       % Give a unique label
-	% For LaTeX tables use
-	\begin{tabular}{c|ccccc|ccccc|ccccc}
-		\toprule[1pt]\noalign{\vspace{0.5pt}}
-		Scenario&\multicolumn{5}{c|}{Scenario 1 }&\multicolumn{5}{c|}{Scenario 2 }&\multicolumn{5}{c}{Scenario 3 }
-		\\\cmidrule(lr){2-6}\cmidrule(lr){7-11}\cmidrule(lr){12-16}
-		Metric&DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR \\\midrule[1pt] 
-		w/o ControlNet\textsuperscript{2}
-		& \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 90.48\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		w/o CGCDM\textsuperscript{4}
-		& 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 89.05\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		w/o KTURS\textsuperscript{3}
-		& \textbf{92.78\%} & \underline{92.05\%} & \underline{0.9284} & \underline{0.5222} & \underline{0.6579} & \textbf{92.78\%} & \underline{91.54\%} & 0.9251 & 0.2861 & 0.7205 & \textbf{92.78\%} & \underline{91.19\%} & 0.9268 & \underline{0.2861} & 0.7773 \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		w/o TMLLM\textsuperscript{5}
-		& \textbf{92.78\%} & 85.64\% & 0.7073 & 1.0000 & 0.1895 & \textbf{92.78\%} & 85.64\% & 0.8625 & 0.6306 & 0.3898 & \textbf{92.78\%} & 79.52\% & 0.7851 & 1.0000 & 0.4210 \\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		DA-TMLLM
-		& \textbf{92.78\%} & \textbf{93.33\%} & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \textbf{92.78\%} & \textbf{92.82\%} & \underline{0.9860} & \underline{0.0028} & \underline{0.9092} & \textbf{92.78\%} & \textbf{93.57\%} & \underline{0.9942} & \textbf{0.0000} & \underline{0.9887} \\
-		%			
-		\noalign{\vspace{0.5pt}}
-		\bottomrule[1pt]
-		\multicolumn{13}{l}{\textsuperscript{1} Best results: \textbf{bold}; second best: \underline{underlined}.}\\	[-5pt]
-		\multicolumn{13}{l}{\textsuperscript{2} w/o ControlNet denotes that the ControlNet is removed in the ablation study.}\\	[-5pt]
-		\multicolumn{13}{l}{\textsuperscript{3} w/o KTURS denotes that the KTURS is removed in the ablation study.}\\	[-5pt]
-		\multicolumn{16}{l}{\textsuperscript{4} w/o CGCDM denotes that the CGCDM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
-		\multicolumn{16}{l}{\textsuperscript{5} w/o TMLLM denotes that the TMLLM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
-	\end{tabular}
-\end{table*}
-\setlength{\tabcolsep}{6pt}
+% \setlength{\tabcolsep}{1pt}
+% \begin{table*}[t!]
+% 	\footnotesize
+% 	% table caption is above the table
+% 	\caption{Experimental Results of the Ablation Study across the Three Scenarios\textsuperscript{1}}
+% 	\renewcommand{\arraystretch}{1.5}
+% 	\centering
+% 	\label{tab:ablation_study}       % Give a unique label
+% 	% For LaTeX tables use
+% 	\begin{tabular}{c|ccccc|ccccc|ccccc}
+% 		\toprule[1pt]\noalign{\vspace{0.5pt}}
+% 		Scenario&\multicolumn{5}{c|}{Scenario 1 }&\multicolumn{5}{c|}{Scenario 2 }&\multicolumn{5}{c}{Scenario 3 }
+% 		\\\cmidrule(lr){2-6}\cmidrule(lr){7-11}\cmidrule(lr){12-16}
+% 		Metric&DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR \\\midrule[1pt] 
+% 		w/o ControlNet\textsuperscript{2}
+% 		& \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 90.48\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
+% 		w/o CGCDM\textsuperscript{4}
+% 		& 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 89.05\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
+% 		w/o KTURS\textsuperscript{3}
+% 		& \textbf{92.78\%} & \underline{92.05\%} & \underline{0.9284} & \underline{0.5222} & \underline{0.6579} & \textbf{92.78\%} & \underline{91.54\%} & 0.9251 & 0.2861 & 0.7205 & \textbf{92.78\%} & \underline{91.19\%} & 0.9268 & \underline{0.2861} & 0.7773 \\
+% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
+% 		w/o TMLLM\textsuperscript{5}
+% 		& \textbf{92.78\%} & 85.64\% & 0.7073 & 1.0000 & 0.1895 & \textbf{92.78\%} & 85.64\% & 0.8625 & 0.6306 & 0.3898 & \textbf{92.78\%} & 79.52\% & 0.7851 & 1.0000 & 0.4210 \\
+% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
+% 		DA-TMLLM
+% 		& \textbf{92.78\%} & \textbf{93.33\%} & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \textbf{92.78\%} & \textbf{92.82\%} & \underline{0.9860} & \underline{0.0028} & \underline{0.9092} & \textbf{92.78\%} & \textbf{93.57\%} & \underline{0.9942} & \textbf{0.0000} & \underline{0.9887} \\
+% 		%			
+% 		\noalign{\vspace{0.5pt}}
+% 		\bottomrule[1pt]
+% 		\multicolumn{13}{l}{\textsuperscript{1} Best results: \textbf{bold}; second best: \underline{underlined}.}\\	[-5pt]
+% 		\multicolumn{13}{l}{\textsuperscript{2} w/o ControlNet denotes that the ControlNet is removed in the ablation study.}\\	[-5pt]
+% 		\multicolumn{13}{l}{\textsuperscript{3} w/o KTURS denotes that the KTURS is removed in the ablation study.}\\	[-5pt]
+% 		\multicolumn{16}{l}{\textsuperscript{4} w/o CGCDM denotes that the CGCDM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
+% 		\multicolumn{16}{l}{\textsuperscript{5} w/o TMLLM denotes that the TMLLM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
+% 	\end{tabular}
+% \end{table*}
+% \setlength{\tabcolsep}{6pt}
+
+% --- 确保导言区包含：\usepackage{longtable, array, booktabs, caption} ---
+
+\clearpage
+\renewcommand{\arraystretch}{1.3} 
+\setlength{\tabcolsep}{6pt} % 适当缩小间距以补偿列宽调整
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{\dimexpr 0.30\textwidth-2\tabcolsep} 
+    *{5}{>{\centering\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep}}
+}
+    % === 第一页表头 ===
+    \caption{DA-TMLLM 在三个场景下的消融实验结果} \label{tab:ablation_study_wider} \\
+    \toprule
+    模型变体 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
+    \midrule
+    \endfirsthead
+
+    % === 续页表头 ===
+    \caption*{表 \ref{tab:ablation_study_wider}（续）：DA-TMLLM 在三个场景下的消融实验结果} \\
+    \toprule
+    模型变体 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
+    \midrule
+    \endhead
+
+    % === 续页页底 ===
+    \midrule
+    \multicolumn{6}{r}{续下页 \dots} \\
+    \endfoot
+
+    % === 最后一页注记 ===
+    \bottomrule
+    \multicolumn{6}{l}{注：}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{1} 加粗与下划线分别对应性能最优与次优的结果。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{2} w/o ControlNet 表示在消融实验中移除 ControlNet 组件。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{3} w/o KTURS 表示在消融实验中移除 KTURS 组件。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{4} w/o CGCDM 表示在抗幻觉方案中移除 CGCDM 模块。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{5} w/o TMLLM 表示在抗幻觉方案中移除 TMLLM 模块。}\\
+    \endlastfoot
+
+    % --- 场景 1 ---
+    \multicolumn{6}{l}{\textbf{场景 1}} \\ \midrule
+    w/o ControlNet\textsuperscript{2} & \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o CGCDM\textsuperscript{4} & 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o KTURS\textsuperscript{3} & \textbf{92.78\%} & \underline{92.05\%} & \underline{0.9284} & \underline{0.5222} & \underline{0.6579} \\
+    w/o TMLLM\textsuperscript{5} & \textbf{92.78\%} & 85.64\% & 0.7073 & 1.0000 & 0.1895 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{93.33\%} & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    \midrule
+
+    % --- 场景 2 ---
+    \multicolumn{6}{l}{\textbf{场景 2}} \\ \midrule
+    w/o ControlNet & \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o CGCDM & 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o KTURS & \textbf{92.78\%} & \underline{91.54\%} & 0.9251 & 0.2861 & 0.7205 \\
+    w/o TMLLM & \textbf{92.78\%} & 85.64\% & 0.8625 & 0.6306 & 0.3898 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{92.82\%} & \underline{0.9860} & \underline{0.0028} & \underline{0.9092} \\
+    \midrule
+
+    % --- 场景 3 ---
+    \multicolumn{6}{l}{\textbf{场景 3}} \\ \midrule
+    w/o ControlNet & \underline{89.17\%} & 90.48\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o CGCDM & 87.50\% & 89.05\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
+    w/o KTURS & \textbf{92.78\%} & \underline{91.19\%} & 0.9268 & \underline{0.2861} & 0.7773 \\
+    w/o TMLLM & \textbf{92.78\%} & 79.52\% & 0.7851 & 1.0000 & 0.4210 \\
+    DA-TMLLM & \textbf{92.78\%} & \textbf{93.57\%} & \underline{0.9942} & \textbf{0.0000} & \underline{0.9887} \\
+\end{longtable}
 
 \subsection{超参数敏感性分析}\label{subsec:DA-TMLLM_sensitivity_analysis}
 
@@ -852,53 +950,87 @@ $L_{f} = 2400$ to balance diagnostic efficacy against computational overhead.
 
 We evaluate the quality of synthetic vibration signals generated by DA-TMLLM in comparison with three augmentation-based baselines, including VQVAE, DCGAN, and QSCGAN, for the minority classes of the domain-specific datasets. As summarized in Table \ref{tab:comparison_result2}, DA-TMLLM achieves the lowest RMSE and the highest PSNR and FSCS. Quantitatively, relative to the second-best performing model in each case, DA-TMLLM reduces the average RMSE by 86.9\% while increasing the average PSNR and FSCS by 97.1\% and 67.2\%, respectively, which validates its superiority in data augmentation. This superior performance is attributed to our conditional diffusion model, which excels at capturing complex, non-stationary signal characteristics through a guided, progressive denoising process. In contrast, DCGAN and QSCGAN are prone to training instability, resulting in an incomplete capture of the true data distribution, while VQVAE tends to generate overly smooth signals that lack critical high-frequency details.
 
-\begin{table*}[t!]
-	\footnotesize
-	% table caption is above the table
-	\caption{Generation Quality Comparison of Augmentation-Based Baselines and DE-TMLLM \textsuperscript{1}}
-	\renewcommand{\arraystretch}{1.5}
-	\centering
-	\label{tab:comparison_result2}       % Give a unique label
-	% For LaTeX tables use
-	\begin{tabular}{c|c c c|c c c|c c c|c c c}
-		\toprule[1pt]\noalign{\vspace{0.5pt}}
-		Model&\multicolumn{3}{c|}{VQVAE}&\multicolumn{3}{c|}{DCGAN}&\multicolumn{3}{c|}{QSCGAN}&\multicolumn{3}{c}{DA-TMLLM}
-		\\\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
-		Metric&RMSE &PSNR &FSCS &RMSE &PSNR &FSCS &RMSE &PSNR &FSCS &RMSE &PSNR &FSCS \\\midrule[1pt]
-		
-		IMS\_MiIR \textsuperscript{2}  & 0.1674 & 15.5231 & 0.0621 & \underline{0.0699} & \underline{23.1205} & \underline{0.4791} & 0.1387 & 17.1660 & 0.4396 & \textbf{0.0084} & \textbf{41.5342} & \textbf{0.9811}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		IMS\_SB  & 0.4097 & 7.7508 & 0.0460 & \underline{0.1696} & \underline{15.4120} & \underline{0.4823} & 0.2251 & 12.9531 & 0.3099 & \textbf{0.0217} & \textbf{33.3997} & \textbf{0.7835}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		IMS\_SOR  & 0.7853 & 2.0990 & 0.0239 & \underline{0.1258} & \underline{18.1025} & \underline{0.5693} & 0.1892 & 14.4668 & 0.4196 & \textbf{0.0111} & \textbf{39.1883} & \textbf{0.7418} 
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		PU\_MiIR   & 0.2666 & 11.4819 & 0.0355 & \underline{0.0598} & \underline{24.4715} & \underline{0.4209} & 0.1682 & 15.4824 & 0.2256 & \textbf{0.0108} & \textbf{39.3536} & \textbf{0.7332}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		XJTU\_MiIR & 0.1269 & 17.9312 & 0.0408 & \underline{0.1177} & \underline{18.6033} & \underline{0.6004} & 0.1902 & 14.4202 & 0.4533 & \textbf{0.0158} & \textbf{36.1506} & \textbf{0.6809}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		XJTU\_SIR & \underline{0.0464} & \underline{26.6663} & 0.0912 & 0.1665 & 15.7207 & \underline{0.3842} & 0.2041 & 13.8345 & 0.3467 & \textbf{0.0117} & \textbf{38.9643} & \textbf{0.5786}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		XJTU\_MiB & 0.1729 & 15.2460 & 0.0865 & 0.1685 & 15.4795 & 0.5216 & \underline{0.1541} & \underline{16.2510} & \underline{0.5346} & \textbf{0.0163} & \textbf{35.8361} & \textbf{0.7601} 
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		XJTU\_SB & 0.4908 & 6.1818 & 0.0256 & \underline{0.1007} & \underline{20.0536} & \underline{0.4464} & 0.2295 & 12.8102 & 0.3242 & \textbf{0.0099} & \textbf{40.0970} & \textbf{0.7360}
-		\\
-		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-		XJTU\_SOR & 0.3577 & 8.9290 & 0.0407 & \underline{0.1464} & \underline{16.6960} & \underline{0.2624} & 0.1865 & 14.5998 & 0.3848 & \textbf{0.0102} & \textbf{39.9638} & \textbf{0.6873}
-		\\
-		%			
-		\noalign{\vspace{0.5pt}}
-		\bottomrule[1pt]
-		\multicolumn{13}{l}{\textsuperscript{1} Best results: \textbf{bold}; second best: \underline{underlined}.}\\[-5pt]
-		\multicolumn{13}{l}{\textsuperscript{2} IMS\_MiIR indicates that data augmentation is applied to the MiIR class within the IMS dataset.}\\[-5pt]
-	\end{tabular}
-\end{table*}
+\renewcommand{\arraystretch}{1.3} 
+\setlength{\tabcolsep}{6pt} 
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{\dimexpr 0.18\textwidth-2\tabcolsep} 
+    >{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep} 
+    *{4}{>{\centering\arraybackslash}p{\dimexpr 0.175\textwidth-2\tabcolsep}}
+}
+    % === 第一页表头 ===
+    \caption{各基准模型与 DA-TMLLM 的生成质量对比结果} \label{tab:comparison_result2_refined} \\
+    \toprule
+    数据集 & 指标 & VQVAE & DCGAN & QSCGAN & DA-TMLLM \\
+    \midrule
+    \endfirsthead
+
+    % === 续页表头 ===
+    \caption*{表 \ref{tab:comparison_result2_refined}（续）：各基准模型与 DA-TMLLM 的生成质量对比结果} \\
+    \toprule
+    数据集 & 指标 & VQVAE & DCGAN & QSCGAN & DA-TMLLM \\
+    \midrule
+    \endhead
+
+    % === 续页页底 ===
+    \midrule
+    \multicolumn{6}{r}{续下页 \dots} \\
+    \endfoot
+
+    % === 最后一页注记 ===
+    \bottomrule
+    \multicolumn{6}{l}{注：}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{1} 各行中的加粗与下划线数值分别对应最优与次优结果。}\\
+    \multicolumn{6}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{2} IMS\_MiIR 表示对 IMS 数据集中的 MiIR 类别应用了数据增强策略。}\\
+    \endlastfoot
+
+    % --- 数据内容 (按数据集分组) ---
+    \multirow{3}{*}{IMS\_MiIR\textsuperscript{2}} 
+    & RMSE & 0.1674 & \underline{0.0699} & 0.1387 & \textbf{0.0084} \\
+    & PSNR & 15.5231 & \underline{23.1205} & 17.1660 & \textbf{41.5342} \\
+    & FSCS & 0.0621 & \underline{0.4791} & 0.4396 & \textbf{0.9811} \\ \midrule
+
+    \multirow{3}{*}{IMS\_SB} 
+    & RMSE & 0.4097 & \underline{0.1696} & 0.2251 & \textbf{0.0217} \\
+    & PSNR & 7.7508 & \underline{15.4120} & 12.9531 & \textbf{33.3997} \\
+    & FSCS & 0.0460 & \underline{0.4823} & 0.3099 & \textbf{0.7835} \\ \midrule
+
+    \multirow{3}{*}{IMS\_SOR} 
+    & RMSE & 0.7853 & \underline{0.1258} & 0.1892 & \textbf{0.0111} \\
+    & PSNR & 2.0990 & \underline{18.1025} & 14.4668 & \textbf{39.1883} \\
+    & FSCS & 0.0239 & \underline{0.5693} & 0.4196 & \textbf{0.7418} \\ \midrule
+
+    \multirow{3}{*}{PU\_MiIR} 
+    & RMSE & 0.2666 & \underline{0.0598} & 0.1682 & \textbf{0.0108} \\
+    & PSNR & 11.4819 & \underline{24.4715} & 15.4824 & \textbf{39.3536} \\
+    & FSCS & 0.0355 & \underline{0.4209} & 0.2256 & \textbf{0.7332} \\ \midrule
+
+    \multirow{3}{*}{XJTU\_MiIR} 
+    & RMSE & 0.1269 & \underline{0.1177} & 0.1902 & \textbf{0.0158} \\
+    & PSNR & 17.9312 & \underline{18.6033} & 14.4202 & \textbf{36.1506} \\
+    & FSCS & 0.0408 & \underline{0.6004} & 0.4533 & \textbf{0.6809} \\ \midrule
+
+    \multirow{3}{*}{XJTU\_SIR} 
+    & RMSE & \underline{0.0464} & 0.1665 & 0.2041 & \textbf{0.0117} \\
+    & PSNR & \underline{26.6663} & 15.7207 & 13.8345 & \textbf{38.9643} \\
+    & FSCS & 0.0912 & \underline{0.3842} & 0.3467 & \textbf{0.5786} \\ \midrule
+
+    \multirow{3}{*}{XJTU\_MiB} 
+    & RMSE & 0.1729 & 0.1685 & \underline{0.1541} & \textbf{0.0163} \\
+    & PSNR & 15.2460 & 15.4795 & \underline{16.2510} & \textbf{35.8361} \\
+    & FSCS & 0.0865 & 0.5216 & \underline{0.5346} & \textbf{0.7601} \\ \midrule
+
+    \multirow{3}{*}{XJTU\_SB} 
+    & RMSE & 0.4908 & \underline{0.1007} & 0.2295 & \textbf{0.0099} \\
+    & PSNR & 6.1818 & \underline{20.0536} & 12.8102 & \textbf{40.0970} \\
+    & FSCS & 0.0256 & \underline{0.4464} & 0.3242 & \textbf{0.7360} \\ \midrule
+
+    \multirow{3}{*}{XJTU\_SOR} 
+    & RMSE & 0.3577 & \underline{0.1464} & 0.1865 & \textbf{0.0102} \\
+    & PSNR & 8.9290 & \underline{16.6960} & 14.5998 & \textbf{39.9638} \\
+    & FSCS & 0.0407 & \underline{0.2624} & 0.3848 & \textbf{0.6873} \\
+\end{longtable}
+
 
 \section{本章小结}\label{sec:DA-TMLLM_conclusion}
 

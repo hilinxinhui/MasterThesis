@@ -44,7 +44,11 @@
 \usepackage{mhchem}
 \usepackage{bm}
 \usepackage{algorithm}
+\usepackage{longtable, array, multirow}
 % \usepackage{algorithmic}
+\usepackage{etoolbox}
+\AtBeginEnvironment{tabular}{\small} 
+\AtBeginEnvironment{tabularx}{\small}
 %---------------------------------------------------------------------------%
 %->> Document inclusion
 %---------------------------------------------------------------------------%

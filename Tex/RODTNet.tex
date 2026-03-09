@@ -333,141 +333,130 @@ Finally, we investigate the sensitivity of our proposed model's performance to v
 % \end{figure}
 
 % 数据集描述
-\begin{table*}[hb]
-    \centering
-    \caption{Dataset Overview.}
-    \scalebox{0.8}
-    {
-    \small
-    \begin{threeparttable}
-      \begin{tabular}{cccccc}
-      \toprule
-      数据集 & 数据子集 & 正极材料\tnote{a} & 额定容量 & 电池数量 & 样本数量 \\
-      \midrule
-      MATR \cite{severson2019data, attia2020closed}  & batch\{1, 2, 3, 9\tnote{b} \} & \ce{LiFePO_{4}} & 1100 mAh  & 144   & 115416 \\
-      \midrule
-      \makecell{Tongji \cite{zhu2022data}} & \makecell{NCA, NCM\tnote{c}} & \makecell{\ce{Li_{0.86}Ni_{0.86}Co_{0.11}Al_{0.03}O_2(NCA)} \\ \ce{Li_{0.84}Ni_{0.83}Co_{0.11}Mn_{0.07}O_2}(NCM)} & 3500 mAh  & \makecell{116} & \makecell{41963} \\
-      \midrule
-      HUST \cite{D2EE01676A}  & $\backslash$ & \ce{LiFePO_{4}} & 1100 mAh  & 77    & 114366 \\
-      \midrule
-      XJTU \cite{wang2024physics} & Batch-\{1, 2, 4\} & \ce{LiNi_{0.5}Co_{0.2}Mn_{0.3}O_2} & 2000 mAh  & 31    & 11182 \\
-      \bottomrule
-      \end{tabular}%
-      \begin{tablenotes}
-        \item[a] The anode material in all batteries is graphite.
-        \item[b] Only the cells in batch 9 with the protocols `3.6-6-5.6-4.755', `4.8-5.2-5.2-4.16', `6-5.6-4.4-3.834', and `8-4.4-4.4-3.94' are used.
-        \item[c] Cell {CY35-05\_1-\#3} from NCA subset and cells {CY35-05\_\#\{1, 2, 3, 4\}} from NCM subset are excluded.
+\begin{table*}[htbp]
+  \centering
+  \caption{本文所采用的锂离子电池公开数据集概览}
+  \label{tab:dataset}
+  \begin{threeparttable}
+    \begin{tabularx}{\textwidth}{
+      >{\raggedright\arraybackslash\hsize=0.9\hsize}X 
+      >{\raggedright\arraybackslash\hsize=1.3\hsize}X 
+      >{\raggedright\arraybackslash\hsize=1.8\hsize}X 
+      >{\centering\arraybackslash\hsize=0.8\hsize}X 
+      >{\centering\arraybackslash\hsize=0.5\hsize}X 
+      >{\centering\arraybackslash\hsize=0.5\hsize}X
+    }
+    \toprule
+    \multicolumn{1}{c}{数据集} & \multicolumn{1}{c}{数据子集} & \multicolumn{1}{c}{正极材料\tnote{a}} & 额定容量 & 电池数量 & 样本数量 \\
+    \midrule
+    MATR \cite{severson2019data, attia2020closed} & batch\{1, 2, 3, 9\tnote{b}\} & \ce{LiFePO_{4}} & 1100 mAh & 144 & 115416 \\
+    \midrule
+    Tongji \cite{zhu2022data} & NCA, NCM\tnote{c} & \ce{Li_{0.86}Ni_{0.86}Co_{0.11}Al_{0.03}O_2} \newline \ce{Li_{0.84}Ni_{0.83}Co_{0.11}Mn_{0.07}O_2} & 3500 mAh & 116 & 41963 \\
+    \midrule
+    HUST \cite{D2EE01676A} & $\backslash$ & \ce{LiFePO_{4}} & 1100 mAh & 77 & 114366 \\
+    \midrule
+    XJTU \cite{wang2024physics} & Batch-\{1, 2, 4\} & \ce{LiNi_{0.5}Co_{0.2}Mn_{0.3}O_2} & 2000 mAh & 31 & 11182 \\
+    \bottomrule
+    \end{tabularx}
+    \begin{tablenotes}
+      \item[a] 所有电池的负极材料均为石墨。
+      \item[b] 仅使用了批次 9 (batch 9) 中采用充电协议为 “3.6-6-5.6-4.755”、“4.8-5.2-5.2-4.16”、“6-5.6-4.4-3.834” 和 “8-4.4-4.4-3.94” 的电池。
+      \item[c] 剔除了 NCA 子集中的电池 CY35-05\_1-\#3 以及 NCM 子集中的电池 CY35-05\_\#\{1, 2, 3, 4\}。
     \end{tablenotes}
   \end{threeparttable}
-    }
-    \label{tab:dataset}%
-  \end{table*}%
-
-Wang等\cite{wang2023feature}
+\end{table*}
 
 % 域泛化任务划分
-  \begin{table*}[h]
-    \scriptsize
-      \centering
-      \caption{The designed OOD degradation pattern generalization tasks.}
-      \scalebox{0.8}
-      {
-        \small
-      \begin{threeparttable}
-        % \resizebox{\linewidth}{!}{
-        \begin{tabularx}{\textwidth}{ccXX}
-        \toprule
-        任务 & 数据集 & 源域电池编号 (\textbf{源域数量}) & 目标域电池编号 (\textbf{目标域数量}) \\
-        \midrule
-        1     & MATR  & 8C(35\%)-3.6C\_\{47,48\}, \newline 8C(25\%)-3.6C\_\{45,46\}, \newline
-        8C(15\%)-3.6C\_\{43,44\}, \newline 7C(40\%)-3C\_\{37,38\}, \newline
-        7C(40\%)-3.6C\_\{41,42\}, \newline 7C(30\%)-3.6C\_\{39,40\}, \newline
-        6C(50\%)-3.6C\_\{35,36\}, \newline 6C(40\%)-3C\_\{25,26\}, \newline
-        6C(40\%)-3.6C\_\{33,34\}, \newline 6C(4\%)-4.75C\_46, \newline
-        等. (\textbf{52})
-        % 6C(30\%)-3.6C\_32, 5C(67\%)-4C\_\{10,18,2,34,42,47\}, \newline
-        % 5.9C(60\%)-3.1C\_\{32,40\}, 5.9C(15\%)-4.6C\_\{24,39\}, \newline
-        % 5.6C(5\%)-4.75C\_41, 5.6C(38\%)-4.25C\_38, \newline
-        % 5.6C(36\%)-4.3C\_\{13,15,21,23,29,37,45,5\}, \newline 
-        % 5.4C(70\%)-3C\_\{17,18\}, 5.4C(60\%)-3C\_\{15,16\}, \newline
-        % 5.4C(50\%)-3C\_14, 5.4C(40\%)-3.6C\_20, \newline
-        % 5.3C(54\%)-4C\_\{11,19,27,35,3,43,48,8\}, \newline
-        % 5.2C(58\%)-4C\_34, 5.2C(50\%)-4.25C\_33, \newline
-        % 5.2C(37\%)-4.5C\_32, 5.2C(10\%)-4.75C\_31, \newline
-        % 4C(80\%)-4C\_\{5,6\}, 4C(40\%)-6C\_29, \newline
-        % 4C(4\%)-4.85C\_30, 4.9C(69\%)-4.25C\_26, \newline
-        % 4.9C(61\%)-4.5C\_25, 4.65C(44\%)-5C\_22, \newline
-        % 4.65C(19\%)-4.85C\_21, 4.4C(80\%)-4.4C\_7, \newline
-        % 4.4C(47\%)-5.5C\_18, 4.4C(24\%)-5C\_17, \newline
-        % 3.7C(31\%)-5.9C\_\{16,30,38\}, 3.6C(9\%)-5C\_16, \newline
-        % 3.6C(80\%)-3.6C\_\{1,2,3\}, 3.6C(30\%)-6C\_15, \newline
-        % 5.4C(60\%)-3.6C\_\{23,24\}, 4.4C(8\%)-4.85C\_20, \newline
-        % 5.2C(66\%)-3.5C\_35, 3.6C(2\%)-4.85C\_14, \newline
-        % 5.6C(19\%)-4.6C\_\{14,20,22,28,36,44,4\}, \newline
-        % 4.8C(80\%)-4.8C\_\{17,1,25,9,10,4,7,8,9\}, \newline
-        % 4C(13\%)-5C\_27, 5.4C(80\%)-5.4C\_\{11,12\}, \newline
-        % 4.65C(69\%)-6C\_23, 6C(60\%)-3C\_\{29,30,48\}, \newline
-        % 6C(50\%)-3C\_\{27,28\}, 5.6C(25\%)-4.5C\_37\tnote{a} (\textbf{52})
-        & 6C(52\%)-3.5C\_47, \newline
-        6C(40\%)-4C\_45, \newline
-        6C(31\%)-4.25C\_44, \newline
-        6C(20\%)-4.5C\_43, \newline
-        5.6C(65\%)-3C\_42, \newline
-        5.6C(58\%)-3.5C\_40, \newline
-        5.6C(47\%)-4C\_39, \newline
-        5.2C(71\%)-3C\_36, \newline
-        4C(31\%)-5C\_28, \newline
-        4.9C(27\%)-4.75C\_24, \newline
-        4.4C(55\%)-6C\_19, \newline
-        3.6C(22\%)-5.5C\_13, \newline
-        2C(7\%)-5.5C\_12, \newline
-        2C(2\%)-5C\_11, \newline
-        2C(10\%)-6C\_10, \newline
-        1C(4\%)-6C\_9 (\textbf{16}) \\
-        \midrule
-        2     & MATR  & M-batch9-1\_\{1,10,2,42,20\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-4\_\{11,12,27,29,38\} (\textbf{1}) \\
-        \midrule
-        3     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-1\_\{1,2,10,20,42\} (\textbf{1}) \\
-        \midrule
-        4     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-2\_\{21,22,31,36,9\} (\textbf{1}) \\
-        \midrule
-        5     & MATR  & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-2\_\{21,22,31,36,9\} (\textbf{3}) & M-batch9-3\_\{13,16,23,47,24\} (\textbf{1}) \\
-        \midrule
-        6     & Tongji & CY25-1\_1-\#\{6,1,9,3,7,2,8\}, \newline
-        CY25-05\_1-\#\{14,11,6,\newline 1,2,19,13,7,17,4,16,10,15\}, \newline
-        CY45-05\_1-\#\{28,17,5,2,\newline 21,7,9,19,22,14,16,8,23,24,12,\newline 10,20,26,13,27\}, \newline CY25-025\_1-\#\{3,5,4,6\}, \newline
-        CY35-05\_1-\#2 (\textbf{5}) & CY25-1\_1-\#\{4,5\}, \newline
-        CY25-05\_1-\#\{3,5,12,18\}, \newline CY25-025\_1-\#7, CY35-05\_1-\#1, \newline CY45-05\_1-\#\{1,11,15,18,25\} (\textbf{5}) \\
-        \midrule
-        7     & Tongji & CY25-05\_1-\#\{6,5,13,15,18,7,3,9,1,\newline
-        16,17,4,14,2,12,10,19,11,8\}, \newline CY25-025\_1-\#\{6,7,4,1,2,3,5\}, \newline CY45-05\_1-\#\{15,4,14,28,13,1,3, 26,19,9,18,16,11,12,27,5,10, \newline 22,8,7,21,6,17,24,20,2,25,23\} (\textbf{3}) & CY25-05\_1-\#\{6,23,5,13,15,18,7,3,9,1,\newline 16,17,4,14,21,2,20,12,10,19,11,8,22\}, \newline CY45-05\_1-\#\{23,15,4,14,28,13,1,3,\newline 2,25,26,19,9,18,16,11,12,17,24,20,\newline 27,5,10,22,8,7,21,6\} (\textbf{2}) \\
-        \midrule
-        8     & HUST  & 9-1,2-2,4-7,9-7,1-8,4-6,2-7,8-4,\newline
-        7-2,10-3,2-4,7-4,3-4,5-4,8-7,7-7, \newline 4-4,1-3,7-1,5-2,6-4,9-8,9-5,6-3,10-8,1-6,3-5,2-6,3-8,3-6,4-8,7-8, \newline 5-1,2-8,8-2,1-5,7-3,10-2,5-5,9-2,5-6,1-7,8-3,4-1,4-2,1-4,6-5,4-3, \newline 5-7,3-3,2-3,9-3,10-5,3-2,3-7 (\textbf{55}) & 9-6,4-5,1-2,10-7,1-1,6-1,6-6,9-4,\newline 10-4,8-5,5-3,10-6,2-5,6-2,3-1,8-8,\newline 8-1,8-6,7-6,6-8,7-5,10-1 (\textbf{22}) \\
-        \midrule
-        9     & XJTU  & X-Batch2-\{1 -- 15\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch1-\{1 -- 8\} (\textbf{1}) \\
-        \midrule
-        10    & XJTU  & X-Batch1-\{1 -- 8\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch2-\{1 -- 15\} (\textbf{1}) \\
-        \midrule
-        11    & XJTU  & X-Batch1-\{1 -- 8\}, \newline X-Batch2-\{1 -- 15\} (\textbf{2}) & X-Batch4-\{1 -- 8\} (\textbf{1}) \\
-        \bottomrule
-        \end{tabularx}%
-      %   \begin{tablenotes}
-      %     \item[a] Refer to \cite{TAN2024103725} for full details.
-      %     \item[b] This ellipsis mark indicates consecutive cell IDs.
-      % \end{tablenotes}
-      \end{threeparttable}
-      }
-      \label{tab:tasks}%
-      \end{table*}%
+% \clearpage
+\begin{longtable}{
+    >{\centering\arraybackslash}p{\dimexpr 0.08\textwidth-2\tabcolsep} 
+    >{\centering\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep} 
+    >{\raggedright\arraybackslash}p{\dimexpr 0.40\textwidth-2\tabcolsep} 
+    >{\raggedright\arraybackslash}p{\dimexpr 0.40\textwidth-2\tabcolsep}
+}
+    % --- 第一页表头 ---
+    \caption{本文设计的分布外退化模式泛化任务概览} \label{tab:tasks} \\
+    \toprule
+    \multicolumn{1}{c}{任务} & \multicolumn{1}{c}{数据集} & \multicolumn{1}{c}{源域电池编号 (源域数量)} & \multicolumn{1}{c}{目标域电池编号 (目标域数量)} \\
+    \midrule
+    \endfirsthead
+
+    % --- 续页表头 ---
+    \caption*{表 \ref{tab:tasks}（续）：本文设计的分布外退化模式泛化任务概览} \\
+    \toprule
+    \multicolumn{1}{c}{任务} & \multicolumn{1}{c}{数据集} & \multicolumn{1}{c}{源域电池编号 (源域数量)} & \multicolumn{1}{c}{目标域电池编号 (目标域数量)} \\
+    \midrule
+    \endhead
+
+    % --- 续页表尾 (除最后一页外) ---
+    \midrule
+    \multicolumn{4}{r}{续下页 \dots} \\
+    \endfoot
+
+    % --- 最后一页表尾 (在此处添加注释) ---
+    \bottomrule
+    % \multicolumn{4}{l}{\footnotesize 注：}\\
+    \multicolumn{4}{p{\dimexpr\textwidth-2\tabcolsep}}{\small \textsuperscript{a} 完整细节请参阅文献 \cite{TAN2024103725}。}\\
+    \multicolumn{4}{p{\dimexpr\textwidth-2\tabcolsep}}{\small \textsuperscript{b} 表中“ -- ”表示连续的电池 ID 编号。}\\
+    \endlastfoot
+
+    % --- 表格正文内容 ---
+    1 & MATR & 8C(35\%)-3.6C\_\{47,48\}, \newline 8C(25\%)-3.6C\_\{45,46\}, \newline
+    8C(15\%)-3.6C\_\{43,44\}, \newline 7C(40\%)-3C\_\{37,38\}, \newline
+    7C(40\%)-3.6C\_\{41,42\}, \newline 7C(30\%)-3.6C\_\{39,40\}, \newline
+    6C(50\%)-3.6C\_\{35,36\}, \newline 6C(40\%)-3C\_\{25,26\}, \newline
+    6C(40\%)-3.6C\_\{33,34\}, \newline 6C(4\%)-4.75C\_46, \newline
+    等. (\textbf{52})
+    & 6C(52\%)-3.5C\_47, \newline
+    6C(40\%)-4C\_45, \newline
+    6C(31\%)-4.25C\_44, \newline
+    6C(20\%)-4.5C\_43, \newline
+    5.6C(65\%)-3C\_42, \newline
+    5.6C(58\%)-3.5C\_40, \newline
+    5.6C(47\%)-4C\_39, \newline
+    5.2C(71\%)-3C\_36, \newline
+    4C(31\%)-5C\_28, \newline
+    4.9C(27\%)-4.75C\_24, \newline
+    4.4C(55\%)-6C\_19, \newline
+    3.6C(22\%)-5.5C\_13, \newline
+    2C(7\%)-5.5C\_12, \newline
+    2C(2\%)-5C\_11, \newline
+    2C(10\%)-6C\_10, \newline
+    1C(4\%)-6C\_9 (\textbf{16}) \\
+    \midrule
+    2 & MATR & M-batch9-1\_\{1,10,2,42,20\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-4\_\{11,12,27,29,38\} (\textbf{1}) \\
+    \midrule
+    3 & MATR & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-2\_\{21,22,31,36,9\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-1\_\{1,2,10,20,42\} (\textbf{1}) \\
+    \midrule
+    4 & MATR & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-3\_\{13,16,23,47,24\} (\textbf{3}) & M-batch9-2\_\{21,22,31,36,9\} (\textbf{1}) \\
+    \midrule
+    5 & MATR & M-batch9-4\_\{11,12,27,29,38\}, \newline M-batch9-1\_\{1,2,10,20,42\}, \newline M-batch9-2\_\{21,22,31,36,9\} (\textbf{3}) & M-batch9-3\_\{13,16,23,47,24\} (\textbf{1}) \\
+    \midrule
+    6 & Tongji & CY25-1\_1-\#\{6,1,9,3,7,2,8\}, \newline
+    CY25-05\_1-\#\{14,11,6,\newline 1,2,19,13,7,17,4,16,10,15\}, \newline
+    CY45-05\_1-\#\{28,17,5,2,\newline 21,7,9,19,22,14,16,8,23,24,12,\newline 10,20,26,13,27\}, \newline CY25-025\_1-\#\{3,5,4,6\}, \newline
+    CY35-05\_1-\#2 (\textbf{5}) & CY25-1\_1-\#\{4,5\}, \newline
+    CY25-05\_1-\#\{3,5,12,18\}, \newline CY25-025\_1-\#7, CY35-05\_1-\#1, \newline CY45-05\_1-\#\{1,11,15,18,25\} (\textbf{5}) \\
+    \midrule
+    7 & Tongji & CY25-05\_1-\#\{6,5,13,15,18,7,3,9,1,\newline
+    16,17,4,14,2,12,10,19,11,8\}, \newline CY25-025\_1-\#\{6,7,4,1,2,3,5\}, \newline CY45-05\_1-\#\{15,4,14,28,13,1,3, 26,19,9,18,16,11,12,27,5,10, \newline 22,8,7,21,6,17,24,20,2,25,23\} (\textbf{3}) & CY25-05\_1-\#\{6,23,5,13,15,18,7,3,9,1,\newline 16,17,4,14,21,2,20,12,10,19,11,8,22\}, \newline CY45-05\_1-\#\{23,15,4,14,28,13,1,3,\newline 2,25,26,19,9,18,16,11,12,17,24,20,\newline 27,5,10,22,8,7,21,6\} (\textbf{2}) \\
+    \midrule
+    8 & HUST & 9-1,2-2,4-7,9-7,1-8,4-6,2-7,8-4,\newline
+    7-2,10-3,2-4,7-4,3-4,5-4,8-7,7-7, \newline 4-4,1-3,7-1,5-2,6-4,9-8,9-5,6-3,10-8,1-6,3-5,2-6,3-8,3-6,4-8,7-8, \newline 5-1,2-8,8-2,1-5,7-3,10-2,5-5,9-2,5-6,1-7,8-3,4-1,4-2,1-4,6-5,4-3, \newline 5-7,3-3,2-3,9-3,10-5,3-2,3-7 (\textbf{55}) & 9-6,4-5,1-2,10-7,1-1,6-1,6-6,9-4,\newline 10-4,8-5,5-3,10-6,2-5,6-2,3-1,8-8,\newline 8-1,8-6,7-6,6-8,7-5,10-1 (\textbf{22}) \\
+    \midrule
+    9 & XJTU & X-Batch2-\{1 -- 15\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch1-\{1 -- 8\} (\textbf{1}) \\
+    \midrule
+    10 & XJTU & X-Batch1-\{1 -- 8\}, \newline X-Batch4-\{1 -- 8\} (\textbf{2}) & X-Batch2-\{1 -- 15\} (\textbf{1}) \\
+    \midrule
+    11 & XJTU & X-Batch1-\{1 -- 8\}, \newline X-Batch2-\{1 -- 15\} (\textbf{2}) & X-Batch4-\{1 -- 8\} (\textbf{1}) \\
+\end{longtable}
+
 
 \begin{table}[htbp]
-\centering
-\caption{Hyperparameter Settings.}
-\scalebox{0.8}
-{
-    \small
-\begin{threeparttable}
+  \centering
+  \caption{RODTNet模型和RODTNet-LT模型的超参数设置}
+  \label{tab:hyperparameters_setting}
+  \begin{threeparttable}
     \begin{tabular}{rll}
     \toprule
     \multicolumn{1}{l}{Symbol} & Description & Value \\
@@ -489,11 +478,9 @@ Wang等\cite{wang2023feature}
     \multicolumn{1}{l}{$\eta_{0}$} & Initial learning rate & $1 \times 10^{-4}$ \\
     \multicolumn{1}{l}{$p_{dropout}$} & Dropout rate & $0.01$ \\
     \bottomrule
-    \end{tabular}%
-\end{threeparttable}
-}
-\label{tab:hyperparameters_setting}%
-\end{table}%
+    \end{tabular}
+  \end{threeparttable}
+\end{table}
 
 
 We evaluate our framework using 4 large-scale datasets, MATR \cite{severson2019data, attia2020closed}, Tongji \cite{zhu2022data}, HUST \cite{D2EE01676A}, and XJTU \cite{wang2024physics} through 11 OOD generalization tasks.
@@ -532,169 +519,298 @@ We employ four metrics, namely Mean Absolute Error (MAE), Mean Square Error (MSE
 
 \subsection{性能对比试验}\label{subsec:RODTNet_comparison_experiment}
 
+% \clearpage
+\renewcommand{\arraystretch}{1.3} % 适度增加行高，提升数据阅读的清晰度
+% 定义列宽：1列名称 (22%) + 6列数据 (每列 13%) = 100% textwidth
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{\dimexpr 0.28\textwidth-2\tabcolsep} 
+    *{6}{>{\centering\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep}}
+}
+    % === 第一页起始表头 (Task 1-3) ===
+    \caption{在 MATR、Tongji、HUST 和 XJTU 数据集上 OOD RUL 预测任务的对比实验结果} \label{tab:rul_results} \\
+    \toprule
+    任务 & \multicolumn{2}{c}{Task 1} & \multicolumn{2}{c}{Task 2} & \multicolumn{2}{c}{Task 3} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    \endfirsthead
+
+    % === 续页通用表头 ===
+    \caption*{表 \ref{tab:rul_results}（续）：OOD RUL 预测任务对比实验结果} \\
+    \toprule
+    模型 / 指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    \endhead
+
+    % === 续页页底 ===
+    \midrule
+    \multicolumn{7}{r}{续下页 \dots} \\
+    \endfoot
+
+    % === 最后一页注记 ===
+    \bottomrule
+    \multicolumn{7}{l}{注：}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{a} + 表示在目标域上进行了微调；\textsuperscript{b} ++ 表示直接在目标域上进行训练。}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{c} \textbf{加粗}/\underline{下划线} 分别表示性能\textbf{最优}/\underline{次优}。}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{d} 为公平起见，对比实验排除了使用预训练--微调模式的模型。}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{e} 本表的符号说明和实验设置同样适用于表 \ref{tab:soh_results}。}\\
+    \endlastfoot
+
+    % --- 第 1 块: Task 1 - Task 3 ---
+    iTransformer \cite{liu2024itransformer} & 99.78 & 15290.60 & 78.56 & 12430.67 & 153.83 & 34106.78 \\
+    iTransformer+\textsuperscript{a} & 12.16 & 290.75 & 44.35 & 5100.32 & 40.20 & 4450.44 \\
+    PatchTST \cite{nie2023a} & 30.86 & 2147.96 & 141.59 & 40006.27 & 89.28 & 13432.70 \\
+    PatchTST+ & 12.82 & 393.49 & 42.24 & 4470.77 & 51.99 & 6520.95 \\
+    TSMixer \cite{chen2023tsmixer} & 261.39 & 95673.01 & 95.70 & 17312.12 & 159.98 & 42316.82 \\
+    TSMixer+ & 16.77 & 584.11 & 52.31 & 5986.63 & 80.59 & 12311.22 \\
+    PINN \cite{wang2024physics} & 27.07 & 1345.26 & 29.33 & 1948.74 & 46.42 & 5144.30 \\
+    PINN+ & 6.04 & 77.55 & 8.38 & 213.91 & 12.02 & 266.98 \\
+    DR-Net \cite{WANG2023108897} & 11.61 & 284.32 & 42.50 & 5231.99 & 49.33 & 5978.47 \\
+    CRNN \cite{D2EE01676A} & 13.66 & 378.74 & 18.16 & 708.65 & 14.40 & 535.36 \\
+    MAGNet \cite{TAN2024103725} & 13.51 & 347.84 & 15.08 & 492.65 & 16.03 & \underline{455.34} \\
+    DeNN-bagging \cite{10102497} & 23.40 & 1014.55 & 46.38 & 4144.07 & 68.88 & 8058.54 \\
+    DeNN-fusion \cite{10102497} & 24.34 & 1010.97 & 49.15 & 4672.25 & 74.74 & 9549.55 \\
+    DeNN-voting \cite{10102497} & 22.90 & 939.58 & 45.83 & 4074.09 & 71.58 & 8787.72 \\
+    MambaLithium \cite{shi2024mambalithium} & 13.19 & 368.84 & 20.32 & 818.35 & 19.99 & 923.46 \\
+    LSTM-DA \cite{HAN2022230823} & 20.36 & 713.70 & 30.14 & 1484.85 & 30.15 & 1701.16 \\
+    ConvMMD \cite{9788003} & 23.95 & 989.20 & 36.96 & 2619.11 & 46.70 & 4542.61 \\
+    DKTL \cite{10029904} & 23.77 & 1005.67 & 38.93 & 3220.22 & 51.40 & 5403.52 \\
+    DDAN \cite{9560040} & 19.35 & 622.24 & 26.90 & 1206.61 & 25.29 & 1267.76 \\
+    RODTNet++\textsuperscript{b} & \underline{2.13} & \underline{20.29} & \underline{12.01} & \underline{380.16} & \underline{10.49} & 577.50 \\
+    RODTNet & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} \\
+    \midrule
+
+    % --- 第 2 块: Task 4 - Task 6 ---
+    任务 & \multicolumn{2}{c}{Task 4} & \multicolumn{2}{c}{Task 5} & \multicolumn{2}{c}{Task 6} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    iTransformer & 94.88 & 15629.50 & 93.21 & 16692.93 & 46.35 & 3348.46 \\
+    iTransformer+ & 29.83 & 3284.53 & 40.36 & 5311.12 & 9.80 & 451.88 \\
+    PatchTST & 149.46 & 36100.57 & 75.57 & 12738.93 & 29.58 & 1881.96 \\
+    PatchTST+ & 38.72 & 3993.89 & 49.47 & 6372.25 & 30.24 & 2642.04 \\
+    TSMixer & 125.36 & 27480.27 & 92.97 & 17272.87 & 115.18 & 21255.96 \\
+    TSMixer+ & 75.14 & 12132.82 & 66.54 & 9945.74 & 19.64 & 844.83 \\
+    PINN & 46.24 & 4323.02 & 48.57 & 3539.95 & 43.84 & 4496.71 \\
+    PINN+ & 12.27 & 408.44 & 9.74 & 195.91 & 9.74 & 195.91 \\
+    DR-Net & 42.87 & 5410.01 & 45.92 & 8061.80 & 8.91 & 180.23 \\
+    CRNN & 13.86 & 579.07 & 12.73 & 365.98 & 8.34 & 138.99 \\
+    MAGNet & \underline{14.75} & \underline{394.57} & 13.37 & \underline{313.13} & 8.98 & 146.94 \\
+    DeNN-bagging & 93.65 & 14047.69 & 57.23 & 5960.93 & 16.73 & 607.03 \\
+    DeNN-fusion & 95.93 & 16148.70 & 76.95 & 10290.79 & 16.80 & 625.23 \\
+    DeNN-voting & 93.89 & 13623.54 & 57.07 & 6028.56 & 16.38 & 586.70 \\
+    MambaLithium & 17.47 & 672.48 & 13.55 & 385.23 & 7.28 & 105.15 \\
+    LSTM-DA & 31.45 & 1644.90 & 20.28 & 769.22 & 18.70 & 639.52 \\
+    ConvMMD & 57.68 & 6594.72 & 28.70 & 1960.54 & 17.03 & 544.12 \\
+    DKTL & 62.88 & 7711.63 & 30.94 & 2252.70 & 15.71 & 465.40 \\
+    DDAN & 26.25 & 1252.40 & 17.79 & 541.77 & 14.07 & 357.74 \\
+    RODTNet++ & 25.63 & 3137.51 & \underline{12.83} & 481.95 & \underline{4.06} & \underline{36.10} \\
+    RODTNet & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} & \textbf{0.68} \\
+    \midrule
+
+    % --- 第 3 块: Task 7 - Task 9 ---
+    任务 & \multicolumn{2}{c}{Task 7} & \multicolumn{2}{c}{Task 8} & \multicolumn{2}{c}{Task 9} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    iTransformer & 79.31 & 11828.38 & 285.14 & 134288.68 & 97.72 & 12857.57 \\
+    iTransformer+ & 19.96 & 690.05 & 25.39 & 1232.29 & 12.37 & 255.54 \\
+    PatchTST & 156.53 & 55065.22 & 171.01 & 70146.16 & 80.18 & 8273.63 \\
+    PatchTST+ & 21.09 & 803.19 & 107.18 & 20704.56 & 13.70 & 298.71 \\
+    TSMixer & 102.14 & 18803.24 & 363.95 & 183759.79 & 343.38 & 119826.16 \\
+    TSMixer+ & 20.28 & 700.89 & 45.71 & 3708.16 & 17.68 & 530.08 \\
+    PINN & 81.96 & 18077.43 & 126.97 & 25586.95 & 53.12 & 5147.91 \\
+    PINN+ & 16.70 & 610.41 & 24.96 & 1203.36 & 10.54 & 251.13 \\
+    DR-Net & 15.77 & 482.02 & 30.98 & 1763.16 & 17.30 & 532.24 \\
+    CRNN & 13.79 & 365.50 & 39.02 & 3541.77 & 29.13 & 1250.78 \\
+    MAGNet & 15.79 & 428.60 & 44.58 & 4499.43 & 27.53 & 1183.21 \\
+    DeNN-bagging & 28.97 & 1520.12 & 85.31 & 15854.20 & 40.39 & 2688.63 \\
+    DeNN-fusion & 31.39 & 1769.45 & 92.75 & 17801.56 & 41.68 & 2863.98 \\
+    DeNN-voting & 30.15 & 1646.72 & 86.36 & 16175.97 & 40.83 & 2692.80 \\
+    MambaLithium & 21.18 & 752.52 & 71.95 & 12473.49 & 45.07 & 3804.16 \\
+    LSTM-DA & 32.55 & 1741.70 & 121.14 & 24930.62 & 31.85 & 1526.07 \\
+    ConvMMD & 37.69 & 2722.93 & 108.81 & 21251.08 & 20.64 & 668.67 \\
+    DKTL & 36.85 & 2282.25 & 104.67 & 19313.69 & 28.27 & 1281.96 \\
+    DDAN & 29.73 & 1478.19 & 117.50 & 24882.38 & 34.05 & 1859.57 \\
+    RODTNet++ & \textbf{0.40} & \textbf{0.30} & \underline{1.51} & \underline{6.89} & \underline{7.62} & \underline{127.05} \\
+    RODTNet & \underline{0.78} & \underline{1.18} & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} \\
+    \midrule
+
+    % --- 第 4 块: Task 10 - Task 11 ---
+    任务 & \multicolumn{2}{c}{Task 10} & \multicolumn{2}{c}{Task 11} & \multicolumn{2}{c}{---} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} 
+    指标 & MAE & MSE & MAE & MSE & \multicolumn{2}{c}{---} \\
+    \midrule
+    iTransformer & 115.28 & 16008.10 & 86.33 & 9092.28 & --- & --- \\
+    iTransformer+ & 5.93 & 50.74 & 21.45 & 746.27 & --- & --- \\
+    PatchTST & 78.84 & 8451.20 & 108.02 & 16314.58 & --- & --- \\
+    PatchTST+ & 7.34 & 81.72 & 25.52 & 1018.20 & --- & --- \\
+    TSMixer & 97.57 & 12165.74 & 356.55 & 134948.97 & --- & --- \\
+    TSMixer+ & 7.90 & 105.46 & 35.20 & 2180.88 & --- & --- \\
+    PINN & 55.81 & 4744.68 & 111.30 & 22690.40 & --- & --- \\
+    PINN+ & 9.83 & 261.32 & 9.83 & 177.17 & --- & --- \\
+    DR-Net & 17.40 & 669.82 & 24.64 & 1306.43 & --- & --- \\
+    CRNN & 26.57 & 1346.65 & 35.58 & 3191.76 & --- & --- \\
+    MAGNet & 24.84 & 1321.13 & 38.51 & 2961.67 & --- & --- \\
+    DeNN-bagging & 36.51 & 2682.08 & 61.02 & 7199.04 & --- & --- \\
+    DeNN-fusion & 36.61 & 2652.09 & 62.20 & 7491.24 & --- & --- \\
+    DeNN-voting & 36.85 & 2739.17 & 61.56 & 7397.65 & --- & --- \\
+    MambaLithium & 28.68 & 1469.89 & 41.50 & 3260.10 & --- & --- \\
+    LSTM-DA & 24.87 & 1151.76 & 44.07 & 3391.50 & --- & --- \\
+    ConvMMD & 28.49 & 1531.89 & 50.73 & 5750.57 & --- & --- \\
+    DKTL & 27.02 & 1456.52 & 54.55 & 6445.32 & --- & --- \\
+    DDAN & 24.13 & 1211.62 & 42.90 & 3599.68 & --- & --- \\
+    RODTNet++ & \underline{3.86} & \textbf{36.87} & \textbf{8.39} & \underline{419.11} & --- & --- \\
+    RODTNet & \textbf{3.50} & \underline{70.76} & \underline{14.03} & \textbf{395.27} & --- & --- \\
+\end{longtable}
+
+% \clearpage 
+\renewcommand{\arraystretch}{1.3} % 增加行高以优化多位小数的视觉清晰度
+% 定义列宽：1列名称 (22%) + 6列数据 (每列 13%) = 100% textwidth
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{\dimexpr 0.28\textwidth-2\tabcolsep} 
+    *{6}{>{\centering\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep}}
+}
+    % === 第一页：起始表头 (Task 1-3) ===
+    \caption{在 MATR、Tongji、HUST 和 XJTU 数据集上 OOD SOH 估计任务的对比实验结果} \label{tab:soh_results} \\
+    \toprule
+    任务 & \multicolumn{2}{c}{任务 1} & \multicolumn{2}{c}{任务 2} & \multicolumn{2}{c}{任务 3} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    \endfirsthead
+
+    % === 续页：通用表头 ===
+    \caption*{表 \ref{tab:soh_results}（续）：OOD SOH 估计任务对比实验结果} \\
+    \toprule
+    模型 / 指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    \endhead
+
+    % === 续页页底 (除最后一页外) ===
+    \midrule
+    \multicolumn{7}{r}{续下页 \dots} \\
+    \endfoot
+
+    % === 最后一页：注记部分 ===
+    \bottomrule
+    \multicolumn{7}{l}{注：}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{a} + 表示在目标域上进行了微调；\textsuperscript{b} ++ 表示直接在目标域上进行训练。}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{c} \textbf{加粗}/\underline{下划线} 分别表示性能\textbf{最优}/\underline{次优}。}\\
+    \multicolumn{7}{p{\dimexpr\textwidth-2\tabcolsep}}{\textsuperscript{d} 为公平起见，对比实验排除了使用预训练--微调模式的模型。}\\
+    \endlastfoot
+
+    % --- 第 1 块: Task 1 - Task 3 ---
+    iTransformer \cite{liu2024itransformer} & 5.9093 & 0.5257 & 1.1315 & 0.0350 & 1.3424 & 0.0317 \\
+    iTransformer+\textsuperscript{a} & 0.7803 & 0.0134 & 0.7618 & 0.0167 & 0.4686 & 0.0067 \\
+    PatchTST \cite{nie2023a} & \underline{1.1228} & 0.0311 & 4.1024 & \underline{0.3776} & 0.7981 & 0.0145 \\
+    PatchTST+ & 0.6310 & 0.0098 & 0.6937 & 0.0136 & 0.4426 & 0.0071 \\
+    TSMixer \cite{chen2023tsmixer} & 16.2029 & 3.4749 & 2.5634 & 0.1033 & 5.1793 & 0.3115 \\
+    TSMixer+ & 0.8600 & 0.0172 & 0.7558 & 0.0160 & 0.5797 & 0.0082 \\
+    PINN \cite{wang2024physics} & 1.3596 & 0.0403 & 2.2216 & 0.0844 & 1.4187 & 0.0511 \\
+    PINN+ & 0.5748 & 0.0061 & 1.3991 & 0.0361 & 1.3524 & 0.0269 \\
+    DR-Net \cite{WANG2023108897} & 4.2229 & 0.3324 & 2.6507 & 0.1112 & 3.4879 & 0.1749 \\
+    CRNN \cite{D2EE01676A} & 0.8260 & 0.0168 & 0.5589 & 0.0058 & 0.5295 & 0.0060 \\
+    MAGNet \cite{TAN2024103725} & 1.2410 & \underline{0.0244} & 0.9305 & 0.0146 & 1.1954 & 0.0233 \\
+    DeNN-bagging \cite{10102497} & 1.7015 & 0.0658 & 2.1448 & 0.1194 & 2.1157 & 0.1141 \\
+    DeNN-fusion \cite{10102497} & 1.5901 & 0.0542 & 2.2918 & 0.1403 & 2.1127 & 0.1162 \\
+    DeNN-voting \cite{10102497} & 1.6199 & 0.0577 & 2.1824 & 0.1217 & 2.0499 & 0.1055 \\
+    MambaLithium \cite{shi2024mambalithium} & 1.2177 & 0.0338 & \underline{0.4801} & 0.0038 & \underline{0.4002} & \underline{0.0031} \\
+    LSTM-DA \cite{HAN2022230823} & 3.0477 & 0.1140 & 2.8469 & 0.0945 & 3.1725 & 0.1164 \\
+    ConvMMD \cite{9788003} & 2.2734 & 0.0891 & 2.2941 & 0.0809 & 2.4317 & 0.0862 \\
+    DKTL \cite{10029904} & 2.2029 & 0.0889 & 2.4482 & 0.1134 & 2.6035 & 0.1153 \\
+    DDAN \cite{9560040} & 2.2708 & 0.0667 & 1.7973 & 0.0378 & 2.0361 & 0.0485 \\
+    RODTNet-LT++\textsuperscript{b} (ours) & 1.1934 & 0.0484 & 0.9942 & 0.0367 & 0.9038 & 0.0330 \\
+    RODTNet-LT (ours) & \textbf{1.0384} & \textbf{0.0208} & \textbf{0.4476} & \textbf{0.0030} & \textbf{0.3630} & \textbf{0.0020} \\
+    \midrule
+
+    % --- 第 2 块: Task 4 - Task 6 ---
+    任务 & \multicolumn{2}{c}{任务 4} & \multicolumn{2}{c}{任务 5} & \multicolumn{2}{c}{任务 6} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    iTransformer & 1.0941 & 0.0218 & 2.7314 & 0.1079 & 21.3182 & 8.5517 \\
+    iTransformer+ & 0.4534 & 0.0051 & 0.7615 & 0.0183 & 2.1108 & 0.1204 \\
+    PatchTST & 4.2731 & 0.4299 & 2.8899 & 0.1764 & 9.5076 & 1.8668 \\
+    PatchTST+ & 0.4094 & 0.0046 & 0.8018 & 0.0183 & 3.6897 & 0.5973 \\
+    TSMixer & 2.9573 & 0.0980 & 3.1299 & 0.1231 & 35.9175 & 15.7721 \\
+    TSMixer+ & 0.4818 & 0.0046 & 0.8081 & 0.0184 & 2.9360 & 0.1595 \\
+    PINN & 1.1438 & 0.0227 & 1.7547 & 0.0556 & 20.7705 & 6.2435 \\
+    PINN+ & 0.7226 & 0.0107 & 1.0708 & 0.0207 & 8.9555 & 2.2297 \\
+    DR-Net & 3.6984 & 0.2049 & 3.4467 & 0.1925 & 16.0808 & 3.9837 \\
+    CRNN & 0.5508 & 0.0082 & 0.8301 & 0.0184 & 7.6085 & 1.6485 \\
+    MAGNet & 0.9216 & 0.0196 & 1.8908 & 0.0526 & 6.9453 & 1.2605 \\
+    DeNN-bagging & 2.1386 & 0.1330 & 2.8398 & 0.1719 & 10.3293 & 1.9811 \\
+    DeNN-fusion & 2.3360 & 0.1544 & 4.0800 & 0.2782 & 10.3575 & 1.9799 \\
+    DeNN-voting & 2.1529 & 0.1109 & 2.8789 & 0.1806 & 10.1680 & 1.9101 \\
+    MambaLithium & \underline{0.4162} & \underline{0.0035} & \underline{0.9160} & \underline{0.0258} & \underline{5.5906} & \underline{0.7132} \\
+    LSTM-DA & 3.4704 & 0.1360 & 3.4921 & 0.1370 & 12.8066 & 2.8925 \\
+    ConvMMD & 2.6367 & 0.0943 & 2.5047 & 0.0807 & 10.7025 & 2.0985 \\
+    DKTL & 2.8678 & 0.1272 & 2.7184 & 0.1135 & 10.5311 & 2.1718 \\
+    DDAN & 2.3470 & 0.0611 & 2.4232 & 0.0648 & 12.1931 & 2.7491 \\
+    RODTNet-LT++ & 2.4697 & 0.3593 & 3.1390 & 0.4989 & 9.6180 & 2.0079 \\
+    RODTNet-LT & \textbf{0.2885} & \textbf{0.0014} & \textbf{0.4435} & \textbf{0.0032} & \textbf{4.0520} & \textbf{0.3946} \\
+    \midrule
+
+    % --- 第 3 块: Task 7 - Task 9 ---
+    任务 & \multicolumn{2}{c}{任务 7} & \multicolumn{2}{c}{任务 8} & \multicolumn{2}{c}{任务 9} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    指标 & MAE & MSE & MAE & MSE & MAE & MSE \\
+    \midrule
+    iTransformer & 10.6146 & 1.6506 & 9.1256 & 1.5742 & 21.2702 & 8.0010 \\
+    iTransformer+ & 8.8424 & 1.4328 & 1.3233 & 0.0277 & 2.9985 & 0.1737 \\
+    PatchTST & 16.9823 & 5.4530 & 9.2243 & 1.6822 & 14.7543 & 4.8261 \\
+    PatchTST+ & 10.1355 & 1.8044 & 6.8517 & 0.9185 & 3.3279 & 0.1986 \\
+    TSMixer & 8.1766 & 1.0106 & 14.3296 & 2.9821 & 51.0444 & 26.6658 \\
+    TSMixer+ & 9.3981 & 1.4881 & 1.6831 & 0.0443 & 2.7117 & 0.1365 \\
+    PINN & 25.2663 & 9.1038 & 5.9623 & 0.7837 & 7.9811 & 1.9312 \\
+    PINN+ & 8.1476 & 1.3071 & 1.3870 & 0.0357 & 3.9588 & 0.4028 \\
+    DR-Net & 19.8591 & 5.6675 & 40.7034 & 21.2569 & 13.3021 & 3.0780 \\
+    CRNN & 4.5716 & 0.4770 & 3.3587 & 0.3612 & 5.8487 & 0.8072 \\
+    MAGNet & \underline{3.6287} & \textbf{0.2369} & 3.2225 & 0.2692 & \underline{3.4654} & \underline{0.2234} \\
+    DeNN-bagging & 7.1896 & 0.8327 & 5.6580 & 0.7403 & 7.6599 & 1.1013 \\
+    DeNN-fusion & 8.5083 & 1.0813 & 5.9468 & 0.7503 & 8.3443 & 1.3646 \\
+    DeNN-voting & 7.4300 & 0.8838 & 5.5938 & 0.7390 & 7.7196 & 1.1244 \\
+    MambaLithium & 6.7626 & 0.8283 & 4.8486 & 0.6418 & 7.0512 & 1.2408 \\
+    LSTM-DA & 8.3498 & 1.0564 & 7.9172 & 1.3040 & 6.0889 & 0.6520 \\
+    ConvMMD & 7.8693 & 0.9537 & 6.7908 & 0.9026 & 5.9231 & 0.6199 \\
+    DKTL & 7.5353 & 0.8587 & 6.7470 & 0.9272 & 4.9570 & 0.5125 \\
+    DDAN & 8.1399 & 1.1031 & 7.3573 & 1.1792 & 5.9360 & 0.8296 \\
+    RODTNet-LT++ & 4.2455 & 0.4090 & \underline{1.7140} & \underline{0.0635} & \textbf{3.0794} & \textbf{0.2118} \\
+    RODTNet-LT & \textbf{3.5394} & \underline{0.3020} & \textbf{1.0781} & \textbf{0.0195} & 4.5385 & 0.3831 \\
+    \midrule
+
+    % --- 第 4 块: Task 10 - Task 11 ---
+    任务 & \multicolumn{2}{c}{任务 10} & \multicolumn{2}{c}{任务 11} & \multicolumn{2}{c}{---} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+    指标 & MAE & MSE & MAE & MSE & \multicolumn{2}{c}{---} \\
+    \midrule
+    iTransformer & 40.3827 & 20.7572 & 19.2927 & 4.6340 & --- & --- \\
+    iTransformer+ & 2.8956 & 0.1635 & 2.8476 & 0.1570 & --- & --- \\
+    PatchTST & 48.1532 & 28.1815 & 15.8620 & 4.5693 & --- & --- \\
+    PatchTST+ & 4.6602 & 0.3933 & 5.0112 & 0.4733 & --- & --- \\
+    TSMixer & 44.3269 & 22.9838 & 58.9715 & 35.8934 & --- & --- \\
+    TSMixer+ & 4.0151 & 0.2957 & 3.7528 & 0.2954 & --- & --- \\
+    PINN & 22.6493 & 7.5184 & 13.4784 & 3.3358 & --- & --- \\
+    PINN+ & 5.6329 & 0.9141 & 3.6541 & 0.3709 & --- & --- \\
+    DR-Net & 10.6609 & 2.0293 & 10.4743 & 1.7780 & --- & --- \\
+    CRNN & 11.0377 & 3.0051 & 6.9622 & 1.2084 & --- & --- \\
+    MAGNet & 7.5763 & 1.7185 & \underline{4.1481} & \underline{0.4131} & --- & --- \\
+    DeNN-bagging & 12.8670 & 3.4043 & 8.8430 & 1.6496 & --- & --- \\
+    DeNN-fusion & 12.5343 & 3.2910 & 8.9251 & 1.7611 & --- & --- \\
+    DeNN-voting & 12.7772 & 3.4203 & 8.9074 & 1.6948 & --- & --- \\
+    MambaLithium & 8.7161 & 2.1239 & 5.8056 & 0.8398 & --- & --- \\
+    LSTM-DA & 10.2645 & 2.3890 & 7.8039 & 1.1160 & --- & --- \\
+    ConvMMD & 11.1645 & 2.6587 & 7.6832 & 1.2462 & --- & --- \\
+    DKTL & 10.8147 & 2.5730 & 6.9723 & 1.1317 & --- & --- \\
+    DDAN & 9.0353 & 2.1172 & 5.9290 & 0.8442 & --- & --- \\
+    RODTNet-LT++ & \textbf{3.3261} & \textbf{0.2229} & \textbf{3.6471} & 0.8305 & --- & --- \\
+    RODTNet-LT & \underline{5.0415} & \underline{0.3875} & 4.3266 & \textbf{0.3424} & --- & --- \\
+\end{longtable}
+
 % 4行2列展示包含RODTNet在内的方法的实验结果
 % 4行2列展示部分对比实验结果
 % 2行2列展示剩下的部分对比实验结果：iTransformer+、PatchTST+、TSMixer+和PINN+，这里视情况加入RODTNet直接在目标域上训练的结果
-
-% \begin{figure*}[h]
-% \captionsetup[subfloat]{font=scriptsize}
-% \centering
-% % --- Row 1 ---
-% \subfloat[iTransformer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer.eps}%
-%     \label{fig:rul_itransformer}} % Optional label for subfigure
-% % \hfill % Distribute space horizontally
-% \subfloat[PatchTST]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST.eps}%
-%     \label{fig:rul_patchtst}}
-% % \hfill
-% \subfloat[TSMixer]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer.eps}%
-%     \label{fig:rul_tsmixer}}
-% % \hfill
-% \subfloat[MambaLithium]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps}%
-%     \label{fig:rul_mamba}}
-% % \hfill
-% \subfloat[PINN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN.eps}%
-%     \label{fig:rul_pinn}}
-
-% % --- Row 2 ---
-% \subfloat[iTransformer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps}%
-%     \label{fig:rul_itransformer_plus}}
-% % \hfill
-% \subfloat[PatchTST+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps}%
-%     \label{fig:rul_patchtst_plus}}
-% % \hfill
-% \subfloat[TSMixer+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps}%
-%     \label{fig:rul_tsmixer_plus}}
-% % \hfill
-% \subfloat[CRNN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_CRNN.eps}%
-%     \label{fig:rul_crnn}}
-% % \hfill
-% \subfloat[PINN+]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_PINN+.eps}%
-%     \label{fig:rul_pinn_plus}}
-
-% % --- Row 3 ---
-% \subfloat[DeNN-bagging]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_bagging.eps}%
-%     \label{fig:rul_bagging}}
-% % \hfill
-% \subfloat[DeNN-fusion]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_fusion.eps}%
-%     \label{fig:rul_fusion}}
-% % \hfill
-% \subfloat[DeNN-voting]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_voting.eps}%
-%     \label{fig:rul_voting}}
-% % \hfill
-% \subfloat[ConvMMD]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps}%
-%     \label{fig:rul_convmmd}}
-% % \hfill
-% \subfloat[DRNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DRNet.eps}%
-%     \label{fig:rul_drnet}}
-
-% % --- Row 4 ---
-% \subfloat[DDAN]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DDAN.eps}%
-%     \label{fig:rul_ddan}}
-% \subfloat[DKTL]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_DKTL.eps}%
-%     \label{fig:rul_dktl}}
-% \subfloat[LSTM-DA]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps}%
-%     \label{fig:rul_lstmda}}
-% \subfloat[MAGNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_MAGNet.eps}%
-%     \label{fig:rul_magnet}}
-% % Consider changing 'OURS' to your actual model name, e.g., 'RODTNet'
-% \subfloat[RODTNet]{\includegraphics[width=1.35in, height=1.137in]{Img/RODTNet_figures/trans/fig4_RODTNet.eps}%
-%     \label{fig:rul_ours}}
-
-% \caption{Comparison of RUL prediction performance between the proposed RODTNet and comparison models on OOD generalization Task 1. In each panel, Predicted RUL (y-axis) is plotted against True RUL (x-axis). The dashed line serves as the ideal reference, and points represent individual predictions for the respective method. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner.}
-% \label{fig:rul} % Overall figure label
-% \end{figure*}
-
-% \begin{figure*}[b!]
-% \captionsetup[subfloat]{font=scriptsize}
-% \centering
-% \subfloat[Generalization Performance Comparison \label{fig:soh}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_soh_radar_chart.eps}}}
-% \hspace{0.05\textwidth}
-% \subfloat[Generalization Efficiency Comparison \label{fig:comp}]{\adjustbox{valign=t}{\includegraphics[height=5.5cm, keepaspectratio]{Img/RODTNet_figures/trans/fig5_footprint.eps}}}
-% \caption{Comparative analysis of the proposed RODTNet-LT model against baseline methods for SOH estimation.
-% (a) Radar chart comparing the performance of RODTNet-LT and baseline models across 11 different SOH estimation generalization tasks.
-% (b) Comparison of model performance (MSE), inference speed (s), and parameter count on the OOD SOH estimation generalization task.}
-% \label{fig:soh_efficiency}
-% \end{figure*}
-
-
-% \begin{figure*}[htbp]
-%     \captionsetup[subfloat]{font=scriptsize}
-%     \centering
-%     % 第一行
-%     \subfloat[ConvMMD]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_ConvMMD.eps} \label{fig:rul_convmmd}}
-%     \hfill
-%     \subfloat[DRNet]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DRNet.eps} \label{fig:rul_drnet}}
-
-%     \vspace{1em}
-%     % 第二行
-%     \subfloat[DDAN]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DDAN.eps} \label{fig:rul_ddan}}
-%     \hfill
-%     \subfloat[DKTL]{\includegraphics[width=0.43\linewidth]{Img/RODTNet_figures/trans/fig4_DKTL.eps} \label{fig:rul_dktl}}
-
-%     \vspace{1em}
-%     % 第三行
-%     \subfloat[LSTM-DA]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_LSTM-DA.eps} \label{fig:rul_lstmda}}
-%     \hfill
-%     \subfloat[MAGNet]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_MAGNet.eps} \label{fig:rul_magnet}}
-
-%     \vspace{1em}
-%     % 第四行
-%     \subfloat[CRNN]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_CRNN.eps} \label{fig:rul_crnn}}
-%     \hfill
-%     \subfloat[RODTNet]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_RODTNet.eps} \label{fig:rul_ours}}
-
-%     \caption{Comparison of RUL prediction performance between the proposed RODTNet and domain adaptation baseline models on OOD generalization Task 1. In each panel, Predicted RUL is plotted against True RUL, with the dashed line serving as the ideal reference.}
-%     \label{fig:RODTNet_RUL_Comparison_Part1}
-% \end{figure*}
-
-% \begin{figure*}[htbp]
-%     \captionsetup[subfloat]{font=scriptsize}
-%     \centering
-%     % 第一行
-%     \subfloat[iTransformer]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer.eps} \label{fig:rul_itransformer}}
-%     \hfill
-%     \subfloat[PatchTST]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST.eps} \label{fig:rul_patchtst}}
-
-%     \vspace{1em}
-%     % 第二行
-%     \subfloat[TSMixer]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer.eps} \label{fig:rul_tsmixer}}
-%     \hfill
-%     \subfloat[MambaLithium]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_MambaLithium.eps} \label{fig:rul_mamba}}
-
-%     \vspace{1em}
-%     % 第三行
-%     \subfloat[PINN]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PINN.eps} \label{fig:rul_pinn}}
-%     \hfill
-%     \subfloat[DeNN-bagging]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_bagging.eps} \label{fig:rul_bagging}}
-
-%     \vspace{1em}
-%     % 第四行
-%     \subfloat[DeNN-fusion]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_fusion.eps} \label{fig:rul_fusion}}
-%     \hfill
-%     \subfloat[DeNN-voting]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_voting.eps} \label{fig:rul_voting}}
-
-%     \caption{Comparison of RUL prediction performance among standard time-series forecasting and ensemble baseline models on OOD generalization Task 1. The distribution of prediction errors is visualized by the inset histogram located in the bottom right corner of each panel.}
-%     \label{fig:RODTNet_RUL_Comparison_Part2}
-% \end{figure*}
-
-% \begin{figure*}[htbp]
-%     \captionsetup[subfloat]{font=scriptsize}
-%     \centering
-%     % 第一行
-%     \subfloat[iTransformer+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_iTransformer+.eps} \label{fig:rul_itransformer_plus}}
-%     \hfill
-%     \subfloat[PatchTST+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PatchTST+.eps} \label{fig:rul_patchtst_plus}}
-
-%     \vspace{1em}
-%     % 第二行
-%     \subfloat[TSMixer+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_TSMixer+.eps} \label{fig:rul_tsmixer_plus}}
-%     \hfill
-%     \subfloat[PINN+]{\includegraphics[width=0.45\linewidth]{Img/RODTNet_figures/trans/fig4_PINN+.eps} \label{fig:rul_pinn_plus}}
-
-%     \caption{Comparison of RUL prediction performance for baseline models evaluated under the target domain training setting on OOD generalization Task 1.}
-%     \label{fig:RODTNet_RUL_Comparison_Part3}
-% \end{figure*}
-
 \begin{figure*}[htbp]
     \captionsetup[subfloat]{font=scriptsize}
     \centering
@@ -801,157 +917,157 @@ We employ four metrics, namely Mean Absolute Error (MAE), Mean Square Error (MSE
     \label{fig:RODTNet_SOH_Efficiency_Comparison}
 \end{figure}
 
-% RUL对比实验
-\begin{table*}[htbp]
-    \footnotesize
-    \centering
-    \caption{Comparison experimental results for the OOD RUL prediction tasks on the MATR, Tongji, HUST, and XJTU datasets.}
-    % \resizebox{\linewidth}{!}{
-    \scalebox{0.8}{
-    \small
-    \begin{adjustbox}{center}{
-    \begin{threeparttable}
-        \begin{tabular}{lccccccccccc}
-        \toprule
-        Task  & \multicolumn{2}{c}{Task1} & \multicolumn{2}{c}{Task2} & \multicolumn{2}{c}{Task3} & \multicolumn{2}{c}{Task4} & \multicolumn{2}{c}{Task5} & Task6 \\
-    \cmidrule{2-12}    Metric & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
-        \midrule
-        iTransformer \cite{liu2024itransformer} & 99.78  & 15290.60  & 78.56  & 12430.67  & 153.83  & 34106.78  & 94.88  & 15629.50  & 93.21  & 16692.93  & 46.35  \\
-        iTransformer+\tnote{a} \cite{liu2024itransformer} & 12.16  & 290.75  & 44.35  & 5100.32  & 40.20  & 4450.44  & 29.83  & 3284.53  & 40.36  & 5311.12  & 9.80  \\
-        PatchTST \cite{nie2023a} & 30.86  & 2147.96  & 141.59  & 40006.27  & 89.28  & 13432.70  & 149.46  & 36100.57  & 75.57  & 12738.93  & 29.58  \\
-        PatchTST+ \cite{nie2023a} & 12.82  & 393.49  & 42.24  & 4470.77  & 51.99  & 6520.95  & 38.72  & 3993.89  & 49.47  & 6372.25  & 30.24  \\
-        TSMixer \cite{chen2023tsmixer} & 261.39  & 95673.01  & 95.70  & 17312.12  & 159.98  & 42316.82  & 125.36  & 27480.27  & 92.97  & 17272.87  & 115.18  \\
-        TSMixer+ \cite{chen2023tsmixer} & 16.77  & 584.11  & 52.31  & 5986.63  & 80.59  & 12311.22  & 75.14  & 12132.82  & 66.54  & 9945.74  & 19.64  \\
-        PINN \cite{wang2024physics}  & 27.07  & 1345.26  & 29.33  & 1948.74  & 46.42  & 5144.30  & 46.24  & 4323.02  & 48.57  & 3539.95  & 43.84  \\
-        PINN+ \cite{wang2024physics} & 6.04  & 77.55  & 8.38  & 213.91  & 12.02  & 266.98  & 12.27  & 408.44  & 9.74  & 195.91  & 9.74  \\
-        DR-Net \cite{WANG2023108897} & 11.61  & 284.32  & 42.50  & 5231.99  & 49.33  & 5978.47  & 42.87  & 5410.01  & 45.92  & 8061.80  & 8.91  \\
-        CRNN \cite{D2EE01676A}  & 13.66  & 378.74  & 18.16  & 708.65  & 14.40  & 535.36  & 13.86  & 579.07  & 12.73  & 365.98  & 8.34  \\
-        MAGNet \cite{TAN2024103725} & 13.51  & 347.84  & 15.08  & 492.65  & 16.03  & \underline{455.34}  & \underline{14.75}  & \underline{394.57}  & 13.37  & \underline{313.13}  & 8.98  \\
-        DeNN-bagging \cite{10102497} & 23.40  & 1014.55  & 46.38  & 4144.07  & 68.88  & 8058.54  & 93.65  & 14047.69  & 57.23  & 5960.93  & 16.73  \\
-        DeNN-fusion \cite{10102497} & 24.34  & 1010.97  & 49.15  & 4672.25  & 74.74  & 9549.55  & 95.93  & 16148.70  & 76.95  & 10290.79  & 16.80  \\
-        DeNN-voting \cite{10102497} & 22.90  & 939.58  & 45.83  & 4074.09  & 71.58  & 8787.72  & 93.89  & 13623.54  & 57.07  & 6028.56  & 16.38  \\
-        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 13.19  & 368.84  & 20.32  & 818.35  & 19.99  & 923.46  & 17.47  & 672.48  & 13.55  & 385.23  & 7.28  \\
-        LSTM-DA \cite{HAN2022230823} & 20.36  & 713.70  & 30.14  & 1484.85  & 30.15  & 1701.16  & 31.45  & 1644.90  & 20.28  & 769.22  & 18.70  \\
-        ConvMMD \cite{9788003} & 23.95  & 989.20  & 36.96  & 2619.11  & 46.70  & 4542.61  & 57.68  & 6594.72  & 28.70  & 1960.54  & 17.03  \\
-        DKTL \cite{10029904}  & 23.77  & 1005.67  & 38.93  & 3220.22  & 51.40  & 5403.52  & 62.88  & 7711.63  & 30.94  & 2252.70  & 15.71  \\
-        DDAN \cite{9560040}  & 19.35  & 622.24  & 26.90  & 1206.61  & 25.29  & 1267.76  & 26.25  & 1252.40  & 17.79  & 541.77  & 14.07  \\
-        RODTNet++\tnote{b} {(ours)} & \underline{2.13}  & \underline{20.29}  & \underline{12.01}  & \underline{380.16}  & \underline{10.49}  & 577.50  & 25.63  & 3137.51  & \underline{12.83}  & 481.95  & \underline{4.06}  \\
-        RODTNet (ours) & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} \\
-    \midrule
-        \multicolumn{12}{c}{} \\
-    \midrule
-            & Task6 & \multicolumn{2}{c}{Task7} & \multicolumn{2}{c}{Task8} & \multicolumn{2}{c}{Task9} & \multicolumn{2}{c}{Task10} & \multicolumn{2}{c}{Task11} \\
-    \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
-        \midrule
-        iTransformer \cite{liu2024itransformer} & 3348.46  & 79.31  & 11828.38  & 285.14  & 134288.68  & 97.72  & 12857.57  & 115.28  & 16008.10  & 86.33  & 9092.28  \\
-        iTransformer+ \cite{liu2024itransformer} & 451.88  & 19.96  & 690.05  & 25.39  & 1232.29  & 12.37  & 255.54  & 5.93  & 50.74  & 21.45  & 746.27  \\
-        PatchTST \cite{nie2023a} & 1881.96  & 156.53  & 55065.22  & 171.01  & 70146.16  & 80.18  & 8273.63  & 78.84  & 8451.20  & 108.02  & 16314.58  \\
-        PatchTST+ \cite{nie2023a} & 2642.04  & 21.09  & 803.19  & 107.18  & 20704.56  & 13.70  & 298.71  & 7.34  & 81.72  & 25.52  & 1018.20  \\
-        TSMixer \cite{chen2023tsmixer} & 21255.96  & 102.14  & 18803.24  & 363.95  & 183759.79  & 343.38  & 119826.16  & 97.57  & 12165.74  & 356.55  & 134948.97  \\
-        TSMixer+ \cite{chen2023tsmixer} & 844.83  & 20.28  & 700.89  & 45.71  & 3708.16  & 17.68  & 530.08  & 7.90  & 105.46  & 35.20  & 2180.88  \\
-        PINN \cite{wang2024physics}  & 4496.71  & 81.96  & 18077.43  & 126.97  & 25586.95  & 53.12  & 5147.91  & 55.81  & 4744.68  & 111.30  & 22690.40  \\
-        PINN+ \cite{wang2024physics} & 195.91  & 16.70  & 610.41  & 24.96  & 1203.36  & 10.54  & 251.13  & 9.83  & 261.32  & 9.83  & 177.17  \\
-        DR-Net \cite{WANG2023108897} & 180.23  & 15.77  & 482.02  & 30.98  & 1763.16  & 17.30  & 532.24  & 17.40  & 669.82  & 24.64  & 1306.43  \\
-        CRNN \cite{D2EE01676A}  & 138.99  & 13.79  & 365.50  & 39.02  & 3541.77  & 29.13  & 1250.78  & 26.57  & 1346.65  & 35.58  & 3191.76  \\
-        MAGNet \cite{TAN2024103725} & 146.94  & 15.79  & 428.60  & 44.58  & 4499.43  & 27.53  & 1183.21  & 24.84  & 1321.13  & 38.51  & 2961.67  \\
-        DeNN-bagging \cite{10102497} & 607.03  & 28.97  & 1520.12  & 85.31  & 15854.20  & 40.39  & 2688.63  & 36.51  & 2682.08  & 61.02  & 7199.04  \\
-        DeNN-fusion \cite{10102497} & 625.23  & 31.39  & 1769.45  & 92.75  & 17801.56  & 41.68  & 2863.98  & 36.61  & 2652.09  & 62.20  & 7491.24  \\
-        DeNN-voting \cite{10102497} & 586.70  & 30.15  & 1646.72  & 86.36  & 16175.97  & 40.83  & 2692.80  & 36.85  & 2739.17  & 61.56  & 7397.65  \\
-        MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 105.15  & 21.18  & 752.52  & 71.95  & 12473.49  & 45.07  & 3804.16  & 28.68  & 1469.89  & 41.50  & 3260.10  \\
-        LSTM-DA \cite{HAN2022230823} & 639.52  & 32.55  & 1741.70  & 121.14  & 24930.62  & 31.85  & 1526.07  & 24.87  & 1151.76  & 44.07  & 3391.50  \\
-        ConvMMD \cite{9788003} & 544.12  & 37.69  & 2722.93  & 108.81  & 21251.08  & 20.64  & 668.67  & 28.49  & 1531.89  & 50.73  & 5750.57  \\
-        DKTL \cite{10029904}  & 465.40  & 36.85  & 2282.25  & 104.67  & 19313.69  & 28.27  & 1281.96  & 27.02  & 1456.52  & 54.55  & 6445.32  \\
-        DDAN \cite{9560040}  & 357.74  & 29.73  & 1478.19  & 117.50  & 24882.38  & 34.05  & 1859.57  & 24.13  & 1211.62  & 42.90  & 3599.68  \\
-        RODTNet++ {(ours)} & \underline{36.10}  & \textbf{0.40} & \textbf{0.30} & \underline{1.51}  & \underline{6.89}  & \underline{7.62}  & \underline{127.05}  & \underline{3.86}  & \textbf{36.87} & \textbf{8.39} & \underline{419.11}  \\
-        RODTNet (ours) & \textbf{0.68} & \underline{0.78}  & \underline{1.18}  & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} & \textbf{3.50} & \underline{70.76}  & \underline{14.03}  & \textbf{395.27} \\
-        \bottomrule
-        \end{tabular}%}
-    \begin{tablenotes}
-    \item[a] + indicates finetuning on the target domain.
-    \item[b] ++ indicates training directly on the target domain.
-    \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
-    \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
-    \item[e] Notation and experimental settings described here also apply to Table~\ref{tab:soh_results}.
-\end{tablenotes}
-\end{threeparttable}}
-\end{adjustbox}
-}
-\label{tab:rul_results}%
-\end{table*}%
+% % RUL对比实验
+% \begin{table*}[htbp]
+%     \footnotesize
+%     \centering
+%     \caption{Comparison experimental results for the OOD RUL prediction tasks on the MATR, Tongji, HUST, and XJTU datasets.}
+%     % \resizebox{\linewidth}{!}{
+%     \scalebox{0.8}{
+%     \small
+%     \begin{adjustbox}{center}{
+%     \begin{threeparttable}
+%         \begin{tabular}{lccccccccccc}
+%         \toprule
+%         Task  & \multicolumn{2}{c}{Task1} & \multicolumn{2}{c}{Task2} & \multicolumn{2}{c}{Task3} & \multicolumn{2}{c}{Task4} & \multicolumn{2}{c}{Task5} & Task6 \\
+%     \cmidrule{2-12}    Metric & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
+%         \midrule
+%         iTransformer \cite{liu2024itransformer} & 99.78  & 15290.60  & 78.56  & 12430.67  & 153.83  & 34106.78  & 94.88  & 15629.50  & 93.21  & 16692.93  & 46.35  \\
+%         iTransformer+\tnote{a} \cite{liu2024itransformer} & 12.16  & 290.75  & 44.35  & 5100.32  & 40.20  & 4450.44  & 29.83  & 3284.53  & 40.36  & 5311.12  & 9.80  \\
+%         PatchTST \cite{nie2023a} & 30.86  & 2147.96  & 141.59  & 40006.27  & 89.28  & 13432.70  & 149.46  & 36100.57  & 75.57  & 12738.93  & 29.58  \\
+%         PatchTST+ \cite{nie2023a} & 12.82  & 393.49  & 42.24  & 4470.77  & 51.99  & 6520.95  & 38.72  & 3993.89  & 49.47  & 6372.25  & 30.24  \\
+%         TSMixer \cite{chen2023tsmixer} & 261.39  & 95673.01  & 95.70  & 17312.12  & 159.98  & 42316.82  & 125.36  & 27480.27  & 92.97  & 17272.87  & 115.18  \\
+%         TSMixer+ \cite{chen2023tsmixer} & 16.77  & 584.11  & 52.31  & 5986.63  & 80.59  & 12311.22  & 75.14  & 12132.82  & 66.54  & 9945.74  & 19.64  \\
+%         PINN \cite{wang2024physics}  & 27.07  & 1345.26  & 29.33  & 1948.74  & 46.42  & 5144.30  & 46.24  & 4323.02  & 48.57  & 3539.95  & 43.84  \\
+%         PINN+ \cite{wang2024physics} & 6.04  & 77.55  & 8.38  & 213.91  & 12.02  & 266.98  & 12.27  & 408.44  & 9.74  & 195.91  & 9.74  \\
+%         DR-Net \cite{WANG2023108897} & 11.61  & 284.32  & 42.50  & 5231.99  & 49.33  & 5978.47  & 42.87  & 5410.01  & 45.92  & 8061.80  & 8.91  \\
+%         CRNN \cite{D2EE01676A}  & 13.66  & 378.74  & 18.16  & 708.65  & 14.40  & 535.36  & 13.86  & 579.07  & 12.73  & 365.98  & 8.34  \\
+%         MAGNet \cite{TAN2024103725} & 13.51  & 347.84  & 15.08  & 492.65  & 16.03  & \underline{455.34}  & \underline{14.75}  & \underline{394.57}  & 13.37  & \underline{313.13}  & 8.98  \\
+%         DeNN-bagging \cite{10102497} & 23.40  & 1014.55  & 46.38  & 4144.07  & 68.88  & 8058.54  & 93.65  & 14047.69  & 57.23  & 5960.93  & 16.73  \\
+%         DeNN-fusion \cite{10102497} & 24.34  & 1010.97  & 49.15  & 4672.25  & 74.74  & 9549.55  & 95.93  & 16148.70  & 76.95  & 10290.79  & 16.80  \\
+%         DeNN-voting \cite{10102497} & 22.90  & 939.58  & 45.83  & 4074.09  & 71.58  & 8787.72  & 93.89  & 13623.54  & 57.07  & 6028.56  & 16.38  \\
+%         MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 13.19  & 368.84  & 20.32  & 818.35  & 19.99  & 923.46  & 17.47  & 672.48  & 13.55  & 385.23  & 7.28  \\
+%         LSTM-DA \cite{HAN2022230823} & 20.36  & 713.70  & 30.14  & 1484.85  & 30.15  & 1701.16  & 31.45  & 1644.90  & 20.28  & 769.22  & 18.70  \\
+%         ConvMMD \cite{9788003} & 23.95  & 989.20  & 36.96  & 2619.11  & 46.70  & 4542.61  & 57.68  & 6594.72  & 28.70  & 1960.54  & 17.03  \\
+%         DKTL \cite{10029904}  & 23.77  & 1005.67  & 38.93  & 3220.22  & 51.40  & 5403.52  & 62.88  & 7711.63  & 30.94  & 2252.70  & 15.71  \\
+%         DDAN \cite{9560040}  & 19.35  & 622.24  & 26.90  & 1206.61  & 25.29  & 1267.76  & 26.25  & 1252.40  & 17.79  & 541.77  & 14.07  \\
+%         RODTNet++\tnote{b} {(ours)} & \underline{2.13}  & \underline{20.29}  & \underline{12.01}  & \underline{380.16}  & \underline{10.49}  & 577.50  & 25.63  & 3137.51  & \underline{12.83}  & 481.95  & \underline{4.06}  \\
+%         RODTNet (ours) & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} \\
+%     \midrule
+%         \multicolumn{12}{c}{} \\
+%     \midrule
+%             & Task6 & \multicolumn{2}{c}{Task7} & \multicolumn{2}{c}{Task8} & \multicolumn{2}{c}{Task9} & \multicolumn{2}{c}{Task10} & \multicolumn{2}{c}{Task11} \\
+%     \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+%         \midrule
+%         iTransformer \cite{liu2024itransformer} & 3348.46  & 79.31  & 11828.38  & 285.14  & 134288.68  & 97.72  & 12857.57  & 115.28  & 16008.10  & 86.33  & 9092.28  \\
+%         iTransformer+ \cite{liu2024itransformer} & 451.88  & 19.96  & 690.05  & 25.39  & 1232.29  & 12.37  & 255.54  & 5.93  & 50.74  & 21.45  & 746.27  \\
+%         PatchTST \cite{nie2023a} & 1881.96  & 156.53  & 55065.22  & 171.01  & 70146.16  & 80.18  & 8273.63  & 78.84  & 8451.20  & 108.02  & 16314.58  \\
+%         PatchTST+ \cite{nie2023a} & 2642.04  & 21.09  & 803.19  & 107.18  & 20704.56  & 13.70  & 298.71  & 7.34  & 81.72  & 25.52  & 1018.20  \\
+%         TSMixer \cite{chen2023tsmixer} & 21255.96  & 102.14  & 18803.24  & 363.95  & 183759.79  & 343.38  & 119826.16  & 97.57  & 12165.74  & 356.55  & 134948.97  \\
+%         TSMixer+ \cite{chen2023tsmixer} & 844.83  & 20.28  & 700.89  & 45.71  & 3708.16  & 17.68  & 530.08  & 7.90  & 105.46  & 35.20  & 2180.88  \\
+%         PINN \cite{wang2024physics}  & 4496.71  & 81.96  & 18077.43  & 126.97  & 25586.95  & 53.12  & 5147.91  & 55.81  & 4744.68  & 111.30  & 22690.40  \\
+%         PINN+ \cite{wang2024physics} & 195.91  & 16.70  & 610.41  & 24.96  & 1203.36  & 10.54  & 251.13  & 9.83  & 261.32  & 9.83  & 177.17  \\
+%         DR-Net \cite{WANG2023108897} & 180.23  & 15.77  & 482.02  & 30.98  & 1763.16  & 17.30  & 532.24  & 17.40  & 669.82  & 24.64  & 1306.43  \\
+%         CRNN \cite{D2EE01676A}  & 138.99  & 13.79  & 365.50  & 39.02  & 3541.77  & 29.13  & 1250.78  & 26.57  & 1346.65  & 35.58  & 3191.76  \\
+%         MAGNet \cite{TAN2024103725} & 146.94  & 15.79  & 428.60  & 44.58  & 4499.43  & 27.53  & 1183.21  & 24.84  & 1321.13  & 38.51  & 2961.67  \\
+%         DeNN-bagging \cite{10102497} & 607.03  & 28.97  & 1520.12  & 85.31  & 15854.20  & 40.39  & 2688.63  & 36.51  & 2682.08  & 61.02  & 7199.04  \\
+%         DeNN-fusion \cite{10102497} & 625.23  & 31.39  & 1769.45  & 92.75  & 17801.56  & 41.68  & 2863.98  & 36.61  & 2652.09  & 62.20  & 7491.24  \\
+%         DeNN-voting \cite{10102497} & 586.70  & 30.15  & 1646.72  & 86.36  & 16175.97  & 40.83  & 2692.80  & 36.85  & 2739.17  & 61.56  & 7397.65  \\
+%         MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 105.15  & 21.18  & 752.52  & 71.95  & 12473.49  & 45.07  & 3804.16  & 28.68  & 1469.89  & 41.50  & 3260.10  \\
+%         LSTM-DA \cite{HAN2022230823} & 639.52  & 32.55  & 1741.70  & 121.14  & 24930.62  & 31.85  & 1526.07  & 24.87  & 1151.76  & 44.07  & 3391.50  \\
+%         ConvMMD \cite{9788003} & 544.12  & 37.69  & 2722.93  & 108.81  & 21251.08  & 20.64  & 668.67  & 28.49  & 1531.89  & 50.73  & 5750.57  \\
+%         DKTL \cite{10029904}  & 465.40  & 36.85  & 2282.25  & 104.67  & 19313.69  & 28.27  & 1281.96  & 27.02  & 1456.52  & 54.55  & 6445.32  \\
+%         DDAN \cite{9560040}  & 357.74  & 29.73  & 1478.19  & 117.50  & 24882.38  & 34.05  & 1859.57  & 24.13  & 1211.62  & 42.90  & 3599.68  \\
+%         RODTNet++ {(ours)} & \underline{36.10}  & \textbf{0.40} & \textbf{0.30} & \underline{1.51}  & \underline{6.89}  & \underline{7.62}  & \underline{127.05}  & \underline{3.86}  & \textbf{36.87} & \textbf{8.39} & \underline{419.11}  \\
+%         RODTNet (ours) & \textbf{0.68} & \underline{0.78}  & \underline{1.18}  & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} & \textbf{3.50} & \underline{70.76}  & \underline{14.03}  & \textbf{395.27} \\
+%         \bottomrule
+%         \end{tabular}%}
+%     \begin{tablenotes}
+%     \item[a] + indicates finetuning on the target domain.
+%     \item[b] ++ indicates training directly on the target domain.
+%     \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
+%     \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
+%     \item[e] Notation and experimental settings described here also apply to Table~\ref{tab:soh_results}.
+% \end{tablenotes}
+% \end{threeparttable}}
+% \end{adjustbox}
+% }
+% \label{tab:rul_results}%
+% \end{table*}%
 
-% SOH对比实验
-\begin{table*}[htbp]
-    \centering
-    \caption{Comparison experimental results for the OOD SOH estimation tasks on the MATR, Tongji, HUST, and XJTU datasets.}
-    % \resizebox{\linewidth}{!}{
-    \scalebox{0.6}{
-    \small
-    \begin{threeparttable}
-    \begin{tabular}{lccccccccccc}
-    \toprule
-    任务  & \multicolumn{2}{c}{任务1} & \multicolumn{2}{c}{任务2} & \multicolumn{2}{c}{任务3} & \multicolumn{2}{c}{任务4} & \multicolumn{2}{c}{任务5} & \multicolumn{1}{l}{任务6} \\
-\cmidrule{2-12}    性能指标 & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
-    \midrule
-    iTransformer \cite{liu2024itransformer} & 5.9093  & 0.5257  & 1.1315  & 0.0350  & 1.3424  & 0.0317  & 1.0941  & 0.0218  & 2.7314  & 0.1079  & 21.3182  \\
-    iTransformer+ \cite{liu2024itransformer} & 0.7803  & 0.0134  & 0.7618  & 0.0167  & 0.4686  & 0.0067  & 0.4534  & 0.0051  & 0.7615  & 0.0183  & 2.1108  \\
-    PatchTST \cite{nie2023a} & \underline{1.1228}  & 0.0311  & 4.1024  & \underline{0.3776}  & 0.7981  & 0.0145  & 4.2731  & 0.4299  & 2.8899  & 0.1764  & 9.5076  \\
-    PatchTST+ \cite{nie2023a} & 0.6310  & 0.0098  & 0.6937  & 0.0136  & 0.4426  & 0.0071  & 0.4094  & 0.0046  & 0.8018  & 0.0183  & 3.6897  \\
-    TSMixer \cite{chen2023tsmixer} & 16.2029  & 3.4749  & 2.5634  & 0.1033  & 5.1793  & 0.3115  & 2.9573  & 0.0980  & 3.1299  & 0.1231  & 35.9175  \\
-    TSMixer+ \cite{chen2023tsmixer} & 0.8600  & 0.0172  & 0.7558  & 0.0160  & 0.5797  & 0.0082  & 0.4818  & 0.0046  & 0.8081  & 0.0184  & 2.9360  \\
-    PINN \cite{wang2024physics}  & 1.3596  & 0.0403  & 2.2216  & 0.0844  & 1.4187  & 0.0511  & 1.1438  & 0.0227  & 1.7547  & 0.0556  & 20.7705  \\
-    PINN+ \cite{wang2024physics} & 0.5748  & 0.0061  & 1.3991  & 0.0361  & 1.3524  & 0.0269  & 0.7226  & 0.0107  & 1.0708  & 0.0207  & 8.9555  \\
-    DR-Net \cite{WANG2023108897} & 4.2229  & 0.3324  & 2.6507  & 0.1112  & 3.4879  & 0.1749  & 3.6984  & 0.2049  & 3.4467  & 0.1925  & 16.0808  \\
-    CRNN \cite{D2EE01676A}  & 0.8260  & 0.0168  & 0.5589  & 0.0058  & 0.5295  & 0.0060  & 0.5508  & 0.0082  & 0.8301  & 0.0184  & 7.6085  \\
-    MAGNet \cite{TAN2024103725} & 1.2410  & \underline{0.0244}  & 0.9305  & 0.0146  & 1.1954  & 0.0233  & 0.9216  & 0.0196  & 1.8908  & 0.0526  & 6.9453  \\
-    DeNN-bagging \cite{10102497} & 1.7015  & 0.0658  & 2.1448  & 0.1194  & 2.1157  & 0.1141  & 2.1386  & 0.1330  & 2.8398  & 0.1719  & 10.3293  \\
-    DeNN-fusion \cite{10102497} & 1.5901  & 0.0542  & 2.2918  & 0.1403  & 2.1127  & 0.1162  & 2.3360  & 0.1544  & 4.0800  & 0.2782  & 10.3575  \\
-    DeNN-voting \cite{10102497} & 1.6199  & 0.0577  & 2.1824  & 0.1217  & 2.0499  & 0.1055  & 2.1529  & 0.1109  & 2.8789  & 0.1806  & 10.1680  \\
-    MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 1.2177  & 0.0338  & \underline{0.4801}  & 0.0038  & \underline{0.4002}  & \underline{0.0031}  & \underline{0.4162}  & \underline{0.0035}  & \underline{0.9160}  & \underline{0.0258}  & \underline{5.5906}  \\
-    LSTM-DA \cite{HAN2022230823} & 3.0477  & 0.1140  & 2.8469  & 0.0945  & 3.1725  & 0.1164  & 3.4704  & 0.1360  & 3.4921  & 0.1370  & 12.8066  \\
-    ConvMMD \cite{9788003} & 2.2734  & 0.0891  & 2.2941  & 0.0809  & 2.4317  & 0.0862  & 2.6367  & 0.0943  & 2.5047  & 0.0807  & 10.7025  \\
-    DKTL \cite{10029904}  & 2.2029  & 0.0889  & 2.4482  & 0.1134  & 2.6035  & 0.1153  & 2.8678  & 0.1272  & 2.7184  & 0.1135  & 10.5311  \\
-    DDAN \cite{9560040}  & 2.2708  & 0.0667  & 1.7973  & 0.0378  & 2.0361  & 0.0485  & 2.3470  & 0.0611  & 2.4232  & 0.0648  & 12.1931  \\
-    RODTNet-LT++ {(ours)} & 1.1934  & 0.0484  & 0.9942  & 0.0367  & 0.9038  & 0.0330  & 2.4697  & 0.3593  & 3.1390  & 0.4989  & 9.6180  \\
-    RODTNet-LT (ours) & \textbf{1.0384} & \textbf{0.0208} & \textbf{0.4476} & \textbf{0.0030} & \textbf{0.3630} & \textbf{0.0020} & \textbf{0.2885} & \textbf{0.0014} & \textbf{0.4435} & \textbf{0.0032} & \textbf{4.0520} \\
-    \midrule
-    \multicolumn{12}{c}{} \\
-    \midrule
-            & \multicolumn{1}{l}{任务6} & \multicolumn{2}{c}{任务7} & \multicolumn{2}{c}{任务8} & \multicolumn{2}{c}{任务9} & \multicolumn{2}{c}{任务10} & \multicolumn{2}{c}{任务11} \\
-\cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
-    \midrule
-    iTransformer \cite{liu2024itransformer} & 8.5517  & 10.6146  & 1.6506  & 9.1256  & 1.5742  & 21.2702  & 8.0010  & 40.3827  & 20.7572  & 19.2927  & 4.6340  \\
-    iTransformer+ \cite{liu2024itransformer} & 0.1204  & 8.8424  & 1.4328  & 1.3233  & 0.0277  & 2.9985  & 0.1737  & 2.8956  & 0.1635  & 2.8476  & 0.1570  \\
-    PatchTST \cite{nie2023a} & 1.8668  & 16.9823  & 5.4530  & 9.2243  & 1.6822  & 14.7543  & 4.8261  & 48.1532  & 28.1815  & 15.8620  & 4.5693  \\
-    PatchTST+ \cite{nie2023a} & 0.5973  & 10.1355  & 1.8044  & 6.8517  & 0.9185  & 3.3279  & 0.1986  & 4.6602  & 0.3933  & 5.0112  & 0.4733  \\
-    TSMixer \cite{chen2023tsmixer} & 15.7721  & 8.1766  & 1.0106  & 14.3296  & 2.9821  & 51.0444  & 26.6658  & 44.3269  & 22.9838  & 58.9715  & 35.8934  \\
-    TSMixer+ \cite{chen2023tsmixer} & 0.1595  & 9.3981  & 1.4881  & 1.6831  & 0.0443  & 2.7117  & 0.1365  & 4.0151  & 0.2957  & 3.7528  & 0.2954  \\
-    PINN \cite{wang2024physics}  & 6.2435  & 25.2663  & 9.1038  & 5.9623  & 0.7837  & 7.9811  & 1.9312  & 22.6493  & 7.5184  & 13.4784  & 3.3358  \\
-    PINN+ \cite{wang2024physics} & 2.2297  & 8.1476  & 1.3071  & 1.3870  & 0.0357  & 3.9588  & 0.4028  & 5.6329  & 0.9141  & 3.6541  & 0.3709  \\
-    DR-Net \cite{WANG2023108897} & 3.9837  & 19.8591  & 5.6675  & 40.7034  & 21.2569  & 13.3021  & 3.0780  & 10.6609  & 2.0293  & 10.4743  & 1.7780  \\
-    CRNN \cite{D2EE01676A}  & 1.6485  & 4.5716  & 0.4770  & 3.3587  & 0.3612  & 5.8487  & 0.8072  & 11.0377  & 3.0051  & 6.9622  & 1.2084  \\
-    MAGNet \cite{TAN2024103725} & 1.2605  & \underline{3.6287}  & \textbf{0.2369} & 3.2225  & 0.2692  & \underline{3.4654}  & \underline{0.2234}  & 7.5763  & 1.7185  & \underline{4.1481}  & \underline{0.4131}  \\
-    DeNN-bagging \cite{10102497} & 1.9811  & 7.1896  & 0.8327  & 5.6580  & 0.7403  & 7.6599  & 1.1013  & 12.8670  & 3.4043  & 8.8430  & 1.6496  \\
-    DeNN-fusion \cite{10102497} & 1.9799  & 8.5083  & 1.0813  & 5.9468  & 0.7503  & 8.3443  & 1.3646  & 12.5343  & 3.2910  & 8.9251  & 1.7611  \\
-    DeNN-voting \cite{10102497} & 1.9101  & 7.4300  & 0.8838  & 5.5938  & 0.7390  & 7.7196  & 1.1244  & 12.7772  & 3.4203  & 8.9074  & 1.6948  \\
-    MambaLithium \cite{shi2024mambalithiumselectivestatespace} & \underline{0.7132}  & 6.7626  & 0.8283  & 4.8486  & 0.6418  & 7.0512  & 1.2408  & 8.7161  & 2.1239  & 5.8056  & 0.8398  \\
-    LSTM-DA \cite{HAN2022230823} & 2.8925  & 8.3498  & 1.0564  & 7.9172  & 1.3040  & 6.0889  & 0.6520  & 10.2645  & 2.3890  & 7.8039  & 1.1160  \\
-    ConvMMD \cite{9788003} & 2.0985  & 7.8693  & 0.9537  & 6.7908  & 0.9026  & 5.9231  & 0.6199  & 11.1645  & 2.6587  & 7.6832  & 1.2462  \\
-    DKTL \cite{10029904}  & 2.1718  & 7.5353  & 0.8587  & 6.7470  & 0.9272  & 4.9570  & 0.5125  & 10.8147  & 2.5730  & 6.9723  & 1.1317  \\
-    DDAN \cite{9560040}  & 2.7491  & 8.1399  & 1.1031  & 7.3573  & 1.1792  & 5.9360  & 0.8296  & 9.0353  & 2.1172  & 5.9290  & 0.8442  \\
-    RODTNet-LT++ {(ours)} & 2.0079  & 4.2455  & 0.4090  & \underline{1.7140}  & \underline{0.0635}  & \textbf{3.0794} & \textbf{0.2118} & \textbf{3.3261} & \textbf{0.2229} & \textbf{3.6471} & 0.8305  \\
-    RODTNet-LT (ours) & \textbf{0.3946} & \textbf{3.5394} & \underline{0.3020}  & \textbf{1.0781} & \textbf{0.0195} & 4.5385  & 0.3831  & \underline{5.0415}  & \underline{0.3875}  & 4.3266  & \textbf{0.3424} \\
-    \bottomrule
-    \end{tabular}%}
-      \begin{tablenotes}
-        \item[a] + indicates finetuning on the target domain.
-        \item[b] ++ indicates training directly on the target domain.
-        \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best
-        \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
-    \end{tablenotes}
-\end{threeparttable}
-}
-    \label{tab:soh_results}%
-\end{table*}%
+% % SOH对比实验
+% \begin{table*}[htbp]
+%     \centering
+%     \caption{Comparison experimental results for the OOD SOH estimation tasks on the MATR, Tongji, HUST, and XJTU datasets.}
+%     % \resizebox{\linewidth}{!}{
+%     \scalebox{0.6}{
+%     \small
+%     \begin{threeparttable}
+%     \begin{tabular}{lccccccccccc}
+%     \toprule
+%     任务  & \multicolumn{2}{c}{任务1} & \multicolumn{2}{c}{任务2} & \multicolumn{2}{c}{任务3} & \multicolumn{2}{c}{任务4} & \multicolumn{2}{c}{任务5} & \multicolumn{1}{l}{任务6} \\
+% \cmidrule{2-12}    性能指标 & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
+%     \midrule
+%     iTransformer \cite{liu2024itransformer} & 5.9093  & 0.5257  & 1.1315  & 0.0350  & 1.3424  & 0.0317  & 1.0941  & 0.0218  & 2.7314  & 0.1079  & 21.3182  \\
+%     iTransformer+ \cite{liu2024itransformer} & 0.7803  & 0.0134  & 0.7618  & 0.0167  & 0.4686  & 0.0067  & 0.4534  & 0.0051  & 0.7615  & 0.0183  & 2.1108  \\
+%     PatchTST \cite{nie2023a} & \underline{1.1228}  & 0.0311  & 4.1024  & \underline{0.3776}  & 0.7981  & 0.0145  & 4.2731  & 0.4299  & 2.8899  & 0.1764  & 9.5076  \\
+%     PatchTST+ \cite{nie2023a} & 0.6310  & 0.0098  & 0.6937  & 0.0136  & 0.4426  & 0.0071  & 0.4094  & 0.0046  & 0.8018  & 0.0183  & 3.6897  \\
+%     TSMixer \cite{chen2023tsmixer} & 16.2029  & 3.4749  & 2.5634  & 0.1033  & 5.1793  & 0.3115  & 2.9573  & 0.0980  & 3.1299  & 0.1231  & 35.9175  \\
+%     TSMixer+ \cite{chen2023tsmixer} & 0.8600  & 0.0172  & 0.7558  & 0.0160  & 0.5797  & 0.0082  & 0.4818  & 0.0046  & 0.8081  & 0.0184  & 2.9360  \\
+%     PINN \cite{wang2024physics}  & 1.3596  & 0.0403  & 2.2216  & 0.0844  & 1.4187  & 0.0511  & 1.1438  & 0.0227  & 1.7547  & 0.0556  & 20.7705  \\
+%     PINN+ \cite{wang2024physics} & 0.5748  & 0.0061  & 1.3991  & 0.0361  & 1.3524  & 0.0269  & 0.7226  & 0.0107  & 1.0708  & 0.0207  & 8.9555  \\
+%     DR-Net \cite{WANG2023108897} & 4.2229  & 0.3324  & 2.6507  & 0.1112  & 3.4879  & 0.1749  & 3.6984  & 0.2049  & 3.4467  & 0.1925  & 16.0808  \\
+%     CRNN \cite{D2EE01676A}  & 0.8260  & 0.0168  & 0.5589  & 0.0058  & 0.5295  & 0.0060  & 0.5508  & 0.0082  & 0.8301  & 0.0184  & 7.6085  \\
+%     MAGNet \cite{TAN2024103725} & 1.2410  & \underline{0.0244}  & 0.9305  & 0.0146  & 1.1954  & 0.0233  & 0.9216  & 0.0196  & 1.8908  & 0.0526  & 6.9453  \\
+%     DeNN-bagging \cite{10102497} & 1.7015  & 0.0658  & 2.1448  & 0.1194  & 2.1157  & 0.1141  & 2.1386  & 0.1330  & 2.8398  & 0.1719  & 10.3293  \\
+%     DeNN-fusion \cite{10102497} & 1.5901  & 0.0542  & 2.2918  & 0.1403  & 2.1127  & 0.1162  & 2.3360  & 0.1544  & 4.0800  & 0.2782  & 10.3575  \\
+%     DeNN-voting \cite{10102497} & 1.6199  & 0.0577  & 2.1824  & 0.1217  & 2.0499  & 0.1055  & 2.1529  & 0.1109  & 2.8789  & 0.1806  & 10.1680  \\
+%     MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 1.2177  & 0.0338  & \underline{0.4801}  & 0.0038  & \underline{0.4002}  & \underline{0.0031}  & \underline{0.4162}  & \underline{0.0035}  & \underline{0.9160}  & \underline{0.0258}  & \underline{5.5906}  \\
+%     LSTM-DA \cite{HAN2022230823} & 3.0477  & 0.1140  & 2.8469  & 0.0945  & 3.1725  & 0.1164  & 3.4704  & 0.1360  & 3.4921  & 0.1370  & 12.8066  \\
+%     ConvMMD \cite{9788003} & 2.2734  & 0.0891  & 2.2941  & 0.0809  & 2.4317  & 0.0862  & 2.6367  & 0.0943  & 2.5047  & 0.0807  & 10.7025  \\
+%     DKTL \cite{10029904}  & 2.2029  & 0.0889  & 2.4482  & 0.1134  & 2.6035  & 0.1153  & 2.8678  & 0.1272  & 2.7184  & 0.1135  & 10.5311  \\
+%     DDAN \cite{9560040}  & 2.2708  & 0.0667  & 1.7973  & 0.0378  & 2.0361  & 0.0485  & 2.3470  & 0.0611  & 2.4232  & 0.0648  & 12.1931  \\
+%     RODTNet-LT++ {(ours)} & 1.1934  & 0.0484  & 0.9942  & 0.0367  & 0.9038  & 0.0330  & 2.4697  & 0.3593  & 3.1390  & 0.4989  & 9.6180  \\
+%     RODTNet-LT (ours) & \textbf{1.0384} & \textbf{0.0208} & \textbf{0.4476} & \textbf{0.0030} & \textbf{0.3630} & \textbf{0.0020} & \textbf{0.2885} & \textbf{0.0014} & \textbf{0.4435} & \textbf{0.0032} & \textbf{4.0520} \\
+%     \midrule
+%     \multicolumn{12}{c}{} \\
+%     \midrule
+%             & \multicolumn{1}{l}{任务6} & \multicolumn{2}{c}{任务7} & \multicolumn{2}{c}{任务8} & \multicolumn{2}{c}{任务9} & \multicolumn{2}{c}{任务10} & \multicolumn{2}{c}{任务11} \\
+% \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
+%     \midrule
+%     iTransformer \cite{liu2024itransformer} & 8.5517  & 10.6146  & 1.6506  & 9.1256  & 1.5742  & 21.2702  & 8.0010  & 40.3827  & 20.7572  & 19.2927  & 4.6340  \\
+%     iTransformer+ \cite{liu2024itransformer} & 0.1204  & 8.8424  & 1.4328  & 1.3233  & 0.0277  & 2.9985  & 0.1737  & 2.8956  & 0.1635  & 2.8476  & 0.1570  \\
+%     PatchTST \cite{nie2023a} & 1.8668  & 16.9823  & 5.4530  & 9.2243  & 1.6822  & 14.7543  & 4.8261  & 48.1532  & 28.1815  & 15.8620  & 4.5693  \\
+%     PatchTST+ \cite{nie2023a} & 0.5973  & 10.1355  & 1.8044  & 6.8517  & 0.9185  & 3.3279  & 0.1986  & 4.6602  & 0.3933  & 5.0112  & 0.4733  \\
+%     TSMixer \cite{chen2023tsmixer} & 15.7721  & 8.1766  & 1.0106  & 14.3296  & 2.9821  & 51.0444  & 26.6658  & 44.3269  & 22.9838  & 58.9715  & 35.8934  \\
+%     TSMixer+ \cite{chen2023tsmixer} & 0.1595  & 9.3981  & 1.4881  & 1.6831  & 0.0443  & 2.7117  & 0.1365  & 4.0151  & 0.2957  & 3.7528  & 0.2954  \\
+%     PINN \cite{wang2024physics}  & 6.2435  & 25.2663  & 9.1038  & 5.9623  & 0.7837  & 7.9811  & 1.9312  & 22.6493  & 7.5184  & 13.4784  & 3.3358  \\
+%     PINN+ \cite{wang2024physics} & 2.2297  & 8.1476  & 1.3071  & 1.3870  & 0.0357  & 3.9588  & 0.4028  & 5.6329  & 0.9141  & 3.6541  & 0.3709  \\
+%     DR-Net \cite{WANG2023108897} & 3.9837  & 19.8591  & 5.6675  & 40.7034  & 21.2569  & 13.3021  & 3.0780  & 10.6609  & 2.0293  & 10.4743  & 1.7780  \\
+%     CRNN \cite{D2EE01676A}  & 1.6485  & 4.5716  & 0.4770  & 3.3587  & 0.3612  & 5.8487  & 0.8072  & 11.0377  & 3.0051  & 6.9622  & 1.2084  \\
+%     MAGNet \cite{TAN2024103725} & 1.2605  & \underline{3.6287}  & \textbf{0.2369} & 3.2225  & 0.2692  & \underline{3.4654}  & \underline{0.2234}  & 7.5763  & 1.7185  & \underline{4.1481}  & \underline{0.4131}  \\
+%     DeNN-bagging \cite{10102497} & 1.9811  & 7.1896  & 0.8327  & 5.6580  & 0.7403  & 7.6599  & 1.1013  & 12.8670  & 3.4043  & 8.8430  & 1.6496  \\
+%     DeNN-fusion \cite{10102497} & 1.9799  & 8.5083  & 1.0813  & 5.9468  & 0.7503  & 8.3443  & 1.3646  & 12.5343  & 3.2910  & 8.9251  & 1.7611  \\
+%     DeNN-voting \cite{10102497} & 1.9101  & 7.4300  & 0.8838  & 5.5938  & 0.7390  & 7.7196  & 1.1244  & 12.7772  & 3.4203  & 8.9074  & 1.6948  \\
+%     MambaLithium \cite{shi2024mambalithiumselectivestatespace} & \underline{0.7132}  & 6.7626  & 0.8283  & 4.8486  & 0.6418  & 7.0512  & 1.2408  & 8.7161  & 2.1239  & 5.8056  & 0.8398  \\
+%     LSTM-DA \cite{HAN2022230823} & 2.8925  & 8.3498  & 1.0564  & 7.9172  & 1.3040  & 6.0889  & 0.6520  & 10.2645  & 2.3890  & 7.8039  & 1.1160  \\
+%     ConvMMD \cite{9788003} & 2.0985  & 7.8693  & 0.9537  & 6.7908  & 0.9026  & 5.9231  & 0.6199  & 11.1645  & 2.6587  & 7.6832  & 1.2462  \\
+%     DKTL \cite{10029904}  & 2.1718  & 7.5353  & 0.8587  & 6.7470  & 0.9272  & 4.9570  & 0.5125  & 10.8147  & 2.5730  & 6.9723  & 1.1317  \\
+%     DDAN \cite{9560040}  & 2.7491  & 8.1399  & 1.1031  & 7.3573  & 1.1792  & 5.9360  & 0.8296  & 9.0353  & 2.1172  & 5.9290  & 0.8442  \\
+%     RODTNet-LT++ {(ours)} & 2.0079  & 4.2455  & 0.4090  & \underline{1.7140}  & \underline{0.0635}  & \textbf{3.0794} & \textbf{0.2118} & \textbf{3.3261} & \textbf{0.2229} & \textbf{3.6471} & 0.8305  \\
+%     RODTNet-LT (ours) & \textbf{0.3946} & \textbf{3.5394} & \underline{0.3020}  & \textbf{1.0781} & \textbf{0.0195} & 4.5385  & 0.3831  & \underline{5.0415}  & \underline{0.3875}  & 4.3266  & \textbf{0.3424} \\
+%     \bottomrule
+%     \end{tabular}%}
+%       \begin{tablenotes}
+%         \item[a] + indicates finetuning on the target domain.
+%         \item[b] ++ indicates training directly on the target domain.
+%         \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best
+%         \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
+%     \end{tablenotes}
+% \end{threeparttable}
+% }
+%     \label{tab:soh_results}%
+% \end{table*}%
 
 To evaluate the OOD generalization capability of our proposed RODTNet and RODTNet-LT, we conduct comprehensive experiments across 11 tasks using MAE and MSE as evaluation metrics. For RUL prediction tasks, Table~\ref{tab:rul_results} demonstrates that RODTNet achieves state-of-the-art performance in 9 tasks and ranks second in the remaining 2 tasks, surpassed only by its target-domain-adapted variant. In SOH estimation tasks, RODTNet-LT attains optimal performance in 9 scenarios as shown in Table~\ref{tab:soh_results}, while exhibiting marginal performance gaps against its target-domain counterpart and MAGNet in 2 cases.
 % 
@@ -990,6 +1106,91 @@ We combine LMCRDR with the UDFS while retaining a linear backbone to form LRODTN
 （）{RODTNet-LT}
 
 For the task of SOH estimation involving long-tailed distributions, we obtained the RODTNet-LT variant by the adding LARR strategy. We observe that RODTNet-LT achieved lower generalization error compared to RODTNet, proving the effectiveness of LARR in removing head bias.
+
+\begin{table}[htbp]
+    \centering
+    \caption{RODTNet 在 MATR 与 Tongji 数据集上的消融实验结果}
+    \label{tab:ablation_1_part1}
+    \begin{threeparttable}
+        \begin{tabularx}{\textwidth}{lccc*{4}{>{\centering\arraybackslash}X}}
+            \toprule
+            \multicolumn{1}{c}{模型} & \multicolumn{3}{c}{组件} & \multicolumn{2}{c}{MATR 数据集} & \multicolumn{2}{c}{Tongji 数据集} \\
+            \cmidrule(lr){2-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+            & MC & Mamba & UDFS & MAE & MSE & MAE & MSE \\
+            \midrule
+            Baseline\textsuperscript{a} & & & & 111.2889 & 17628.7479 & 21.0490 & 926.8474 \\
+            DGBL\textsuperscript{b} & & & \checkmark & 23.3242 & 979.1668 & 22.1563 & 852.3195 \\
+            LMCRDR\textsuperscript{c} & \checkmark & & & 0.9910 & 1.8321 & 3.2627 & 21.1491 \\
+            MCRDR\textsuperscript{d} & \checkmark & \checkmark & & \underline{0.6214} & 1.3798 & \underline{0.8529} & \underline{1.4767} \\
+            LRODTNet\textsuperscript{e} & \checkmark & & \checkmark & 0.6734 & \textbf{0.7131} & 2.9669 & 16.7873 \\
+            RODTNet & \checkmark & \checkmark & \checkmark & \textbf{0.5370} & \underline{1.3636} & \textbf{0.7820} & \textbf{1.1815} \\
+            \bottomrule
+        \end{tabularx}
+        \begin{tablenotes}
+            \footnotesize
+            \item[a] Baseline：采用下采样原始循环信号和线性主干网络。
+            \item[b] DGBL：在基准模型基础上引入了特征操纵策略。
+            \item[c] LMCRDR：线性主干的 RODTNet 变体，未采用特征操纵。
+            \item[d] MCRDR：不含特征操纵策略的 RODTNet 变体。
+            \item[e] LRODTNet：线性主干的 RODTNet 变体。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{RODTNet 在 HUST 与 XJTU 数据集上的消融实验结果}
+    \label{tab:ablation_1_part2}
+    \begin{threeparttable}
+        \begin{tabularx}{\textwidth}{lccc*{4}{>{\centering\arraybackslash}X}}
+            \toprule
+            \multicolumn{1}{c}{模型} & \multicolumn{3}{c}{组件} & \multicolumn{2}{c}{HUST 数据集} & \multicolumn{2}{c}{XJTU 数据集} \\
+            \cmidrule(lr){2-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+            & MC & Mamba & UDFS & MAE & MSE & MAE & MSE \\
+            \midrule
+            Baseline & & & & 266.2715 & 116654.9141 & 96.2077 & 12405.8422 \\
+            DGBL & & & \checkmark & 65.1147 & 6879.1396 & 32.4785 & 1900.7478 \\
+            LMCRDR & \checkmark & & & 0.9775 & 2.8166 & 9.5687 & 163.8348 \\
+            MCRDR & \checkmark & \checkmark & & \underline{0.4390} & \underline{0.4802} & \underline{4.7762} & \underline{49.0050} \\
+            LRODTNet & \checkmark & & \checkmark & 1.3954 & 3.9988 & 10.6988 & 234.1704 \\
+            RODTNet & \checkmark & \checkmark & \checkmark & \textbf{0.3200} & \textbf{0.2935} & \textbf{4.3448} & \textbf{46.0641} \\
+            \bottomrule
+        \end{tabularx}
+        \begin{tablenotes}
+            \footnotesize
+            \item[] 注：相关模型变体定义及实验设置请参阅表 \ref{tab:ablation_1_part1}。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{RODTNet-LT 在 MATR、Tongji、HUST 和 XJTU 数据集上的消融实验结果}
+    \label{tab:ablation_study_2}
+    \begin{threeparttable}
+        % 调整比例：第一列 1.8，其余 8 列各 0.9 (1.8 + 8*0.9 = 9.0)
+        \begin{tabularx}{\textwidth}{
+            >{\raggedright\arraybackslash\hsize=2.2\hsize}X 
+            *{8}{>{\centering\arraybackslash\hsize=0.85\hsize}X}
+        }
+            \toprule
+            \multicolumn{1}{c}{数据集} & \multicolumn{2}{c}{MATR 数据集} & \multicolumn{2}{c}{Tongji 数据集} & \multicolumn{2}{c}{HUST 数据集} & \multicolumn{2}{c}{XJTU 数据集} \\
+            \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+            \multicolumn{1}{c}{指标} & MAE & MSE & MAE & MSE & MAE & MSE & MAE & MSE \\
+            \midrule
+            Baseline\textsuperscript{a} & 5.1276 & 0.5883 & 9.6675 & 1.6127 & 9.4620 & 1.4738 & 20.8255 & 9.4026 \\
+            RODTNet & \underline{1.1207} & \underline{0.0257} & \underline{7.3428} & \underline{0.8164} & \underline{1.5201} & \underline{0.0448} & \textbf{4.4705} & \underline{0.3998} \\
+            RODTNet-LT\textsuperscript{b} & \textbf{1.0384} & \textbf{0.0208} & \textbf{3.5394} & \textbf{0.3020} & \textbf{1.0781} & \textbf{0.0195} & \underline{4.5385} & \textbf{0.3831} \\
+            \bottomrule
+        \end{tabularx}
+        \begin{tablenotes}
+            \footnotesize
+            \item[a] 基准模型：采用下采样原始循环信号和线性主干网络。
+            \item[b] RODTNet-LT：在 RODTNet 基础上引入了 LARR 模块。
+            \item[] 注：\textbf{加粗}/\underline{下划线} 分别表示性能\textbf{最优}/\underline{次优}。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
 
 \subsection{超参数敏感性分析}\label{subsec:RODTNet_sensitivity_analysis}
 
