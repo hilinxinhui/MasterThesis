@@ -253,7 +253,7 @@ $\Omega, \mathcal{L}$
 % 
 如~表~\ref{tab:generalization_framework}所示，在目标域数据有标签可用时，直接微调基于源域训练的模型参数即可；当目标域数据只有少量有标签而大部分无标签时，往往通过设计域适应正则项 $\mathcal{L}_{\text{ada}}$ 对齐数据分布；若在通常的泛化问题上添加特殊的设定，如源域数据不可访问或目标域的无标签数据随时间流式、单次地给出，即得到无源域自适应问题和测试时自适应问题，前者的研究挑战转变为设计自监督信号，例如设置一致性正则项 $\mathcal{L}_{\text{con}}$，后者的参数更新则往往采用在线的形式；当目标域数据完全不可用时，优化目标在于学习域不变表征以分别应对退化趋势外推预测与未知故障辨识的挑战。具体地，对退化建模问题，通常涉及结构正则项 $\mathcal{L}_{\text{str}}$，对故障诊断问题则通常引入不变性风险惩罚项 $\mathcal{L}_{\text{inv}}$。
 
-动力电池因工况与个体差异导致的数据分布漂移削弱了退化模型的泛化性能。为实现可靠~PHM~对可泛化性的要求，现有文献依据对目标域数据的可访问性，发展出基于三种范式的退化建模方法，包括基于{预训练-微调范式}的退化建模方法，对应表中的\textbf{完全监督微调}与\textbf{半监督自适应}场景；基于{域自适应范式}的退化建模方法，主要对应表中\textbf{标准无监督自适应}场景；以及基于{域泛化范式}的退化建模方法，对应表中的\textbf{域泛化}场景。
+动力电池因工况与个体差异导致的数据分布漂移削弱了退化模型的泛化性能。为实现可靠~PHM~对可泛化性的要求，现有文献依据对目标域数据的可访问性，发展出基于三种范式的退化建模方法，包括基于{预训练-微调（Pre-training-Finetuning, PT-FT）范式}的退化建模方法，对应表中的\textbf{完全监督微调}与\textbf{半监督自适应}场景；基于{域自适应（Domain Adaptation, DA）范式}的退化建模方法，主要对应表中\textbf{标准无监督自适应}场景；以及基于{域泛化（Domain Generalization, DG）范式}的退化建模方法，对应表中的\textbf{域泛化}场景。
 
 （1）{基于预训练-微调范式的退化建模}
 
@@ -285,9 +285,7 @@ $\Omega, \mathcal{L}$
 
 （3）{基于域泛化的退化建模}
 
-Domain generalization paradigm involves three main categories, namely data manipulation, representation learning, and specific learning strategy \cite{9782500}.
-
-（Domain Generalization, DG）
+DG~范式可以细分为三种策略，分别是基于数据调弈的策略、基于表征学习的策略和基于任务属性设计的学习策略\cite{9782500}。
 
 % In \cite{CHEN2024234696}, Chen等人 develop a dual-branch feature extractor to process domain samples with mixed and separated sources. By leveraging a domain discriminator and a health state estimator, their approach enables domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
 % In \cite{CHEN2024234696}, Chen等人 develop a dual-branch network, a domain discriminator and a health state estimator to learn domain-invariant degradation feature extraction, culminating in a representation learning-based degradation pattern generalization method termed DGSOH.
@@ -314,10 +312,17 @@ To address these issues, we propose RODTNet, a novel model for OOD degradation p
 
 \subsection{幻觉鲁棒的故障诊断研究现状}\label{subsec:fault_diagnosis}
 
-目前，传统深度学习模型（Conventional Deep Learning Models, CDLMs）在智能化旋转机械故障诊断占据主流，但其针对大规模数据时模型容量和泛化能力有限，且仅能输出单一故障标签，难以提供归因分析与维修决策。LLMs~具备强泛化能力和可读诊断报告生成能力，在近年来获得广泛关注。
+目前，传统深度学习模型（Conventional Deep Learning Models, CDLMs）在智能化旋转机械故障诊断占据主流，但其针对大规模数据时模型容量和泛化能力有限，且仅能输出单一故障标签，难以提供归因分析与维修决策。LLMs~具备强泛化能力和可读诊断报告生成能力，在近年来获得广泛关注，图~\ref{fig:intro_LLM_framework}~展示了故障诊断基础模型的一般架构。
 % 
 CDLMs 和 LLMs，而尤其是 LLMs，均存在输出事实性错误，即幻觉，的风险，这在高安全要求的工业场景下是不可接受的。为满足可靠~PHM~的抗幻觉需求，一系列幻觉鲁棒的~PHM~方法已被提出。
 本节基于幻觉的诱因与模型输出特性的差异，综述三类已有方法，包括旨在缓解统计偏差的 CDLMs 与 LLMs 方法、具备非期望输入拒绝能力的 CDLMs 与 LLMs 和具有序列级幻觉检测能力的 LLMs。
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Img/Intro_figures/Gemini_Generated_Image_9oq6kx9oq6kx9oq6.png}
+    \bicaption{面向旋转机械故障诊断的多模态大模型系统架构图}{}
+    \label{fig:intro_LLM_framework}
+\end{figure}
 
 （1）{缓解统计偏差的 CDLMs 与 LLMs 方法}
 
