@@ -19,7 +19,7 @@
 \end{figure}
 
 % 【P3】
-电动汽车的动力系统主要由储能子系统和传动子系统构成。基于IPHM技术体系，本文的研究对象聚焦于支撑整车动力输出的两大核心易损部件。第一类部件是作为整车能量中枢的动力电池，其在长期的充放电循环中发生不可逆的性能退化。第二类部件是作为动力传动中枢的旋转机械，其在持续的高转速与变载荷工况下易产生疲劳并引发结构性故障。在本文的研究设定中，针对动力电池的退化建模被解耦为两个侧重点不同的评估维度。一方面，是健康状态（State of Health, SOH）估计，即估计当前最大可用容量与额定容量之比，以评估电池当前循环性能；另一方面，是剩余使用寿命（Remaining Useful Life, RUL）预测，即预测从当前循环到寿命终止（End of Life, EOL）循环间的循环数，以评估电池未来性能演化趋势。针对旋转机械，本文开展故障诊断研究，即识别系统的异常状态及具体损伤类别。图\ref{fig:intro_ev_PHM}展示了本文所研究的电动汽车动力系统架构及其退化预测与故障诊断联合技术框架。
+电动汽车的动力系统主要由储能子系统和传动子系统构成。基于~IPHM~技术体系，本文的研究对象聚焦于支撑整车动力输出的两大核心易损部件。第一类部件是作为整车能量中枢的动力电池，其在长期的充放电循环中发生不可逆的性能退化。第二类部件是作为动力传动中枢的旋转机械，其在持续的高转速与变载荷工况下易产生疲劳并引发结构性故障。在本文的研究设定中，针对动力电池的退化建模被解耦为两个侧重点不同的评估维度。一方面，是健康状态（State of Health, SOH）估计，即估计当前最大可用容量与额定容量之比，以评估电池当前循环性能；另一方面，是剩余使用寿命（Remaining Useful Life, RUL）预测，即预测从当前循环到寿命终止（End of Life, EOL）循环间的循环数，以评估电池未来性能演化趋势。针对旋转机械，本文开展故障诊断研究，即识别系统的异常状态及具体损伤类别。图\ref{fig:intro_ev_PHM}展示了本文所研究的电动汽车动力系统架构及其退化预测与故障诊断联合技术框架。
 
 % 【P4】
 动力电池的电化学衰退微观过程难以观测、持续时间长且退化特征隐蔽。动力电池性能表征量，无论是~SOH~或~RUL，都具有连续性，针对性能表征量的估计或预测在~IPHM~框架下属于回归问题。旋转机械的局部损伤通常由宏观瞬态冲击与高频振动引发，演变过程迅速。由于损伤宏观可观测，基于损伤的发生位置和严重程度，容易定义离散标签描述故障内容，基于~IPHM~框架，故障诊断问题具有典型的分类性质。鉴于动力电池与旋转机械在失效机理、演化时间尺度以及管理任务的形式上存在本质差异，本文针对两者的不同特性，分别设计了适配其演化规律和问题形式的研究路线。
@@ -30,27 +30,43 @@
 
 \section{国内外研究现状}\label{sec:Intro_literature_review}
 
-In this section, we review methodologies relevant to uncertainty-aware prognosis, categorizing them into two paradigms: physics-based models and data-driven models.
-
-In this section, we review methods related to robust battery degradation modeling, including methods based on (1) pretraining-finetuning paradigm, (2) domain adaptation paradigm, and (3) domain generalization paradigm.
-% (1) pretraining-finetuning requiring full target-domain labels,
-% (2) domain adaptation aligning feature distributions with unlabeled target data,
-% (3) domain generalization operating without target-domain supervision.
-
-% In this section, we review the related methods including CDLMs and LLMs for mitigating statistical bias, CDLMs and LLMs for rejecting undesired data, and LLMs for detecting sequence-level hallucinations.
-In this section, we review the related methods including (1) CDLMs and LLMs for mitigating statistical bias, (2) CDLMs and LLMs for rejecting undesired inputs, and (3) LLMs for detecting sequence-level hallucinations.
+本节围绕动力系统中的动力电池和旋转机械两个核心部件的智能化退化建模和故障诊断的国内外研究现状进行综述。
+% 
+如前述，本文重点研究可靠~PHM~问题，并将可靠性分解为可信性、可泛化性和抗幻觉三个方面，并采用分研究路线的组织形式。
+% 
+相应地，本节根据研究内容重点回顾
+\textbf{计及不确定性的电池健康状态估计}、
+\textbf{面向分布漂移的电池退化模式}和
+\textbf{幻觉鲁棒的旋转机械故障诊断}
+三个部分的相关工作。
+% 
+这三个部分的探讨并不局限于单一研究对象，而致力于提炼相关研究的抽象机制。具体而言，本节内容的目的为探究如何在连续退化过程预测中引入不确定性量化，以满足场景对可信性的要求；研究如何消除跨工况或跨设备等导致的数据分布偏移，以实现可泛化退化建模；以及探索如何检测深度模型，尤其是大语言模型，在面对未知或边界样本时产生的盲目自信，从而赋予模型抗幻觉能力。
 
 \subsection{计及不确定性的健康状态估计研究现状}\label{subsec:SOH_estimation}
 
-（1）Uncertainty-aware Physics-based Prognostic Models % \label{subsec:physics-based_models}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Img/Intro_figures/Gemini_Generated_Image_jzsifrjzsifrjzsi.png}
+    \bicaption{确定性与概率性健康状态估计方法对比示意图}{}
+    \label{fig:intro_UQ_framework}
+\end{figure}
 
-Physics-based prognostic models derive uncertainty-aware predictions by integrating degradation mechanisms with filtering techniques for state estimation and parameter updating. The employed filters—predominantly Kalman filters and particle filters—leverage inherent Bayesian frameworks to quantify uncertainty through probabilistic inference over system states and noise distributions\cite{chen2003bayesian}, enabling dynamic confidence bounds on predictive results.
+复杂工况下，点估计往往难以满足系统对高可靠决策的需求，引入不确定性量化技术以提升健康状态估计的可信性是必要环节。
+% 
+如图~\ref{fig:intro_UQ_framework}~所示，在贝叶斯方法的视角下，状态估计即学习从输入 $\boldsymbol{x}$ 到目标 $y$ 的条件预测分布 $p_{\boldsymbol{\theta}}(y|\boldsymbol{x})$，其中 $\boldmath{\theta}$ 是可学习的参数。传统确定性模型的预测分布因退化为零方差的狄拉克函数，即 $p_{\boldsymbol{\theta}}(y|\boldsymbol{x}) = \delta(y - f_{\boldsymbol{\theta}}(\boldsymbol{x}))$， 而表现出对预测结果的盲目置信，对未知工况时存在误判风险。对应地，概率性模型直接输出具备方差的连续概率密度函数，例如高斯分布，即 $p_{\boldsymbol{\theta}}(y|\boldsymbol{x}) = \mathcal{N}(\mu_{\boldsymbol{\theta}}(\boldsymbol{x}), \sigma^2_{\boldsymbol{\theta}}(\boldsymbol{x}))$，从而能够以方差 $\sigma^2_{\boldsymbol{\theta}}$ 对认知与偶然误差进行量化，在面对未见退化模式的样本时表达低置信度，赋予估计结果可信性。
+%
+本节综述现有的两类具有不确定性量化能力的估计模型，包括计及不确定性的物理驱动估计模型和计及不确定性的数据驱动估计模型。
+
+（1）计及不确定性的物理驱动估计模型 % \label{subsec:physics-based_models}
+
+计及不确定性的物理驱动估计模型通过将退化机制与用于状态估计和参数更新的滤波技术结合实现状态估计和对应不确定性的量化。所使用的滤波器，通常是卡尔曼滤波器（Kalman Filter, KF）或粒子滤波器（Particle Filter, PF），天然属于贝叶斯模型。这一类方法通过对系统状态和噪声分布进行概率推理以量化不确定性\cite{chen2003bayesian}，从而实现对估计结果的动态置信区间估计。
+
 % 2016
 % Bressel等人\cite{7386653} propose an extended Kalman filter-based algorithm integrated with the inverse first-order reliability method for SOH and RUL prediction, along with the corresponding confidence intervals.
 文献\cite{7386653}中，Bressel~等人提出了一种基于观测器的预测方法，所提出的方法通过扩展卡尔曼滤波器（Extended Kalman Filter, EKF）建模设备的健康状态和退化动态，基于逆一阶可靠度方法（Inverse First-Order Reliability Method, IFORM）外推健康状态轨迹直至触发预设的失效阈值，从而实现对变功率负载工况下的质子交换膜燃料电池的剩余使用寿命预测，并给出90\%置信区间作为对预测结果的不确定性的量化。
 % 2021
 % Kim等人\cite{9032349} propose a prognostic model utilizing a dynamic particle filter which quantifies the uncertainty associated with the battery's end-of-life and adaptively adjusts the parameters of the degradation model.
-文献\cite{9032349}中，Kim~等人结合异常检测技术和基于粒子滤波（Particle Filter, PF）的预测方法提出了一种平移核粒子滤波（Shifting Kernel Particle Filter, SKPF）算法，解决了特定循环阶段带有异常退化轨迹的电池的突变特征辨识问题，实现了兼具精度和稳健性的剩余使用寿命预测，所提出方法同样给出预测结果的置信区间。
+文献\cite{9032349}中，Kim~等人结合异常检测技术和基于~PF~的预测方法提出了一种平移核粒子滤波（Shifting Kernel Particle Filter, SKPF）算法，解决了特定循环阶段带有异常退化轨迹的电池的突变特征辨识问题，实现了兼具精度和稳健性的剩余使用寿命预测，所提出方法同样给出预测结果的置信区间。
 % 2021
 % Haque and Choi \cite{9113648} propose a prognostic model utilizing a sparse kernel ridge regression-assisted particle filter and quantifie abrupt changes in degradation trajectories by accounting for noise uncertainty.
 晶体管的可靠应用依赖剩余使用寿命预测，晶体管性能退化具有不确定性、突变性和样本贫化性，这与电池性能退化在数据表现上一致，文献\cite{9113648}中，Haque~和~Choi~提出了一种稀疏核岭回归辅助的粒子滤波（Sparse Kernel Ridge Regression Assisted Particle Filter, SKRR-PF）算法，通过在后验概率密度函数估计的重采样环节引入稀疏核岭回归机制，实现了对晶体管器件导通电阻轨迹突变的识别和剩余使用寿命的预测。
@@ -67,9 +83,10 @@ Physics-based prognostic models derive uncertainty-aware predictions by integrat
 % Wang等人\cite{10672556} propose a zonotopic Kalman filter-based method with physics constraints to achieve online capacity interval estimation.
 文献\cite{10672556}中，为了实现电池在线容量估计，Wang~等人提出了一种物理约束中心对称多胞形卡尔曼滤波器（Physics-Constrained Zonotopic Kalman Filter, PCZKF），其中所提出的滤波器实现电池模型的参数及其区间估计的联合更新，所提出的物理约束则用于应对电池容量再生挑战，所提出的方法相比传统基于~KF~的方法能够输出更加精确容量预测轨迹和更加收敛的容量置信区间。
 
-（2）Uncertainty-aware Data-driven Prognostic Models % \label{subsec:data-driven_models}
+（2）计及不确定性的数据驱动估计模型 % \label{subsec:data-driven_models}
 
-Uncertainty-aware data-driven prognostic models can be classified into statistical learning-based methods \cite{van2021bayesian, gruber2025sourcesuncertaintysupervisedmachine} and deep learning-based methods \cite{ABDAR2021243}. Statistical learning approaches rely on explicit probabilistic models for analytical or approximate inference. In contrast, deep learning methods address uncertainty by leveraging the statistical properties of randomized parameter spaces or output distributions.
+计及不确定性的数据驱动估计模型可进一步分为基于统计学习的方法\cite{van2021bayesian, gruber2025sourcesuncertaintysupervisedmachine}和基于深度学习的方法\cite{ABDAR2021243}。基于统计学习的方法依赖显式概率模型进行分析或近似推理。与之相对的，基于深度学习的方法通过利用随机化参数空间或输出分布的统计特性实现不确定性量化。
+
 % 
 相关向量回归（Relevance Vector Regression, RVR）和高斯过程回归（Gaussian Process Regression, GPR）是两种典型的具有不确定性量化能力的统计学习方法，被广泛应用在状态估计和寿命预测问题中。
 % Wang等人\cite{rvr_rul_9552552} introduce a prognostic method based on relevance vector regression (RVR), while Richardson等人\cite{gpr_soh_8263147} employ Gaussian process regression (GPR) for SOH estimation.
@@ -236,6 +253,8 @@ $\Omega, \mathcal{L}$
 % 
 如~表~\ref{tab:generalization_framework}所示，在目标域数据有标签可用时，直接微调基于源域训练的模型参数即可；当目标域数据只有少量有标签而大部分无标签时，往往通过设计域适应正则项 $\mathcal{L}_{\text{ada}}$ 对齐数据分布；若在通常的泛化问题上添加特殊的设定，如源域数据不可访问或目标域的无标签数据随时间流式、单次地给出，即得到无源域自适应问题和测试时自适应问题，前者的研究挑战转变为设计自监督信号，例如设置一致性正则项 $\mathcal{L}_{\text{con}}$，后者的参数更新则往往采用在线的形式；当目标域数据完全不可用时，优化目标在于学习域不变表征以分别应对退化趋势外推预测与未知故障辨识的挑战。具体地，对退化建模问题，通常涉及结构正则项 $\mathcal{L}_{\text{str}}$，对故障诊断问题则通常引入不变性风险惩罚项 $\mathcal{L}_{\text{inv}}$。
 
+动力电池因工况与个体差异导致的数据分布漂移削弱了退化模型的泛化性能。为实现可靠~PHM~对可泛化性的要求，现有文献依据对目标域数据的可访问性，发展出基于三种范式的退化建模方法，包括基于{预训练-微调范式}的退化建模方法，对应表中的\textbf{完全监督微调}与\textbf{半监督自适应}场景；基于{域自适应范式}的退化建模方法，主要对应表中\textbf{标准无监督自适应}场景；以及基于{域泛化范式}的退化建模方法，对应表中的\textbf{域泛化}场景。
+
 （1）{基于预训练-微调范式的退化建模}
 
 % In \cite{LI2021116410}, Li等人 propose a lightweight and generalizable model for battery SOH estimation that integrates the pretraining-finetuning paradigm with pruned convolutional neural network.
@@ -295,12 +314,12 @@ To address these issues, we propose RODTNet, a novel model for OOD degradation p
 
 \subsection{幻觉鲁棒的故障诊断研究现状}\label{subsec:fault_diagnosis}
 
-% 分为三类：
-% （1）
-% （2）
-% （3）
+目前，传统深度学习模型（Conventional Deep Learning Models, CDLMs）在智能化旋转机械故障诊断占据主流，但其针对大规模数据时模型容量和泛化能力有限，且仅能输出单一故障标签，难以提供归因分析与维修决策。LLMs~具备强泛化能力和可读诊断报告生成能力，在近年来获得广泛关注。
+% 
+CDLMs 和 LLMs，而尤其是 LLMs，均存在输出事实性错误，即幻觉，的风险，这在高安全要求的工业场景下是不可接受的。为满足可靠~PHM~的抗幻觉需求，一系列幻觉鲁棒的~PHM~方法已被提出。
+本节基于幻觉的诱因与模型输出特性的差异，综述三类已有方法，包括旨在缓解统计偏差的 CDLMs 与 LLMs 方法、具备非期望输入拒绝能力的 CDLMs 与 LLMs 和具有序列级幻觉检测能力的 LLMs。
 
-（1）{CDLMs and LLMs for Mitigating Statistical Bias}
+（1）{缓解统计偏差的 CDLMs 与 LLMs 方法}
 
 % In \cite{Peng_Liu_Du_Gao_Wang_2025}, H. Peng等人 design a cross-dataset diagnostic LLM, termed BearLLM.
 文献\cite{Peng_Liu_Du_Gao_Wang_2025}中，Peng~等人提出了一种融合多模态大语言模型的轴承健康管理框架，命名为~BearLLM，仅需加载一套预训练权重即可实现跨数据集高精度故障诊断。该框架首先提出了一种先验知识增强的统一振动信号表征机制；进一步地，预训练一个故障分类网络捕获信号深度表征；最后，基于所标注的大规模振动信号-文本描述对，将所提取的时序特征映射对齐到词嵌入空间，通过大语言模型联合推理。
@@ -315,9 +334,9 @@ To address these issues, we propose RODTNet, a novel model for OOD degradation p
 % In \cite{QSCGAN}, W. Wan等人 embed self-attention and spectral normalization within generator-discriminator architectures to augment rocket bearing data, termed QSCGAN.
 文献\cite{QSCGAN}中，Wan~等人针对数据驱动轴承故障诊断问题中数据匮乏和标签缺失的双重挑战，提出了一种基于快速自注意力卷积对抗生成网络（Quick Self-Attention Convolutional Generative Adversarial Network, QSCGAN）的无监督诊断方法。该方法由生成器、判别器和分类器协同，其中生成器和判别器构成对抗博弈对，将隐空间噪声分布映射为真实数据分布，合成逼真的原始机械振动信号，以此对分类器的训练集进行数据增强。
 % In \cite{VQVAE}, Q. Zheng等人 combine degradation stage partitioning and vector quantized augmentation to enrich degradation features, termed VQVAE.
-为了解决将数据增强和域不变特征表示技术应用在未知工况健康管理时面临的长时序列内在时序一致性不足的问题，文献\cite{VQVAE}中，Zhang~等人提出了一种融合不变性和特异性特征表示的泛化网络框架，命名为~VQVAE。具体地，通过引入时间序列向量量化变分自编码网络针对设备退化阶段生成多样化样本，继而分别提取源域间共享共性特征和各源域专属特征，最后加权融合所提取的两种特征，实现高精度跨域寿命预测结果。
+为了解决将数据增强和域不变特征表示技术应用在未知工况健康管理时面临的长时序列内在时序一致性不足的问题，文献\cite{VQVAE}中，Zhang~等人提出了一种融合不变性和特异性特征表示的泛化网络框架，命名为~VQVAE。具体地，通过引入时间序列向量量化变分自编码网络针对设备退化阶段生成多样化样本，继而分别提取源域间共享共性特征和各源域专属特征，最后加权融合所提取的两种特征，实现高精度跨域寿命预测。
 
-（2）{CDLMs and LLMs for Rejecting Undesired Inputs}
+（2）{具有非期望输入拒绝能力的 CDLMs 与 LLMs 方法}
 
 %MDCC=DSRC+马氏距离
 %WDSN=DANN+马氏距离
@@ -334,7 +353,7 @@ To address these issues, we propose RODTNet, a novel model for OOD degradation p
 % In \cite{20242516270368}, B. Liu等人 benchmark LLaMA-series LLMs for undesired input detection and design a cosine distance-based detector using isotropic embeddings, termed LLM-OOD.
 LLMs~在模型参数规模、预训练目标和推理范式上与传统模型存在显著差异，基于后者开展的~OOD~检测研究的结论适用性有限。文献\cite{20242516270368}中，Liu~等人针对~LLMs~的~OOD~检测能力开展了实证研究，评估了各类主流~OOD~检测器在零梯度和微调场景下的性能表现，并基于~LLMs~嵌入空间的各向同性特质，提出了一种基于余弦距离的~OOD~检测器，命名为~LLM-OOD。
 
-（3）{LLMs for Detecting Sequence-Level Hallucinations}
+（3）{具有序列级幻觉检测能力的 LLMs}
 
 % %请检查LLM-check中具体用到的特征，确保与实验一致。
 % %请检查\cite{azaria-mitchell-2023-internal}是否是秒杀级对比算法 <- 这篇论文没开源
