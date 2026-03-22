@@ -460,10 +460,11 @@ The pipeline in the inference stage is summarized in Algorithm~\ref{alg:inferenc
 
 \section{实验评估}\label{sec:DA-TMLLM_experiment}
 
-This section presents a comprehensive evaluation of DA-TMLLM, benchmarking it against nine baseline methods across eleven datasets and seven evaluation metrics.
-First, we evaluate the performance of DA-TMLLM under hallucination-prone scenarios and assess the effectiveness of data augmentation on minority classes.
-Second, ablation studies are conducted to quantify the contribution of each key component.
-Third, we analyze the sensitivity of DA-TMLLM's performance to varying hyperparameters.
+本节对 DA-TMLLM 进行全面评估，在 11 个数据集和 7 个评估指标上将其与 9 种基线方法进行对比。
+首先，评估 DA-TMLLM 在幻觉易发场景下的诊断和幻觉检测性能，并验证数据增强对存在少数类的诊断的有效性。
+其次，进行消融实验，以量化各个组成模块的贡献。
+再次，分析 DA-TMLLM 性能对不同超参数的敏感性。
+最后，通过对比实验评估 DA-TMLLM 生成的故障信号的质量。
 
 \subsection{实验设置}\label{subsec:DA-TMLLM_experimental_setup}
 
@@ -484,14 +485,14 @@ The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{Ma
 \renewcommand{\arraystretch}{1.2}
 \begin{table*}[htbp]
     \centering
-    \caption{实验数据集详细概况统计（转置布局版）}
+    \caption{实验数据集详细概况统计}
     \label{tab:Detailed_datasets_transposed}
     
     \begin{tabular}{l c ccc ccc ccc}
         \toprule
-        & & \multicolumn{3}{c}{内圈故障 (Inner)} & \multicolumn{3}{c}{滚珠故障 (Ball)} & \multicolumn{3}{c}{外圈故障 (Outer)} \\
+        & & \multicolumn{3}{c}{内圈故障 (-IR)} & \multicolumn{3}{c}{滚珠故障 (B)} & \multicolumn{3}{c}{外圈故障 (OR)} \\
         \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11}
-        数据集 & 正常 (FF) & 轻微 & 中度 & 严重 & 轻微 & 中度 & 严重 & 轻微 & 中度 & 严重 \\
+        数据集 & 正常 (FF) & 轻微(Mi-) & 中度(Mo-) & 严重(S-) & 轻微() & 中度() & 严重() & 轻微() & 中度() & 严重() \\
         \midrule
         PU \cite{PU} & 1918 & 954 & 633 & -- & -- & -- & -- & 2223 & 1588 & -- \\
         JNU \cite{s130608013} & 900 & -- & 900 & -- & -- & 900 & -- & -- & 900 & -- \\
@@ -506,7 +507,7 @@ The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{Ma
         \textbf{总样本计数} & \textbf{72864} & 3160 & 18054 & 1602 & 1360 & 14246 & 2038 & 4000 & 16348 & 1844 \\
         \textbf{训练样本计数} & \textbf{10000} & 2736 & 10000 & 345 & 45 & 10000 & 1005 & 4620 & 10000 & 1764 \\
         \bottomrule
-        \multicolumn{11}{l}{\footnotesize 注：表中数值表示样本数量；短横线（--）表示该数据集中缺失对应的故障类别。}
+        \multicolumn{11}{l}{表中数值表示样本数量；短横线（--）表示该数据集中缺失对应的故障类别。}
     \end{tabular}
 \end{table*}
 
@@ -523,7 +524,7 @@ Scenario 3 employs a composite test set comprising the domain-specific subset, U
 
 \begin{table}[htbp]
   \centering
-  \caption{DA-TMLLM~模型的超参数设置}
+  \caption{DA-TMLLM~模型实验超参数设置}
   \label{tab:Hyperparameter}
   \begin{tabular}{lll}
   \toprule
