@@ -34,7 +34,11 @@
 
 \section{基于层次化随机时空 Transformer 的状态估计方法}\label{sec:HSSTT_methodology}
 
-In this section, we elaborate on the proposed HSSTT framework, provide an in-depth analysis of the deployment of HSSTT in practical industrial scenarios, and detail the methodology for achieving trustworthy SOH estimation. As depicted in Fig.~\ref{fig:hsstt_framework}, correlation information between tokens are aggregated by the proposed stochastic self-attention. And degradation dynamics are captured by the designed uncertainty-aware spatial-temporal feature encoder and mapped to SOH through the downstream regressor. Model uncertainty is quantified employing Monte Carlo sampling and further calibrated by the proposed principled auxiliary model.
+本节详细阐述所提出的 HSSTT 模型，系统性介绍实现无偏不确定性量化和可信 SOH 估计的方法，同时对该模型在实际工业场景中的部署可行性进行分析。
+如图~\ref{fig:hsstt_framework} 所示，该方法自底向上地集成多个模块。
+首先，为实现对循环信号片段间关联信息的聚合，构建基于 GSR 的随机自注意力机制。
+其次，为捕获电池的复杂时空退化动态，设计计及不确定性的层次化随机 Transformer，其所提取的特征通过下游回归器映射至 SOH 估计值。
+最后，模型的不确定性通过蒙特卡洛采样（Monte Carlo Sampling, MCS）量化，引入偏差-方差分解阐述估计精度和不确定性量化质量的权衡关系，并设计基于保序回归的不确定性校准策略以修正置信度偏差。
 
 \begin{figure}[!htbp]
     \centering
@@ -45,7 +49,7 @@ In this section, we elaborate on the proposed HSSTT framework, provide an in-dep
 
 \subsection{基于 GSR 的随机自注意力机制}\label{subsec:stochastic_attention}
 
-To address the issue of merging ambiguous segments resulting from the oversight of model uncertainty, we propose an uncertainty-aware self-attention mechanism based on the Gumbel-Softmax reparameterization (GSR) technique. This innovative self-attention mechanism is the most fundamental and crucial component in the construction of HSSTT.
+为解决因忽略模型不确定性导致的循环信号片段聚合模糊性问题，本文提出一种基于 GSR 的自注意力机制。该机制是构建 HSSTT 模型的基础。
 
 Transformer-based models's exceptional context modeling capability is primarily attributed to the multi-head self-attention (MHA) mechanism. Taking the $j$-th head as an example, the sequence $X=[x^{(1)}, x^{(2)}, \ldots, x^{(T)}] \in \mathbb{R}^{d_{in} \times T}$ undergoes affine transformations via trainable projection matrices $W_{Q}^{(j)}, W_{K}^{(j)}, W_{V}^{(j)} \in \mathbb{R}^{d_{emb} \times d_{in}}$ to generate query $Q^{(j)}$, key $K^{(j)}$, and value $V^{(j)}$. Here, $T$ is the total number of cycles in each sequence sample, while $d_{in}$ and $d_{emb}$ are the dimensions of the input and embedding, respectively.
 
