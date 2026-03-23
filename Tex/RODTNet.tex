@@ -2,6 +2,18 @@
 
 \section{引言}\label{sec:RODTNet_introduction}
 
+在电动汽车作为可持续交通体系载体的关键性越发显现的背景下，其动力总成中的储能部件，LIBs，的重要性不言而喻\cite{10766661, 9849057, 10897846, WASEEM2025236414}。
+LIBs 不断进行充放电循环并在这一过程中发生性能退化。
+导致可用续航里程削减，热失控风险增加，退役后梯次利用的经济价值降低\cite{LI2024155588}。
+从而，对 LIBs 的性能退化建模重要且迫切。通常使用一对各自有所侧重的指标系统评估 LIBs 的性能退化程度，分别是 RUL 和 SOH。
+具体地，前者通过量化容量衰减至寿命终止阈值前的剩余循环次数来提供前瞻性预测，后者则通过当前容量与标称容量的比值来反映当前状态。
+
+% para 2
+鉴于车载应用对非侵入式测量的限制，LIBs 的 RUL 和 SOH 只能依据车载电池管理系统（Vehiclar Battery Management Systems, VBMS）采集的监测数据，通过构建退化模型进行间接预测或估计。相比于难以应对复杂多物理场耦合效应的传统机理方法，数据驱动方法，尤其是基于深度学习的方法，在建立循环信号与退化状态之间的非线性映射方面展现出显著优势 \cite{XIAO2023107347, XIE2024630}。然而，此类方法的预测过估计性能高度依赖训练数据与测试数据同分布的前置假设，这种假设在复杂多变的实际驾驶工况下往往难以成立。此外，获取覆盖全运行工况的高质量带标签数据伴随着高昂的成本，这进一步加剧了数据驱动模型在实际应用中的泛化难度。
+
+% para 3
+现有研究广泛探讨了数据驱动 LIBs 退化建模问题中的训练与测试数据分布漂移问题，并主要借助预训练微调范式或域自适应范式构建模型 \cite{10177255}。然而，此类方法高度依赖目标域数据的可访问性。在已部署的车载系统中，由于通信带宽瓶颈、隐私保护法规以及实时计算资源的约束，获取充足的目标域数据存在很大现实阻碍 \cite{10886998, 10663939, 9849057}。进一步地，LIBs 退化过程对应连续的目标空间且具有内在的序数演化特征，这使其数据分布从根本上区别于异常检测与故障诊断等依赖离散标签的任务的数据分布 \cite{10214203, 10577994}。这种独有的序数特征导致在故障诊断等领域中已被充分研究和验证的泛化失效，仅利用源域数据实现分布外退化模式泛化的难度很大。尽管部分融合表征学习或元学习的策略在一定程度上实现了无需目标域数据的 LIBs 退化建模 \cite{TAN2024103725, CHEN2024234696}，但其建模过程仍依赖于预设的退化先验知识过预设的退化相关任务。与之相对地，基于数据调弈（Data Manipulation, DM）的域泛化范式 \cite{9782500} 凭借其简洁性和与底层数据驱动模型解耦的灵活性展现出优势。然而，在建立从原始传感输入到最终退化指标的多阶段复杂信息映射时，基于数据调弈的泛化策略仍需以下三个挑战：
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{Img/RODTNet_figures/trans/Fig1_Challenges.eps}
@@ -9,73 +21,38 @@
     \label{fig:rodtnet_challenges}
 \end{figure}
 
-% para 1
-Li-ion batteries (LIBs) dominate as power sources in electric vehicles\cite{WASEEM2025236414}. However, degradation through cycling compromises driving range, elevates thermal runaway risks, and diminishes residual value for second-life utilization \cite{LI2024155588}.
-% 这个版本则强调这两个物理量的对比
-These critical challenges underscore the imperative for precise degradation monitoring through a key pair of complementary indicators. Namely, remaining useful life (RUL) which provides a forward-looking prediction by quantifying the operational cycles left until capacity drops below the end-of-life threshold, and state of health (SOH) which reflects the current condition via the current-to-nominal capacity ratio.
-% % 这个版本强调这两个关键量的定义
-% These critical challenges underscore the imperative for precise degradation monitoring through a key pair of complementary indicators: remaining useful life (RUL), quantifying the remaining cycles until capacity drops below end-of-life threshold, and state of health (SOH), defined as the current-to-nominal capacity ratio.
-
-% para 2
-Due to the requirements for non-invasive measurements in practical applications, RUL and SOH of batteries can only be inferred indirectly through degradation modeling. While traditional mechanistic approaches struggle with complex multi-physics coupling effects, data-driven methods, particularly deep learning based ones, have emerged as more powerful tools for establishing nonlinear mappings between operational signals and degradation states\cite{XIAO2023107347, XIE2024630}.
-% %
-% However, their performance critically relies on the consistency assumption between training and testing data distributions, a condition systematically violated in real-world transportation systems.
-% % 
-% Multidimensional variations, including material discrepancies across production batches, heterogeneous charging-discharing variability, and regional climate divergences, induce distribution shifts that degrade model performance, while the prohibitive cost of acquiring labeled data across all operational scenarios further compounds generalization challenges. 
-However, their performance heavily relies on the assumption that training and testing data share similar distributions, which is violated in dynamic real-world systems. Furthermore, the prohibitive cost of acquiring labeled data across all operational scenarios compounds the generalization challenges.
-
-% para 3
-Numerous studies have investigated training-testing distribution shifts in battery systems and proposed models via pretraining-finetuning or domain adaptation \cite{10177255}. However, these methods remain constrained by requiring target domain data, which are unavailable in applications due to privacy regulations, hardware constraints, or operational dynamics.
-% 
-Degradation modeling fundamentally differs from discrete-label tasks like anomaly detection and fault diagnosis \cite{10214203, 10577994} due to its continuous target space, where target values exhibit an intrinsic order. This ordinality renders standard approaches inadequate and makes out-of-distribution (OOD) generalization using only source data exceptionally challenging.
-%
-While some approaches leveraging representation learning or meta learning enable target-free modeling \cite{TAN2024103725, CHEN2024234696}, they still rely on degradation priors. In contrast, data manipulation, a distinct domain generalization paradigm \cite{9782500}, offers advantages in structural simplicity and model-agnostic integration. However, this strategy faces three challenges related to multi-stage propagation from raw inputs to the degradation targets.
-
 % para 4
-The first challenge is the spatiotemporal information scarcity, fundamentally stemming from the non-invasion measurement requirements.
-% 
-Temporally, equal-interval sampling results in sparse data within dynamically complex, degradation-sensitive periods \cite{BOSE2023107543, zhu2022data, GUAN2018204, XIONG2020110048}, while over-representing less informative static operational segments. This leads to an insufficient representation of critical temporal dynamics.
-% 
-Spatially, cyclic data relies on a limited set of sensor modalities, providing restricted multi-physical insight and failing to adequately capture crucial internal battery behaviors like thermodynamic stresses \cite{XIONG2020110048} and mechanical deformations \cite{zeng2023nonintrusive}.
-% 
-As illustrated in Fig.~\ref{fig:challenges}(a), direct modeling of such sparse raw cyclic signals yields a complex high-dimensional manifold structure where degradation representations lack topological continuity. Consequently, subsequent feature manipulation becomes susceptible to noise overfitting and demonstrates limited generalization capacity beyond training distributions.
+（1）第一个挑战来自于循环数据时空信息的稀缺性，这来源于车载应用对非侵入式测量的限制。
+在时间维度上，等间隔采样机制导致 VBMs 在动态复杂且对退化高度敏感的工况区间内数据采集过于稀疏 \cite{9648002, BOSE2023107543, zhu2022data, GUAN2018204, XIONG2020110048}，却在信息量较低的平稳运行阶段产生冗余记录，进而造成对关键时间退化特征的表征不足。
+在空间维度上，车载循环数据仅包含有限的传感器模态，所能获取的多物理场信息受限，难以有效捕捉热力学应力 \cite{XIONG2020110048} 与机械变形 \cite{zeng2023nonintrusive} 等 LIBs 内部的关键退化机制。
+如图\ref{fig:rodtnet_challenges}(a) 所示，若直接基于这样具有时空稀疏性的原始循环信号建模，将使得映射出退化特征表现复杂的高维流形结构，导致提取的退化特征缺乏必要的拓扑连续性，后续 DM 操作易使模型过拟合局部噪声，并降低其在训练分布之外的泛化性能。
 
 % para 5
-The second challenge arises from the lack of consideration of statistics uncertainty of representations within feature space, induced by domain shifts.
-% 
-The inherent complexity and sensitivity of battery aging \cite{LI2024155588} cause degradation patterns to inevitably diverge across different operational conditions. This divergence creates domain shifts, introducing statistics uncertainty as source-domain-trained models encounter OOD data with different underlying distributions \cite{9577663, pmlr-v202-dai23d, liuncertainty}.
-% 
-As illustrated in Fig.~\ref{fig:challenges}(b), these shifts primarily involve covariate shifts caused by variations in charging protocols, electrode materials, and depth of discharge, coupled with characteristic concept shifts arising from divergent degradation trajectories. 
-% 
-Consequently, this domain shift-induced uncertainty disrupts the consistency of the mapping learned between features and degradation states, limiting a model's ability to generalize from the source domains to unseen target domains and hindering the practical applicability of data-driven prognostics.
+（2）第二个挑战在于未考虑域漂移在特征空间表征中引入的统计不确定性。LIBs 性能退化过程的内在复杂性及其对工况的高度敏感性 \cite{LI2024155588}，导致退化模式在多变的运行条件下不可避免地呈现出分化。这种分化直接引发了数据分布的漂移现象，使得基于源域数据训练的模型在面对分布不同的 OOD 数据时，产生统计不确定性 \cite{9577663, pmlr-v202-dai23d, liuncertainty}。如图~\ref{fig:rodtnet_challenges}(b) 所示，域漂移主要表现为由充电协议、电极材料及放电深度等差异引起的协变量漂移，以及由不同退化轨迹演变导致的概念漂移。由域漂移引起的统计不确定性破坏了模型习得的特征与退化状态之间映射关系的一致性，限制了模型向未见目标域的泛化能力，最终阻碍数据驱动方法的实际应用。
 
 % para 6
-The third challenge is the multi-domain long-tail degradation distribution, arising from complex internal thermoelectric coupled reactions and appearing as diverse nonlinear trajectories.
-%
-Specifically, the multi-stage dynamics of battery aging, often marked by a `knee point' transitioning from slow early degradation to accelerated late-stage deterioration, inherently leads to cyclic degradation samples being heavily concentrated in the early-life phase, with later stages sparsely represented.
-% 
-As illustrated by the fast charging example in Fig.~\ref{fig:challenges}(c), this creates an asymmetric, long-tailed sample distribution. Consequently, models neglecting this characteristic exhibit poor generalization on the less frequent `tail' samples. 
-% 
-This long-tail distribution biases feature manipulation-based approaches towards the abundant early-life data, creating skewed representations that undermine generalizability. Furthermore, the heterogeneity of these long-tail distributions across multiple source domains exacerbates feature space fragmentation, impeding robust degradation modeling in practice.
+（3）第三个挑战源于多域长尾退化分布，这一挑战本质上是由 LIBs 内部复杂的热电耦合反应导致的，在宏观上表现为高度多样化的非线性退化轨迹。
+具体地，LIBs 性能退化轨迹包括不止一个阶段，其多阶段动态演化过程通常伴随明显的容量拐点，标志着从早期和中期缓慢衰减向后期加速退化的转变。
+这种多阶段非线性的退化过程导致循环退化数据相对集中于 LIBs 寿命的早期和中期阶段，对应地，后期加速退化阶段的样本分布则较为稀疏。
+如图~\ref{fig:rodtnet_challenges}(c) 中的快速充电工况实例所示，非线性退化特性产生了不对称的长尾样本分布。未能显式建模此分布特征的模型在面对低频次尾部退化样本时表现出严重的性能下降。
+长尾分布使得直接进行 DM 操作将使得模型向数据量庞大的早中期寿命阶段倾斜，产生破坏模型跨域泛化能力的偏态特征表征。此外，长尾分布在多个不同源域之间存在异质性，这进一步增加了退化特征空间的不连续程度，阻碍了面向实际应用场景的鲁棒退化建模的实现。
 
 % para 7
-In this paper, we propose a robust OOD degradation tracking network (RODTNet) and its long-tail-optimized variant (RODTNet-LT) to address these challenges.
+为应对上述挑战，本章提出一种鲁棒分布外退化模式跟踪网络（Robust Out-of-Distribution Degradation  Tracking Network, RODTNet）长尾优化变体（Robust Out-of-Distribution Degradation Tracking Network with Long-Tail Optimization, RODTNet-LT）。
 % 
-First, we propose a manifold contraction-based strategy to extract robust degradation representations (MCRDR), aimed at overcoming spatiotemporal information scarcity. This strategy analyzes feature space manifold topology to identify geometric properties of well-generalized representations, and then utilizes a heuristic signal reconstruction method in conjunction with the Mamba mechanism for feature mapping.
+首先，为克服时空信息稀缺问题，提出基于流形收缩的鲁棒退化表征提取策略（Manifold Contraction-based Strategy for Robust Degradation Representation, MCRDR）。通过解析退化特征流形的拓扑结构，基于具备良泛化能力表征的几何约束，融合启发式信号重构策略与 Mamba 架构实现有效的可泛化特征映射。
 % 
-Next, we develop an uncertainty-driven feature synthesis (UDFS) method to cope with domain shifts. By quantifying and sampling from the inherent statistics distribution of target domains via multivariate Gaussian distribution, the UDFS expands the boundaries of the learned degradation manifold and facilitates domain generalization for degradation patterns.
+其次，为有效应对域分布漂移，提出不确定性驱动的特征合成策略（Uncertainty-Driven Feature Synthesis, UDFS）。利用多元高斯分布对目标域的固有统计规律进行量化与采样，向外拓展已学习的退化特征流形的分布边界，增强数据驱动的退化建模模型的跨域泛化的能力。
 % 
-Finally, we propose a long-tail-aware adaptive rebalancing refinement (LARR) method to address the generalization impairment caused by multi-domain long-tail distributions. Using Gaussian kernel smoothing, this method guides the feature synthesis process towards exploring low-density degradation patterns, thereby promoting a more balanced representation within the label space.
-% 
-The contributions of this work are as follows.
+最后，针对多域长尾分布，提出感知长尾分布的自适应重平衡微调策略（Long-Tail-Aware Adaptive Rebalancing Refinement, LARR）。利用高斯核平滑机制引导特征合成过程向低密度退化模式空间探索，进而在标签空间层面重塑并实现了更加均衡的特征表征。RODTNet 和 RODTNet-LT 贡献如下：
 
-% para 8, 9, 10, 11
-\begin{enumerate}
-	\item We propose the manifold contraction-based strategy for robust degradation representation extraction (MCRDR). By enforcing pattern continuity and contracting the feature manifold, MCRDR yields a robust degradation representation to overcome the spatiotemporal information scarcity and promotes generalization.
-	\item We develop the uncertainty-driven feature synthesis (UDFS) method to tackle domain shifts. UDFS explicitly links feature space statistics uncertainty to domain variability, thereby guiding the extraction of domain-invariant features and the synthesis of diverse OOD patterns for improved generalization.
-	\item We present the long-tail-aware adaptive rebalancing refinement (LARR) to address the multi-domain long-tail challenge. Leveraging similarities between feature and label spaces and distribution smoothing, LARR mitigates head-bias of feature synthesis, enhancing generalization for imbalanced degradation trajectories.
-	\item Comprehensive experiments across 11 OOD generalization tasks using 4 LIB aging datasets validate the effectiveness of both RODTNet and RODTNet-LT, and demonstrate their superiority over 14 baseline methods with their 20 variants.
-\end{enumerate}
+（1）提出基于流形收缩的鲁棒退化表征提取策略，约束特征流形复杂度和连续性，生成 OOD 鲁棒退化表征。
+
+（2）提出不确定性驱动的特征合成策略，通过统计不确定性量化域变异性，指导域不变特征提取和 OOD 退化模式合成。
+
+（3）提出感知长尾分布的自适应重平衡策略，利用特征空间与标签空间间相似性及分布平滑技术，缓解特征合成的头部偏见，增强针对不平衡退化轨迹的泛化能力。
+
+（4）在 4 个 LIBs 老化数据集上通过 11 个 OOD 泛化任务系统验证 RODTNet 和 RODTNet-LT 的有效性，证明其相较于 14 种基线方法及其 20 种变体的先进性，阐述将其应用在可靠 VBMS 中的潜力。
 
 \section{基于拓扑约束下不确定性驱动特征调弈的退化建模方法}\label{sec:RODTNet_methodology}
 
