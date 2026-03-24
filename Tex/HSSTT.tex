@@ -4,9 +4,9 @@
 
 锂离子电池（Lithium-ion Batteries, LIBs）凭借其优越的功能特性，在工业领域得到了广泛的应用，尤其是作为电动汽车动力电池\cite{NASAJPOURESFAHANI2024114783, hannan2017review}。然而，严苛的工业环境与复杂的内部电化学反应相叠加，亟待采取更为严密的保障措施，以确保LIBs长期的安全与可靠运行。因此，对LIBs的性能进行有效监测以保障其持续稳定运转显得尤为关键。通常而言，LIBs 的性能由 SOH 表征，该指标被定义为 LIBs 当前最大可用容量与其标称容量之比\cite{WANG2024110325, 10391265}。
 
-深度学习的蓬勃发展极大地推动了数据驱动 SOH 估计模型的涌现。此类模型极大降低了模型开发过程对领域专家知识的依赖，并在捕捉复杂退化机制动态特性方面展现出卓越能力，因而正逐步取代传统的基于物理的模型\cite{mit_dataset_attia2020closed, tri_dataset_severson2019data, tongji_dataset_zhu2022data}。然而，工业环境中不可避免的噪声波动与多变的负载需求，往往导致样本数据呈现出复杂且难以解析的分布特征；在处理此类样本时，数据驱动模型依然极易产生不准确的估计结果\cite{10214203}。此外，受限于其确定性本质，此类模型仅能提供 SOH 的单一点估计，而缺乏对潜在误差的预警能力，如图~\ref{fig:hsstt_challenges}(a) 所示。过度依赖此类确定性模型势必会对后续的决策过程带来风险。例如，若 LIBs 的 SOH 估计值低于实际值，将导致 LIBs 提前退役，进而造成不必要的经济损失；反之，若高估 SOH，则会引发 LIBs 的过度循环使用，从而增加系统级热失控的潜在风险。
+深度学习的蓬勃发展极大地推动了数据驱动 SOH 估计模型的涌现。此类模型极大降低了模型开发过程对领域专家知识的依赖，并在捕捉复杂退化机制动态特性方面展现出卓越能力，因而正逐步取代传统的基于物理的模型\cite{mit_dataset_attia2020closed, tri_dataset_severson2019data, tongji_dataset_zhu2022data}。然而，工业环境中不可避免的噪声波动与多变的负载需求，往往导致样本数据呈现出复杂且难以解析的分布特征；在处理此类样本时，数据驱动模型依然极易产生不准确的估计结果\cite{10214203}。此外，受限于其确定性本质，此类模型仅能提供 SOH 的单一点估计，而缺乏对潜在误差的预警能力，如图~\ref{fig:hsstt_challenges}(a) 所示。过度依赖此类确定性模型势必会对后续的决策过程带来风险。例如，若 LIBs 的 SOH 估计值低于实际值，将导致 LIBs 提前退役，进而造成不必要的经济损失；反之，若高估 SOH，则会引发 LIBs 的过度循环使用，从而增加系统热失控风险。
 
-为规避确定性模型引发的潜在问题，并切实保障工业级监测与维护的可靠性，对数据驱动预测模型输出结果的可信度进行评估显得至关重要。鉴于其与高可信 SOH 估计之间的紧密联系，不确定性的量化被认为居于核心地位\cite{THUY2024330, 10539360}。一方面，不确定性可作为一种量化测度，通过衡量模型表征的概率分布与真实分布之间的偏差，客观地反映出估计结果的可信程度；另一方面，不确定性亦可作为一种以用户为导向的可靠性分析指标，能够自然融入涉及人工干预的实际决策流程之中。综上，实际工业应用对 LIBs 的高可信预测模型提出了迫切需求，而在构建此类模型时，仍面临着以下需要解决的问题：
+为规避确定性模型引发的潜在问题，并切实保障工业级监测与维护的可靠性，对数据驱动的估计模型输出结果的可信度进行评估显得至关重要。鉴于其与高可信 SOH 估计之间的紧密联系，不确定性的量化被认为居于核心地位\cite{THUY2024330, 10539360}。一方面，不确定性可作为一种量化测度，通过衡量模型表征的概率分布与真实分布之间的偏差，客观地反映出估计结果的可信程度；另一方面，不确定性亦可作为一种以用户为导向的可靠性分析指标，能够自然融入涉及人工干预的实际决策流程之中。综上，实际工业应用对 LIBs 的高可信估计模型提出了迫切需求，而在构建此类模型时，仍面临着以下需要解决的问题：
 
 % 这张图好像也没法修改为三张子横向排列的形式
 \begin{figure}[!htbp]
@@ -49,38 +49,51 @@
 
 \subsection{基于 GSR 的随机自注意力机制}\label{subsec:stochastic_attention}
 
-为解决因忽略模型不确定性导致的循环信号片段聚合模糊性问题，本文提出一种基于 GSR 的自注意力机制。该机制是构建 HSSTT 模型的基础。
+为解决因忽略模型不确定性导致的循环信号片段聚合模糊性问题，本章提出一种基于 GSR 的自注意力机制。该机制是构建 HSSTT 模型的基础。
 
-Transformer-based models's exceptional context modeling capability is primarily attributed to the multi-head self-attention (MHA) mechanism. Taking the $j$-th head as an example, the sequence $X=[x^{(1)}, x^{(2)}, \ldots, x^{(T)}] \in \mathbb{R}^{d_{in} \times T}$ undergoes affine transformations via trainable projection matrices $W_{Q}^{(j)}, W_{K}^{(j)}, W_{V}^{(j)} \in \mathbb{R}^{d_{emb} \times d_{in}}$ to generate query $Q^{(j)}$, key $K^{(j)}$, and value $V^{(j)}$. Here, $T$ is the total number of cycles in each sequence sample, while $d_{in}$ and $d_{emb}$ are the dimensions of the input and embedding, respectively.
+基于 Transformer 的模型所具备的上下文建模能力，主要源于多头自注意力（Multi-Head Attention, MHA）机制。以第 $j$ 个注意力头为例，输入序列 $X=[x^{(1)}, x^{(2)}, \dots, x^{(T)}] \in \mathbb{R}^{d_{in} \times T}$ 经由可训练的投影矩阵 $W_Q^{(j)}, W_K^{(j)}, W_V^{(j)} \in \mathbb{R}^{d_{emb} \times d_{in}}$ 执行仿射变换，生成查询矩阵 $Q^{(j)}$、键矩阵 $K^{(j)}$ 和值矩阵 $V^{(j)}$。其中，$T$ 为每个序列样本的总循环数，$d_{in}$ 和 $d_{emb}$ 分别表示输入维度与嵌入维度。
 
-The attention weights $A^{(j)}$ produced by the softmax function exhibit the form of discrete probability distribution, indicating that they can be viewed as being sampled from a categorical distribution \cite{20193407356730, 20230613569727}. By substituting softmax with Gumbel-Softmax and replacing the deterministic computation with a probabilistic sampling method, we convert the self-attention into the stochastic counterpart. This modification alters the attention weights for each token into a categorical distribution with several discrete outcomes, which can be formulated as
+由 Softmax 函数生成的注意力权重 $A^{(j)}$ 具有离散概率分布的形式，表明该权重可视为从类别分布中采样的结果 \cite{20193407356730, 20230613569727}。通过将 Softmax 函数替换为 Gumbel-Softmax 函数，并以概率采样方法取代确定性计算，即可将标准自注意力转换为随机化变体。此项转换使每个循环信号片段的注意力权重转变为具有多个离散结果的类别分布，其形式表述为
+% 
 \begin{equation}
-% \tilde{A}^{(j)}\sim\mathcal{G}(\frac{K^{(j)^\top}Q^{(j)}}{\tau})
-\tilde{A}^{(j)}\sim\mathcal{G}((K^{(j)^\top}Q^{(j)}) / \tau),
-\label{eq:gumbel-softmax-attention}
-\end{equation}%
-where $\mathcal{G}$ is the Gumbel-Softmax function, and $\tau$ is a temperature parameter. Consequently, the attention weights $\tilde{A}^{(j)}$, derived via the self-attention mechanism, transition from being specific normalized logits to random variables probabilistically sampled from a distinct discrete distribution. In this manner, deterministic self-attention is converted into the stochastic variant for uncertainty quantification.
+  \tilde{A}^{(j)} \sim \mathcal{G}((K^{(j)\top}Q^{(j)}) / \tau)
+\end{equation}
+% 
+其中，$\mathcal{G}$ 表示 Gumbel-Softmax 分布，$\tau$ 为温度参数。从而，经由自注意力机制计算得到的权重 $\tilde{A}^{(j)}$，从确定性的归一化对数几率（logits）转变为从特定离散分布中采样的随机变量。通过这种方式，确定性自注意力转化为具有不确定性量化能力的随机形式。
 
-The foundation of stochastic self-attention construction is the continuous relaxation of discrete categorical distributions, which can be effectively achieved through the GSR technique. Consider a non-negative discrete categorical distribution $(\pi_{1},\pi_{2},\cdots,\pi_{T})$, not entirely zeroes, representing the attention weights for a specific token in self-attention. Specifically, $\pi_{i}=k_{i}^\top q_{i}$ denotes the outcome of column-wise partitioning of matrices $K^{(j)}$ and $Q^{(j)}$, where $i$ indicates the column index. The initial step involves examining the index variable of this distribution, which is expressed as
+构建随机自注意力的基础在于对离散类别分布进行连续松弛，前述 GSR 技术可有效实现该过程。考虑一个非负且不全为零的离散类别分布 $(\pi_1, \pi_2, \dots, \pi_T)$，其表征经过自注意力机制计算得到的特定循环信号片段的注意力权重。具体而言，将矩阵 $K^{(j)}$ 和 $Q^{(j)}$ 按列划分为向量 $k_i$ 与 $q_i$，其内积 $\pi_i = k_i^\top q_i$ 构成该分布的非归一化参数，其中 $i$ 为列索引。为实现从该类别分布中的离散采样，首先引入 Gumbel-Max 方法构造独热向量 $z$，定义为
+% 
 \begin{equation}
-z=one\_hot(argmax(g_{i}+\log(\pi_{i}))),
-\label{eq:index_variable}
-\end{equation}%
-where $T$ is the total number of potential outcomes in the discrete categorical distribution, corresponding to the count of input tokens. Moreover, $g_i$ is a random variable that adheres to the $Gumbel(0,1)$ distribution, and represented as
+  z = \text{one\_hot}(\text{argmax}(g_i + \log(\pi_i)))
+\end{equation}
+% 
+其中，$T$ 为该离散类别分布中所有潜在结果的总数，对应于输入循环信号片段的数量。$g_i$ 是服从 $\text{Gumbel}(0,1)$ 分布的随机变量，定义为
+% 
 \begin{equation}
-g_{i}=-\log(-\log(u_{i})),
-\label{eq:gumbel_noise}
-\end{equation}%
-where $u_i$ is uniformly distributed between 0 and 1, both $g_i$ and $u_i$ are independent and identically distributed (i.i.d.) simple random samples, and $g_i$ also referred to as Gumbel noise. The argmax operation in \eqref{eq:index_variable} is non-differentiable, thus the GSR technique is employed to convert it into a continuous counterpart, yielding
+  g_i = -\log(-\log(u_i))
+\end{equation}
+% 
+其中，$u_i$ 在 0 和 1 之间均匀分布，$g_i$ 和 $u_i$ 均为独立同分布的简单随机样本。$g_i$ 亦称为 Gumbel 噪声。由于上述 argmax 操作不可微，采用 GSR 技术将其转化为连续形式，定义为
+% 
 \begin{equation}
-\tilde{A}^{(j)}=\frac{\exp((g_{i}+\log(\pi_{i}))/\tau)}{\sum\nolimits_{k=1}^{T}\exp((g_{i}+\log(\pi_{k}))/\tau)},
-\label{eq:gsr_relaxation}
-\end{equation}%
-which is equivalent to \eqref{eq:gumbel-softmax-attention}. In the context of MHA, $\tau$ serves as a replacement for the original scaling factor $1 / \sqrt{d_{emb}}$. From the GSR perspective, the right hand side of the above equation closely approximates the discrete categorical distribution $(\pi_{1}, \pi_{2}, \cdots, \pi_{T})$. As $\tau$ trends towards zero, the Gumbel-Softmax distribution increasingly resembles the original categorical distribution. Employing the GSR technique for continuous relaxation converts the non-differentiable categorical distribution into a smooth, differentiable GS distribution. This transformation permits the direct application of backpropagation for training stochastic self-attention. Initially, $\tau$ is set to a relatively large value, which is gradually reduced during training as the model progresses towards convergence, thus optimizing the balance between speed and effectiveness.
+\tilde{A}^{(j)} = \frac{\exp((g_i + \log(\pi_i))/\tau)}{\sum_{k=1}^{T}\exp((g_k + \log(\pi_k))/\tau)}
+\end{equation}
 
-Apparently, the GSR technique generates attention weights by incorporating Gumbel noise into the logits, followed by applying the softmax function to the resultant vector. As detailed in\cite{potapczynski2020invertible}, a direct mapping exists between Gumbel and Gaussian noise, ensuring that GSR-based approaches and methods such as MCD are fundamentally aligned. Our empirical findings, presented in Section \ref{subsec:ablation_study}, demonstrate that the proposed method surpasses the MCD-based approach in capturing model uncertainty.
+该式与前述 Gumbel-Softmax 公式等价。在 MHA 框架下，$\tau$ 可作为原始缩放因子 $1/d_{emb}$ 的替代。从 GSR 的角度看，上式的右侧部分能够紧密逼近离散类别分布 $(\pi_1, \pi_2, \dots, \pi_T)$。当 $\tau$ 趋近于零时，Gumbel-Softmax 分布愈发接近原始的离散类别分布。采用 GSR 进行连续松弛，将不可微的类别分布转化为平滑且可微的 Gumbel-Softmax 分布。这一转换为随机自注意力的训练直接应用反向传播算法提供可能。在训练初期，$\tau$ 设定为相对较大的值，并随着模型收敛而逐步减小，以在训练速度与性能之间取得平衡。
 
-{The transformation from a deterministic attention mechanism to a stochastic one offers a direct window into the model's internal decision-making process, which offers the crucial advantages of not only quantifying uncertainty but also delivering model interpretability. Conceptualizing attention weights as distributions allows their variance across multiple stochastic forward passes to serve as a quantifiable indicator for the model's confidence in the salience of each input token. Low variance indicates high confidence in a feature's utility as a stable degradation indicator. Conversely, high variance signals model uncertainty when encountering noisy or ambiguous data segments. This inherent interpretability facilitates the generation of an `uncertainty map' over the input data, providing the foundation for the trustworthy feature extraction process detailed subsequently.}
+显而易见地，GSR 技术通过将 Gumbel 噪声引入 logits，并对合成后的向量施加 Softmax 函数来生成注意力权重。
+% 
+为阐述这一机制与 MCD 等变分推断方法的理论一致性，需考察 Gumbel 噪声与高斯噪声之间的解析映射关系 \cite{potapczynski2020invertible}。给定标准高斯随机变量 $\epsilon \sim \mathcal{N}(0, 1)$，其累积分布函数定义为 $\Phi(\epsilon)$。根据概率积分变换定理，变量 $u = \Phi(\epsilon)$ 严格服从标准均匀分布 $\mathcal{U}(0, 1)$。由于 Gumbel 噪声 $g_i$ 经由均匀分布样本的逆变换采样生成，将 $u$ 的表达式代入前述 Gumbel 噪声公式，建立两者之间的严格双射如下
+% 
+\begin{equation}
+  g_i = -\log(-\log(\Phi(\epsilon)))
+\end{equation}
+% 
+MCD 等变分近似方法的核心理论基础在于通过注入高斯扰动或可渐近等效为高斯分布的随机噪声，以逼近神经网络权重的后验分布。从而，基于 GSR 的离散变量连续松弛在概率测度空间上与连续高斯扰动同构。这种同构性质从数学层面论证，采用 GSR 驱动的随机机制与基于 MCD 的连续空间近似方法具有一致的不确定性量化理论基础。
+% 
+本文在第 \ref{subsec:ablation_study} 小节呈现的实验结果进一步表明，所提方法在建模模型不确定性方面优于基于 MCD 的方法。
+
+将确定性注意力机制随机化，为阐明模型内部的决策过程提供直接可能性。随机化不仅实现不确定性量化，同时提升模型的可解释性。将注意力权重概念化为概率分布后，其在多次随机前向传播中的方差即可作为可量化指标，用于衡量模型对每个输入循环信号片段显著性的置信度。低方差表明模型对特定特征作为稳定退化指标的有效性具有高置信度；反之，高方差则意味着模型在处理含噪或模糊的数据片段时存在不确定性。这种内嵌的可解释性为生成关于输入数据的不确定性图谱提供可能，并为后续的可信特征提取过程奠定基础。
 
 \subsection{计及不确定性的层次化随机 Transformer}\label{subsec:hierarchical_spatialtemporal}
 
@@ -210,11 +223,14 @@ Specifically, for a given number of clusters $ n_{\text{centroid}} $, the comput
 
 \section{实验评估}\label{sec:HSSTT_experiment}
 
-In this section, we conduct extensive experiments to evaluate the performance of HSSTT. Initially, HSSTT is compared with baseline models regarding prediction accuracy and uncertainty quantification quality. Subsequently, ablation studies are performed to assess the impacts of the proposed components. Lastly, an experimental study is undertaken to compare ID and OOD SOH estimation, empirically verifying HSSTT's capability in distinguishing ID and OOD samples.
+为全面评估 HSSTT 模型的综合性能，本节设计并实施一系列综合实验。首先，通过与现有基线模型的横向对比，系统分析所提出模型在估计精度和不确定性量化质量方面的表现。随后，利用通过实验深入验证所提出各核心组件对整体模型性能的贡献。进一步地，通过敏感性分析系统探究关键超参数波动对模型预测稳定性的具体影响。最后，针对分布内与分布外 SOH 估计展开对比研究，从实证角度论证模型区分不同数据分布特征的能力与鲁棒性。
 
 \subsection{实验设置}\label{subsec:HSSTT_experimental_setup}
 
-Our benchmark encompasses four publicly available LIB degradation datasets, denoted as MIT\cite{mit_dataset_attia2020closed}, TRI\cite{tri_dataset_severson2019data}, TJU\cite{tongji_dataset_zhu2022data}, and XJTU\cite{WANG2024109884}, respectively. The data subset and the serial numbers of batteries \cite{WANG2024110325} that we used in this study are summarized in Table~\ref{tab:dataset_summary}. We evaluate HSSTT against seven baseline models, including MRVR\cite{rvr_rul_9552552}, GP-ICE\cite{gpr_soh_8263147}, BMNN\cite{bbb_rul_9738999}, SACN\cite{capsnet_rul_li2024sensor}, DeNN\cite{ensemble2_soh_10102497}, BDAE\cite{mcdropout_autoencoder_10412192}, and SNGP\cite{nemani2023uncertainty}. To ensure comparability, all baselines are reproduced to take direct cyclic signals as input and estimate SOH.
+本研究的基准测试包括四个公开的 LIBs 循环老化数据集，分别记为 MIT 数据集\cite{mit_dataset_attia2020closed}、TRI 数据集\cite{tri_dataset_severson2019data}、TJU 数据集\cite{tongji_dataset_zhu2022data} 以及 XJTU 数据集\cite{WANG2024109884}。
+具体采用的数据子集及电池编号 \cite{WANG2024110325} 汇总于表 \ref{tab:HSSTT_dataset_summary}。
+为全面评估 HSSTT 模型的性能，选取 7 个基线模型开展对比实验，包括 MRVR \cite{rvr_rul_9552552}、GP-ICE \cite{gpr_soh_8263147}、BMNN \cite{bbb_rul_9738999}、SACN \cite{capsnet_rul_li2024sensor}、DeNN \cite{ensemble2_soh_10102497}、BDAE \cite{mcdropout_autoencoder_10412192} 与 SNGP \cite{nemani2023uncertainty}。
+为保证对比公平性，所有基线模型均基于相同设定复现，并统一以直接循环信号作为输入执行 SOH 估计。
 
 % 这里应该补充一张各个数据集上电池退化轨迹的图片
 % 多图的插入如图\ref{fig:oaspl}，多图不应在子图中给文本子标题，只要给序号，并在主标题中进行引用说明。
@@ -266,46 +282,108 @@ Our benchmark encompasses four publicly available LIB degradation datasets, deno
   \label{tab:HSSTT_dataset_summary}
 \end{table}
 
+% \begin{table}[htbp]
+%   \centering
+%   \caption{HSSTT~模型实验超参数设置}
+%   \label{tab:HSSTT_hyperparams}
+%   \begin{tabular}{clc}
+%   \toprule
+%   Symbol & \multicolumn{1}{c}{Description} & Value \\
+%   \midrule
+%   $d_{sensor}$ & number of sensors & 3 \\
+%   $T$ & number of charge-discharge cycles & 16 \\
+%   $d_{resample}$ & resampling dimension & 64 \\
+%   $d_{in}$ & dimension of the input sequence & 192 \\
+%   $k_{dilated}$ & size of the kernel in dilated convolution & 2 \\
+%   $r_{dilated}$ & dilation rate of the dilated convolution & 2 \\
+%   $n_{head}$ & number of heads in Transformer & 2 \\
+%   $n_{encoder}$ & number of encoder layers & 1 \\
+%   $d_{FFN}$ & FFN forward expansion & 1 \\
+%   $d_{emb}$ & attention embedding dimension & 16 \\
+%   $\tau_{1}$ & temperature factor for clustered attention & 1 \\
+%   $\tau_{2}$ & temperature factor for GSR based attention & 1 \\
+%   $n_{centroid}$ & number of centroids for clustered attention & 1 \\
+%   $n_{bs\_train}$ & batch size for train and validate dataloader & 16 \\
+%   $n_{bs\_test}$ & batch size for test dataloader & 1 \\
+%   $n_{epoch}$ & number of training epochs & 100 \\
+%   $\eta_{0}$ & initial learning rate & 0.001 \\
+%   $\gamma$ & learning rate adjustment multiplier & 0.5 \\
+%   $p$      & dropout rate & 0.1 \\
+%   $B$      & number of MC sampling during inference & 30 \\
+%   \bottomrule
+%   \end{tabular}
+% \end{table}
+
 \begin{table}[htbp]
-  \centering
-  \caption{HSSTT~模型实验超参数设置}
-  \label{tab:HSSTT_hyperparams}
-  \begin{tabular}{clc}
-  \toprule
-  Symbol & \multicolumn{1}{c}{Description} & Value \\
-  \midrule
-  $d_{sensor}$ & number of sensors & 3 \\
-  $T$ & number of charge-discharge cycles & 16 \\
-  $d_{resample}$ & resampling dimension & 64 \\
-  $d_{in}$ & dimension of the input sequence & 192 \\
-  $k_{dilated}$ & size of the kernel in dilated convolution & 2 \\
-  $r_{dilated}$ & dilation rate of the dilated convolution & 2 \\
-  $n_{head}$ & number of heads in Transformer & 2 \\
-  $n_{encoder}$ & number of encoder layers & 1 \\
-  $d_{FFN}$ & FFN forward expansion & 1 \\
-  $d_{emb}$ & attention embedding dimension & 16 \\
-  $\tau_{1}$ & temperature factor for clustered attention & 1 \\
-  $\tau_{2}$ & temperature factor for GSR based attention & 1 \\
-  $n_{centroid}$ & number of centroids for clustered attention & 1 \\
-  $n_{bs\_train}$ & batch size for train and validate dataloader & 16 \\
-  $n_{bs\_test}$ & batch size for test dataloader & 1 \\
-  $n_{epoch}$ & number of training epochs & 100 \\
-  $\eta_{0}$ & initial learning rate & 0.001 \\
-  $\gamma$ & learning rate adjustment multiplier & 0.5 \\
-  $p$      & dropout rate & 0.1 \\
-  $B$      & number of MC sampling during inference & 30 \\
-  \bottomrule
-  \end{tabular}
+\centering
+\caption{HSSTT 模型实验超参数设置}
+\label{tab:HSSTT_hyperparams}
+\begin{tabular}{clc}
+\toprule
+符号 & \multicolumn{1}{c}{描述} & 取值 \\
+\midrule
+$d_{sensor}$ & 传感器数量 & 3 \\
+$T$ & 充放电循环次数 & 16 \\
+$d_{resample}$ & 重采样维度 & 64 \\
+$d_{in}$ & 输入序列维度 & 192 \\
+$k_{dilated}$ & 膨胀卷积核尺寸 & 2 \\
+$r_{dilated}$ & 膨胀卷积膨胀率 & 2 \\
+$n_{head}$ & Transformer 注意力头数 & 2 \\
+$n_{encoder}$ & 编码器层数 & 1 \\
+$d_{FFN}$ & FFN 前向扩展倍数 & 1 \\
+$d_{emb}$ & 注意力嵌入维度 & 16 \\
+$\tau_{1}$ & 聚类注意力温度系数 & 1 \\
+$\tau_{2}$ & 基于 GSR 的注意力温度系数 & 1 \\
+$n_{centroid}$ & 聚类注意力中心数 & 1 \\
+$n_{bs\_train}$ & 训练与验证集批次大小 & 16 \\
+$n_{bs\_test}$ & 测试集批次大小 & 1 \\
+$n_{epoch}$ & 训练轮数 & 100 \\
+$\eta_{0}$ & 初始学习率 & 0.001 \\
+$\gamma$ & 学习率调整系数 & 0.5 \\
+$p$      & Dropout 率 & 0.1 \\
+$B$      & 推理阶段 MCS 次数 & 30 \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-We construct the sample inputs using directly measured data from $T$ consecutive cycles. Each cycle's data comprises three sequences from physical sensors: current, voltage, and relative sampling time. Initially, a min-max normalization is performed on all collected signals. Subsequently, these signals are downsampled to standardize their dimensions, and the resampled time series are horizontally stacked to form sample $X$. A dilated convolution is then applied to $X$ to extract cross-sensor dependencies. The resulting feature map is flattened into a column vector to create timestep-wise embeddings.
+模型采用连续 $T$ 个循环的直接测量数据构造样本输入。每个循环的数据包含由物理传感器采集的电流、电压以及相对采样时间三个通道上的序列。
+数据预处理阶段首先对所有采集信号按通道执行最大最小值归一化，随后进行下采样以统一特征维度，最后将重采样后的时间序列水平堆叠，构成模型输入样本 $X$。进而对样本 $X$ 施加膨胀卷积以提取跨传感器依赖关系。卷积生成的特征图进展平为列向量，用以创建进行时间步编码的特征表示。
 
-We conduct all the experiments on a server equipped with an Intel Core i9-13900KF CPU and an NVIDIA 4090 GPU (PyTorch 2.1.0 with CUDA 11.8). A leave-one-out cross-validation protocol is implemented, sequentially excluding individual batteries as test sets and dividing the remaining samples into training (90\%) and validation (10\%) subsets.
-This cycle continues until every battery is used as the test set, guaranteeing comprehensive evaluation while maintaining strict separation between training, validation, and test phases.
+所有实验均在配备 Intel Core i9-13900KF CPU 与 NVIDIA 4090 GPU 的服务器上开展，软件环境统一配置为 PyTorch 2.1.0 及 CUDA 11.8。
+模型评估时严格执行留一交叉验证（Leave-One-Out Cross-Validation, LOOCV）规则。具体地，该规则依次排除单一电池作为独立测试集，并将剩余样本按 90\% 和 10\% 的比例划分为训练集与验证集。交叉验证循环持续至每个电池均完成测试集评估。此设定在确保模型泛化能力得到全面验证的同时，严格保持训练、验证与测试阶段的数据隔离。模型训练阶段采用均方误差（Mean Squared Error, MSE）作为损失函数，并通过 Adam 优化器执行参数更新。
+最大训练轮数设定为 100，同时引入基于验证集损失的早停机制以规避过拟合风险。HSSTT 模型的关键超参数依据第 \ref{subsec:HSSTT_sensitivity_analysis} 小节详述的敏感性分析进行系统优化，具体参数取值归纳于表 \ref{tab:HSSTT_hyperparams}。
+
+评估指标方面，采用平均绝对误差（Mean Absolute Error, MAE, $\downarrow$）和均方根误差（Root Mean Square Error, RMSE, $\downarrow$）衡量 SOH 估计精度。
+其中，括号内的 $\uparrow$ 与 $\downarrow$ 符号用于标明指标的优劣方向。$\uparrow$ 表示该指标数值越高模型性能越优，$\downarrow$ 表示该指标数值越低模型性能越优。
+MAE 反映估计值与真实值之间误差的绝对平均水平，定义为
+
+\begin{equation}
+  MAE = \frac{1}{N} \sum_{i=1}^{N} |y_i - \hat{y}_i|
+\end{equation}
 % 
-MSE serves as the loss function, and model optimization is achieved through the Adam optimizer. The model training is limited to 100 epochs, with early stopping triggered by validation loss to prevent overfitting. {The key hyperparameters for HSSTT, optimized via the sensitivity analysis in Section IV-D, are detailed in Table~\ref{tab:hyperparams}.}
+RMSE 侧重于惩罚较大的估计误差，定义为
 
-The accuracy of the SOH estimates is evaluated using mean absolute error (MAE) and root mean square error (RMSE). Additionally, negative log-likelihood (NLL) is utilized to gauge the quality of fit and predictive uncertainty of HSSTT. Expected calibration error (ECE) is introduced as a diagnostic tool for calibration assessment\cite{kuleshov2018accurate, nemani2023uncertainty}. Visualization results of SOH estimation, uncertainty quantification, and calibration supplement the quantitative metrics.
+\begin{equation}
+  RMSE = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2}
+\end{equation}
+% 
+其中，$N$ 表示样本总数，$y_i$ 与 $\hat{y}_i$ 分别表示真实与估计的 SOH 值。
+% 
+采用负对数似然（Negative Log-Likelihood, NLL, $\downarrow$）评估数据拟合质量以及 HSSTT 模型的预测不确定性。假定模型输出遵循高斯分布，NLL 定义为
+
+\begin{equation}
+  NLL = \frac{1}{N} \sum_{i=1}^{N} \left[ \frac{\ln(2\pi\sigma_i^2)}{2} + \frac{(y_i - \hat{y}_i)^2}{2\sigma_i^2} \right]
+\end{equation}
+% 
+其中，$\sigma_i^2$ 为模型输出的预测方差。同时，引入期望校准误差（Expected Calibration Error, ECE, $\downarrow$）评估不确定性量化质量 \cite{kuleshov2018accurate, nemani2023uncertainty}。其通过计算不同置信度区间内的估计准确率与平均置信度的加权偏差量化所输出的不确定性的校准程度，定义为
+
+\begin{equation}
+  ECE = \sum_{m=1}^{M} \frac{|B_m|}{N} |acc(B_m) - conf(B_m)|
+\end{equation}
+% 
+其中，$M$ 为划分的区间数量，$B_m$ 为第 $m$ 个区间的样本集合，$acc(\cdot)$ 与 $conf(\cdot)$ 分别表示该区间的准确率与置信度。
+
+除上述定量指标外，SOH 估计、不确定性量化以及模型校准的可视化分析为模型综合评估提供直观的定性补充。
 
 \subsection{性能对比实验}\label{subsec:HSSTT_comparison_experiment}
 

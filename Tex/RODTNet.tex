@@ -38,7 +38,8 @@ LIBs 不断进行充放电循环并在这一过程中发生性能退化。
 长尾分布使得直接进行 DM 操作将使得模型向数据量庞大的早中期寿命阶段倾斜，产生破坏模型跨域泛化能力的偏态特征表征。此外，长尾分布在多个不同源域之间存在异质性，这进一步增加了退化特征空间的不连续程度，阻碍了面向实际应用场景的鲁棒退化建模的实现。
 
 % para 7
-为应对上述挑战，本章提出一种鲁棒分布外退化模式跟踪网络（Robust Out-of-Distribution Degradation  Tracking Network, RODTNet）长尾优化变体（Robust Out-of-Distribution Degradation Tracking Network with Long-Tail Optimization, RODTNet-LT）。
+\sloppy
+为应对上述挑战，本章提出一种鲁棒分布外退化模式跟踪网络（Robust Out-of-Distribution Degradation  Tracking Network, RODTNet），及其长尾优化变体（Robust Out-of-Distribution Degradation Tracking Network with Long-Tail Optimization, RODTNet-LT）。
 % 
 首先，为克服时空信息稀缺问题，提出基于流形收缩的鲁棒退化表征提取策略（Manifold Contraction-based Strategy for Robust Degradation Representation, MCRDR）。通过解析退化特征流形的拓扑结构，基于具备良泛化能力表征的几何约束，融合启发式信号重构策略与 Mamba 架构实现有效的可泛化特征映射。
 % 
@@ -89,7 +90,7 @@ The objective of OOD-robust degradation modeling is to learn a  model $f_{\theta
 % 
 The model should generalize to $N$ unseen target domains $\mathcal{T} = \{ D^{j} \}_{j=M+1}^{M+N}$ without requiring access to them during training. This is achieved by minimizing the expected loss $\ell$ on the target domains, that is $\mathop{\min}_{\theta}\mathbb{E}_{(\boldsymbol{x}, y) \in \mathcal{T}} [\ell(f_{\theta}(\boldsymbol{x}), y)]$. % where the expectation is taken over the data distribution of the target domain.
 
-\subsection{Manifold Contraction for Robust Degradation Representation}
+\subsection{基于流形收缩的鲁棒退化表征提取策略}
 
 To address the challenge of insufficient spatiotemporal coverage, we design MCRDR based on manifold contraction that emphasizes critical temporal segments and achieves spatial dimension expansion, enabling subsequent feature synthesis to further increase feature density.
 First, we investigate the relationship between the generalization ability of degradation features and their manifold topology, exploring the geometric properties of well-generalized representations.
@@ -165,7 +166,7 @@ where $Z^{main}_{MRB}$, $Z^{bypass}_{MRB}$, and $Z_{MRB}$ are the main, bypass, 
 \end{align}
 where $A$ and $B$ are trainable matrices. Adopting ZOH discretization $DR$ \cite{gu2024mamba}, $A$ is HiPPO-initialized \cite{20212610553629}, while $B$ and the discretization factor $\Delta$ are functions of input $\widetilde{x}_{t}$.
 
-\subsection{Uncertainty-driven Feature Synthesis against Domain Shifts}\label{subsec:UDFS}
+\subsection{不确定性驱动的退化特征合成策略}\label{subsec:UDFS}
 
 To mitigate the issue of domain shift-induced statistics uncertainty and enhance model generalization capability, we propose UDFS method, which extrapolates distribution boundaries based on the contracted degradation representation.
 First, we model feature statistics probabilistically via multivariate Gaussian distributions.
@@ -215,7 +216,7 @@ Functionally, UDFS is integrated into the Mamba with manifold contraction model,
 This UDFS integration adds negligible constant-level computational overhead during training.
 Furthermore, a dynamic activation mechanism based on Bernoulli sampling regulates its use, ensuring sufficient learning from real samples. At each training iteration, a Bernoulli value $p^{\prime}$ is drawn, and feature synthesis via UDFS proceeds only when $p^{\prime} < p_{0}$, where $p_{0}$ is a predefined activation threshold.
 
-\subsection{Long-tail-aware Adaptive Rebalancing Refinement}\label{susbec:LARR}
+\subsection{感知长尾分布的自适应重平衡微调策略}\label{susbec:LARR}
 
 To address the challenge of multi-source domain long-tail degradation distributions, we propose LARR, which employs feature distribution calibration specifically for enhancing battery degradation trajectory tracking and precise SOH estimation.
 First, we employ feature distribution calibration to strengthen the correspondence between degradation feature similarity and degradation label proximity.
