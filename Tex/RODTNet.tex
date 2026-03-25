@@ -76,23 +76,31 @@ LIBs 不断进行充放电循环并在这一过程中发生性能退化。
 
 \subsection{基于流形收缩的鲁棒退化表征提取策略}
 
-To address the challenge of insufficient spatiotemporal coverage, we design MCRDR based on manifold contraction that emphasizes critical temporal segments and achieves spatial dimension expansion, enabling subsequent feature synthesis to further increase feature density.
-First, we investigate the relationship between the generalization ability of degradation features and their manifold topology, exploring the geometric properties of well-generalized representations.
-Second, we propose a heuristic cyclic signal reconstruction method possessing potentially low topological complexity.
-Finally, the reconstructed input are mapped onto the feature space using a Mamba-based model.
+为应对时空信息稀疏的挑战，本节提出 MCRDR 策略。
+该策略强化关键时间片段表征并实现空间维度扩展，驱动后续特征合成步骤提升退化特征在调整空间中的分布密度。
+% 
+具体地，
+首先，从流形拓扑的视角深入剖析退化特征泛化能力与其固有几何属性间的映射关系。
+其次，提出一种启发式循环信号重构方法，这种重构可以得到有利于退化模式泛化几何性质的退化特征。
+最后，构建基于 Mamba 的特征编码器，实现重构输入向高维特征空间的映射。
 
 （1）拓扑视角下的退化表征分析
 
-Inspired by studies in relevant fields such as fault diagnosis, we investigate the geometric properties of generalizable features of degradation models.
-Omitting cycle and domain indices for notational clarity, we explicitly consider the latent variable $\boldsymbol{z}$ corresponding to input $\boldsymbol{x}$. Consequently, the domain is defined as $D = \{ (\boldsymbol{x}, \boldsymbol{z}, y) \}$, adapting the source $\mathcal{S}$ and target $\mathcal{T}$ domain structure accordingly.
-Let $Z$ be the random variable for $z \in \mathcal{Z}$ with distribution $P_{Z}$, we assume these representations reside on a manifold $\mathcal{M}_{Z}$ embedded within the feature space.
-We assess degradation representations using the Information Bottleneck (IB) \cite{alemi2017deep} principle for quality and Intrinsic Dimension (IntDim) \cite{10.5555/3692070.3694510} for geometry.
-The IB principle seeks an optimal representation $Z$ by maximizing its relevance to the label $Y$, $\mathcal{I}(Z;Y)$, while minimizing the information it retains about the input $X$, $\mathcal{I}(Z;Y)$. This objective is formulated as
+受相关领域，如故障诊断领域，的特征泛化研究的启发，本节系统阐述退化模型中具备强泛化能力的特征的几何属性。
+简单起见，暂略去循环与域索引。
+显式定义对应于输入 $\boldsymbol{x}$ 的潜在变量 $\boldsymbol{z}$。据此，将数据域重新定义为 $\mathcal{D} = \{( \boldsymbol{x}, \boldsymbol{z}, y)\}$，相应地更新对源域 $\mathcal{S}$ 和目标域 $\mathcal{T}$ 的定义。令 $Z$ 为取值于 $z \in \mathcal{Z}$ 的随机变量，其概率分布记为 $P_Z$。
+假设提取的潜在表征均严格分布于嵌入在特征空间中的一个流形 $\mathcal{M}_Z$ 上。
+
+基于信息瓶颈（Information Bottleneck, IB）理论 \cite{alemi2017deep} 评估所得到的退化表征质量，并以本征维度（Intrinsic Dimension, IntDim）\cite{10.5555/3692070.3694510} 量化退化表征的几何复杂程度。
+
+IB 理论的优化准则要求在最大化潜在表征 $Z$ 与退化标签 $Y$ 之间互信息 $\mathcal{I}(Z;Y)$ 的同时，约束该表征所保留的关于原始输入 $X$ 的冗余互信息 $\mathcal{I}(Z;X)$。
+即求解下述极小化目标函数
+% 
 \begin{equation}
     \min_{Z} \mathcal{IB} = \min_{Z} [- \mathcal{I}(Z;Y) + \beta \mathcal{I}(Z;X)], 
     \label{IB_mutual_info}
 \end{equation}
-where $\mathcal{I}(\cdot;\cdot)$ is mutual information, and $\beta > 0$ is a Lagrangian multiplier. 
+其中 $\mathcal{I}(\cdot;\cdot)$ is mutual information, and $\beta > 0$ is a Lagrangian multiplier. 
 The IntDim is the minimum dimension for isometric manifold embedding.
 Given the covariate shift inherent in degradation generalization, the IB objective is reformulated, focusing on the relationship between $Z$ and $Y$, formulated as
 \begin{equation}
