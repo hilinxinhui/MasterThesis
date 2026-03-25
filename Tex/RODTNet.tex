@@ -12,7 +12,7 @@ LIBs 不断进行充放电循环并在这一过程中发生性能退化。
 鉴于车载应用对非侵入式测量的限制，LIBs 的 RUL 和 SOH 只能依据车载电池管理系统（Vehiclar Battery Management Systems, VBMS）采集的监测数据，通过构建退化模型进行间接预测或估计。相比于难以应对复杂多物理场耦合效应的传统机理方法，数据驱动方法，尤其是基于深度学习的方法，在建立循环信号与退化状态之间的非线性映射方面展现出显著优势 \cite{XIAO2023107347, XIE2024630}。然而，此类方法的预测过估计性能高度依赖训练数据与测试数据同分布的前置假设，这种假设在复杂多变的实际驾驶工况下往往难以成立。此外，获取覆盖全运行工况的高质量带标签数据伴随着高昂的成本，这进一步加剧了数据驱动模型在实际应用中的泛化难度。
 
 % para 3
-现有研究广泛探讨了数据驱动 LIBs 退化建模问题中的训练与测试数据分布漂移问题，并主要借助预训练微调范式或域自适应范式构建模型 \cite{10177255}。然而，此类方法高度依赖目标域数据的可访问性。在已部署的车载系统中，由于通信带宽瓶颈、隐私保护法规以及实时计算资源的约束，获取充足的目标域数据存在很大现实阻碍 \cite{10886998, 10663939, 9849057}。进一步地，LIBs 退化过程对应连续的目标空间且具有内在的序数演化特征，这使其数据分布从根本上区别于异常检测与故障诊断等依赖离散标签的任务的数据分布 \cite{10214203, 10577994}。这种独有的序数特征导致在故障诊断等领域中已被充分研究和验证的泛化失效，仅利用源域数据实现分布外退化模式泛化的难度很大。尽管部分融合表征学习或元学习的策略在一定程度上实现了无需目标域数据的 LIBs 退化建模 \cite{TAN2024103725, CHEN2024234696}，但其建模过程仍依赖于预设的退化先验知识过预设的退化相关任务。与之相对地，基于数据调弈（Data Manipulation, DM）的域泛化范式 \cite{9782500} 凭借其简洁性和与底层数据驱动模型解耦的灵活性展现出优势。然而，在建立从原始传感输入到最终退化指标的多阶段复杂信息映射时，基于数据调弈的泛化策略仍需以下三个挑战：
+现有研究广泛探讨了数据驱动 LIBs 退化建模问题中的训练与测试数据分布漂移问题，并主要借助预训练微调范式或域自适应范式构建模型 \cite{10177255}。然而，此类方法高度依赖目标域数据的可访问性。在已部署的车载系统中，由于通信带宽瓶颈、隐私保护法规以及实时计算资源的约束，获取充足的目标域数据存在很大现实阻碍 \cite{10886998, 10663939, 9849057}。进一步地，LIBs 退化过程对应连续的目标空间且具有内在的序数演化特征，这使其数据分布从根本上区别于异常检测与故障诊断等依赖离散标签的任务的数据分布 \cite{10214203, 10577994}。这种独有的序数特征导致在故障诊断等领域中已被充分研究和验证的泛化失效，仅利用源域数据实现 OOD 退化模式泛化的难度很大。尽管部分融合表征学习或元学习的策略在一定程度上实现了无需目标域数据的 LIBs 退化建模 \cite{TAN2024103725, CHEN2024234696}，但其建模过程仍依赖于预设的退化先验知识过预设的退化相关任务。与之相对地，基于数据调弈（Data Manipulation, DM）的域泛化范式 \cite{9782500} 凭借其简洁性和与底层数据驱动模型解耦的灵活性展现出优势。然而，在建立从原始传感输入到最终退化指标的多阶段复杂信息映射时，基于数据调弈的泛化策略仍需以下三个挑战：
 
 \begin{figure}[!htbp]
     \centering
@@ -64,31 +64,15 @@ LIBs 不断进行充放电循环并在这一过程中发生性能退化。
     \label{fig:rodtnet_framework}
 \end{figure}
 
-% \subsection{}\label{subsec:RODTNet_MCRDR}
-
-% \subsection{}\label{subsec:RODTNet_UDFS}
-
-% \subsection{}\label{subsec:RODTNet_LARR}
-
-\subsection{Overview}
-
-To enhance robustness against unseen degradation patterns, we propose RODTNet, a robust OOD degradation tracking network, and its long-tail optimized variant, RODTNet-LT. As illustrated in Fig.~\ref{fig:framework}, the core RODTNet integrates two key components: (1) a manifold contraction-based robust degradation representation extraction (MCRDR) strategy, and (2) an uncertainty-driven feature synthesis (UDFS) method. RODTNet-LT further incorporates (3) a long-tail-aware adaptive rebalancing refinement (LARR) module to specifically address challenges in imbalanced degradation distributions.
+为提升智能 VBMS 中预测算法的可靠性，并增强系统面对未见退化模式的鲁棒性，本章提出鲁棒分布外退化跟踪网络 RODTNet 及其针对长尾分布优化的变体 RODTNet-LT。如图 \ref{fig:rodtnet_framework} 所示，RODTNet 包含两个基础组件，即基于流形收缩的鲁棒退化表征提取策略 MCRDR 和不确定性驱动的特征合成方法 UDFS。在此基础上，RODTNet-LT 进一步引入感知长尾分布的自适应重平衡微调机制 LARR，以应对不平衡退化数据分布引发的泛化挑战。
 % 
-First, the MCRDR module processes input signals via heuristic reconstruction and employs a Mamba model to map them into a latent representation that forms a manifold with low topological complexity and enhanced continuity, addressing the issue of insufficient spatiotemporal coverage.
-%
-Then, the UDFS module models the feature distribution of seen domain patterns, quantifies the uncertainty arising from domain shifts, and synthesizes plausible features corresponding to unseen domains by leveraging this uncertainty measure, promoting OOD generalization. 
+具体地，提取策略 MCRDR 首先利用启发式信号重构处理原始车载传感器数据，并借助基于 Mamba 架构的特征提取器将其映射为具备低拓扑复杂度和高拓扑连续性的潜在流形表征，从而克服时空信息稀疏的局限性。
 % 
-Finally, the LARR module complements the previous stages by adaptively recalibrating and rebalancing the feature space. This refinement sharpens the model's sensitivity to both frequent and rare degradation patterns, addressing the long-tail distribution challenge.
+其次，特征合成方法 UDFS 对已知源域退化模式的特征分布进行统计建模，定量评估由域偏移引发的统计不确定性，并以此为引导合成逼近目标域真实物理分布的模拟 OOD 特征，从而增强模型的 OOD 泛化能力。
+% 
+最后，微调机制 LARR 通过自适应地重新校准并重平衡特征空间，进一步优化前序特征的分布结构。该机制提升网络对高频常规模式与稀有尾部退化轨迹的综合表征能力，有效解决多域长尾分布问题。
 
-We formulate the problem of modeling battery degradation under distribution shifts. Let $\boldsymbol{x}_{t} \in \mathbb{R}^{L \times C}$ denote the multi-sensor signal sequence (length $L$, $C$ sensors) at cycle $t$, and $y_{t} \in \mathbb{R}$ be the corresponding degradation indicator (RUL or SOH). We consider $(\boldsymbol{x}_{t}, y_{t})$ as samples from random variables $(X, Y)$ residing in spaces $\mathcal{X} \times \mathcal{Y}$, governed by a joint distribution $P_{XY}$ with marginals $P_{X}$ and $P_{Y}$.
-% 
-Variations in internal and external factors of batteries create distinct operational domains. We consider $K = M + N$ domains, denoted as $D^{i} = \{ (\boldsymbol{x}_{t}, y_{t}) \} \sim P_{XY}^{i}, i = 1, \dots, K$.
-% Crucially, distinct domains exhibit distribution shifts, meaning $P^{i}_{XY} \neq P^{j}_{XY}$ for $i \neq j$.
-And $P^{i}_{XY} \neq P^{j}_{XY}$ for $i \neq j$.
-% 
-The objective of OOD-robust degradation modeling is to learn a  model $f_{\theta}: \mathcal{S} \to \mathcal{T}$, parametered by $\theta$, using data from $M$ source domains $\mathcal{S} = \{ D^{i} \}_{i=1}^{M}$.
-% 
-The model should generalize to $N$ unseen target domains $\mathcal{T} = \{ D^{j} \}_{j=M+1}^{M+N}$ without requiring access to them during training. This is achieved by minimizing the expected loss $\ell$ on the target domains, that is $\mathop{\min}_{\theta}\mathbb{E}_{(\boldsymbol{x}, y) \in \mathcal{T}} [\ell(f_{\theta}(\boldsymbol{x}), y)]$. % where the expectation is taken over the data distribution of the target domain.
+针对分布偏移条件下的 LIBs 退化建模问题，本节给出 OOD 退化建模的形式化定义。令 $\boldsymbol{x}_{t} \in \mathbb{R}^{L \times C}$ 表示 LIBs 在第 $t$ 次循环时采集的多传感器监测信号序列，其中 $L$ 为序列长度，$C$ 为传感器通道数；同时令 $y_{t} \in \mathbb{R}$ 表示对应的剩余使用寿命或健康状态等退化表征量。成对观测值 $(\boldsymbol{x}_{t}, y_{t})$ 构成定义在样本空间 $\mathcal{X} \times \mathcal{Y}$ 上的随机变量 $(X, Y)$ 的实现样本，该随机变量服从边缘分布为 $P_{X}$ 与 $P_{Y}$ 的联合概率分布 $P_{XY}$。实际应用中，汽车驾驶工况与环境温度等外部物理条件，以及 LIBs 内部电化学状态的动态演变，共同构成复杂多样的运行域。假设系统总计包含 $K = M + N$ 个域，记为 $D^{i} = \{ (\boldsymbol{x}_{t}, y_{t}) \} \sim P^{i}_{XY}$，其中 $i=1,\dots,K$。该问题的核心挑战在于不同域之间存在显著的分布偏移现象，即对于任意 $i \neq j$ 均满足 $P^{i}_{XY} \neq P^{j}_{XY}$。鲁棒 OOD 退化建模的根本目标在于，仅利用采集自 $M$ 个源域 $\mathcal{S} = \{ D^{i} \}_{i=1}^{M}$ 的数据，训练一个由参数 $\theta$ 决定的映射模型 $f_{\theta}: \mathcal{S} \to \mathcal{T}$。该模型需具备在训练阶段完全不接触目标域数据的前提下，泛化至 $N$ 个未见目标域 $\mathcal{T} = \{ D^{j} \}_{j=M+1}^{M+N}$ 的能力。在数学表达上，该目标等效于最小化模型在未见目标域上的期望预测损失 $\ell$，即求解最优化问题 $\mathop{\min}_{\theta}\mathbb{E}_{(\boldsymbol{x}, y) \in \mathcal{T}} [\ell(f_{\theta}(\boldsymbol{x}), y)]$，其中期望值严格基于目标域的真实数据分布计算。
 
 \subsection{基于流形收缩的鲁棒退化表征提取策略}
 
@@ -97,7 +81,7 @@ First, we investigate the relationship between the generalization ability of deg
 Second, we propose a heuristic cyclic signal reconstruction method possessing potentially low topological complexity.
 Finally, the reconstructed input are mapped onto the feature space using a Mamba-based model.
 
-（）{Degenerate Representation from a Topological Perspective}
+（1）拓扑视角下的退化表征分析
 
 Inspired by studies in relevant fields such as fault diagnosis, we investigate the geometric properties of generalizable features of degradation models.
 Omitting cycle and domain indices for notational clarity, we explicitly consider the latent variable $\boldsymbol{z}$ corresponding to input $\boldsymbol{x}$. Consequently, the domain is defined as $D = \{ (\boldsymbol{x}, \boldsymbol{z}, y) \}$, adapting the source $\mathcal{S}$ and target $\mathcal{T}$ domain structure accordingly.
@@ -147,7 +131,7 @@ We implement this reconstruction by extracting statistical features from each se
 Representative examples include temporal differences or channel-wise moments such as mean and standard deviation. Concatenating these extracted statistics yields the reconstructed signal $\boldsymbol{\widetilde{x}}_{t} \in \mathbb{R} ^ {D \times 1}$, where $D$, the total number of extracted statistics, typically satisfies $C < D \ll L$. The precise input construction methodology is detailed in Section~\ref{subsec:experimental_setup}.
 Empirically validated in Section~\ref{subsec:comparative_experiments}, this reconstruction mitigates temporal interference and expands features dimensionality to address insufficient coverage challenge, resulting in lower IntDim and more continuous degradation representation.
 
-（）{Mamba with Manifold Contraction}
+（2）结合流形收缩的 Mamba 模型
 
 Selecting a backbone for mapping reconstructed signals to degradation features involves considering the task's sequential nature, linear time-invariant (LTI) system approximability for battery physics, and edge deployment constraints. Mamba's sequence modeling proficiency, LTI-compatible state-space mechanism, linear scaling, and parallel inference capabilities \cite{gu2024mamba} align well with these requirements, leading us to adopt it for this mapping task.
 
@@ -173,7 +157,7 @@ First, we model feature statistics probabilistically via multivariate Gaussian d
 Second, we quantify statistics uncertainty by non-parametrically estimating the variance of these statistics.
 Lastly, based on this uncertainty quantification, we synthesize features representing potential OOD degradation patterns through sampling, and the UDFS mechanism is subsequently integrated into the MMC model to enhance robustness. % against OOD instances.
 
-（）{Multivariate Gaussian Distribution for Domain Shift Modeling}
+（1）面向域漂移的多元高斯建模
 
 Domain-specific degradation patterns are reflected in statistical distributions of features. We posit that domain shifts induce quantifiable inconsistencies in these statistics across different operational environments. Explicitly modeling this statistical inconsistency, particularly through the uncertainty inherent in feature statistics, enables the synthesis of features representative of unseen target domains from source data. This approach allows training degradation models with enhanced robustness.
 Our method quantifies inter-domain variability by identifying the underlying distribution that governs feature statistics and by leveraging its sampling variance.
@@ -197,7 +181,7 @@ These variances are estimated non-parametrically based on the observed intra-bat
 \end{align}
 where $ \mathbb{E}_{b}(\mu) $ and $ \mathbb{E}_{b}(\sigma) $ are the expectations of mean and standard deviation of the $ b $-th sample within a minibatch.
 
-（）{Uncertainty-driven Feature Synthesis}
+（2）不确定性驱动的特征合成
 
 Differentiable generation of feature statistics employs the reparameterization method under the assumption of Gaussian distributed original statistics with parameters $\mu$, $\Sigma_{\mu}$ and $\sigma$, $\Sigma_{\sigma}$, formulated as
 \begin{align}
@@ -223,7 +207,7 @@ First, we employ feature distribution calibration to strengthen the corresponden
 Second, we integrate this feature calibration strategy into UDFS to form LARR to eliminate domain-specific information tied to long-tail distributions, thereby purifying feature domain invariance.
 Finally, we examine LARR's training dynamics and subsequently incorporate a head-bias mitigation strategy designed to improve degradation pattern generalization.
 
-（）{Symmetric-kernel-based Feature Statistic Calibration}
+（1）基于特征核的特征统计校准
 
 We discretize the bounded SOH label space via uniform binning into $\mathcal{B}$ intervals, indexed $\textit{b} = 1, 2, \dots, \mathcal{B}$. Battery degradation trajectories exhibit a long-tail distribution, characterized by substantial, often exponential, variation in the number of samples associated with each bin $\textit{b}$.
 % 
@@ -252,7 +236,7 @@ To calibrate the feature distribution, we employ kernel smoothing across bins ba
 \end{align}
 where $Gau(\cdot, \cdot)$ is the Gaussian kernel function with coefficient $\gamma$, and $y_{\textit{b}}$ and $y_{\textit{b}^{\prime}}$ are SOH values corresponding to the $\textit{b}$-th and $\textit{b}^{\prime}$-th bins, respectively.
 
-（）{Imbalance-bias-free Degradation Dynamics Generalization}
+（2）消除不平衡偏差的退化泛化
 
 To address the long-tail distribution challenge, which persists in a consistent form both preceding and following the feature synthesis via $G(Z_{MRB})$, we implement the proposed LARR algorithm for head-bias-free correction of features.
 LRAA performs feature distribution calibration utilizing two sets of bin-specific statistics, namely observed statistics $\{{\mu}_{\textit{b}}, {\sigma}_{\textit{b}}\}$ and calibration statistics $\{\widetilde{\mu}_{\textit{b}}, \widetilde{\sigma}_{\textit{b}}\}$, formulated as
