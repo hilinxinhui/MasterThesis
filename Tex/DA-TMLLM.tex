@@ -41,9 +41,10 @@
 
 \subsection{ControlNet 引导的跨数据集条件扩散模型}
 
-To mitigate inter-dataset discrepancies, we propose a cross-dataset standardization method by applying fixed-duration segmentation, length alignment, and scale normalization.
-Then, we develop the architecture of the conditional diffusion model (CDM) to synthesize vibration signals.
-Finally, we design a ControlNet to inject controllable semantic guidance into the reverse diffusion phase.
+为减小数据集间差异，
+提出一种跨数据集标准化方法，通过固定时长分段、长度对齐和尺度归一化对旋转机械运行时信号进行预处理。
+随后，提出基于条件扩散模型（Conditional Diffusion Model, CDM）的方法，用于合成和补充少数故障模式上的振动信号。
+最后，向 CDM 中引入 ControlNet，在反向扩散阶段注入可控的语义引导信息。
 
 （1）跨数据集信号预处理标准化方法
 
@@ -169,21 +170,6 @@ where $\lambda$ is the transition threshold of $\operatorname{Huber}(\cdot)$.
 
 
 \subsection{可信多模态大语言模型}\label{subsec:DA-TMLLM_TMLLM}
-
-% \begin{figure}[!htbp]
-%     \centering
-%     \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/correlation.eps}
-%     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
-%     \label{fig:correlation}
-% \end{figure}
-
-% \begin{figure}[!htbp]
-%     \centering
-%     \includegraphics[width=\textwidth]{Img/DA-TMLLM_figures/trans/whole_strategy.eps}
-%     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
-%     \label{fig:strategy}
-% \end{figure}
-
 
 %符号后续还需要统一细化
 TMLLM aims to provide trustworthy diagnostic results and analysis across multiple datasets.
@@ -446,18 +432,13 @@ The pipeline in the inference stage is summarized in Algorithm~\ref{alg:inferenc
 
 \subsection{实验设置}\label{subsec:DA-TMLLM_experimental_setup}
 
-% Peng等\cite{Peng_Liu_Du_Gao_Wang_2025}
+为在易发生幻觉的场景下对 DA-TMLLM 与对比模型进行基准评估，实验采用 2 类数据集，即领域特定数据集和非预期数据集。
+其中，非预期数据集仅用于测试阶段构造非预期测试子集，以量化模型对非预期输入的拒识能力。
+领域特定数据集由多个轴承数据集构成，并划分为训练集、验证集和领域特定测试子集。
+在此基础上，进一步将领域特定测试子集与非预期测试子集合并，构建复合测试集，以统一评估模型在抗幻觉场景下的整体性能。
 
-To benchmark DA-TMLLM against comparative models under hallucination-prone scenarios, we employ two dataset categories: domain-specific datasets and undesired datasets.
-The undesired datasets are used only during the testing phase to build an undesired test subset that quantifies the model's ability to reject undesired inputs.
-The domain-specific datasets, consisting of multiple bearing datasets, are partitioned into a training set, a validation set, and a domain-specific test subset.
-Furthermore, we merge the domain-specific and undesired test subsets into a composite test set, enabling a unified evaluation of the model's hallucination-resilient performance.
-The domain-specific datasets comprise nine bearing datasets: PU \cite{PU}, JNU \cite{s130608013}, CWRU \cite{15467457}, JUST \cite{JUST}, DIRG \cite{DAGA2019252}, HIT \cite{HIT}, IMS \cite{IMS}, MFPT \cite{MFPT}, and XJTU \cite{XJTU}, all of which are contained within the MBHM repository \cite{Peng_Liu_Du_Gao_Wang_2025}.
-% The details of domain-specific datasets are presented in Table \ref{tab:Detailed datasets}, including their fault location-characterized data type and the corresponding number of samples.
-% Table \ref{tab:Detailed datasets} overviews the nine domain-specific bearing datasets employed, listing the fault-location classes and the corresponding sample counts for each dataset.
-Table \ref{tab:Detailed datasets} summarizes the nine domain-specific bearing datasets employed in this study, detailing their respective fault-location classes and sample counts.
-The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{MaFaulDa_dataset} datasets.
-
+领域特定数据集包括 9 个轴承数据集，即 PU 数据集 \cite{PU}、JNU 数据集 \cite{s130608013}、CWRU 数据集 \cite{15467457}、JUST 数据集 \cite{JUST}、DIRG 数据集 \cite{DAGA2019252}、HIT 数据集 \cite{HIT}、IMS 数据集 \cite{IMS}、MFPT 数据集 \cite{MFPT} 和 XJTU 数据集 \cite{XJTU}。
+上述数据集均收录于 MBHM 仓库中 \cite{Peng_Liu_Du_Gao_Wang_2025}。表 \ref{tab:Detailed datasets} 汇总了本研究采用的 9 个领域特定轴承数据集，给出各数据集对应的故障位置类别及样本数量。非预期数据集包括 UP 数据集 \cite{UP_dataset} 和 MaFaulDa 数据集 \cite{MaFaulDa_dataset}。
 
 \setlength{\tabcolsep}{3.5pt}
 \renewcommand{\arraystretch}{1.2}
@@ -489,68 +470,178 @@ The undesired datasets consist of the UP \cite{UP_dataset} and MaFaulDa \cite{Ma
     \end{tabular}
 \end{table*}
 
+为评估模型对由统计偏置引发的幻觉现象的鲁棒性，训练阶段与验证阶段遵循文献 \cite{20243817051432} 所采用的极端类别不平衡设置，其中最大类别与最小类别的样本数量之比超过 100。
+此外，采用类别均衡的领域特定测试子集，以确保各类别对诊断性能的贡献保持一致。
 
-To assess the model's robustness to hallucinations arising from statistical bias, we follow the extreme class imbalance setting of \cite{20243817051432} during training and validation, where the ratio between the largest and smallest classes exceeds 100.
-Additionally, we adopt a balanced domain-specific test subset so that each class contributes equally to the diagnostic performance. 
-The MaFaulDa dataset includes bearing vibration signals that exhibit high semantic similarity to the domain-specific datasets.
-By contrast, the UP dataset comprises underwater propeller fault signals and exhibits a significant domain shift in both operating environment and signal features.
-To evaluate the model's resistance to hallucinations induced by undesired inputs of varying similarity, three types of composite test scenarios are defined.
-Scenario 1 uses a test set formed by combining the domain-specific subset with UP.
-Scenario 2 replaces UP with MaFaulDa, ensuring high semantic similarity to the training dataset.
-Scenario 3 employs a composite test set comprising the domain-specific subset, UP, and MaFaulDa, yielding a mixed-domain evaluation setting.
-
+MaFaulDa 数据集包含轴承振动信号，其语义特征与领域特定数据集具有较高相似性。相比之下，UP 数据集由水下螺旋桨故障信号构成，在运行环境与信号特征两个层面均表现出明显的领域偏移。为评估模型对不同相似度非预期输入所诱发幻觉的抵抗能力，实验定义 3 种复合测试场景。场景 1 的测试集由领域特定子集与 UP 组成。场景 2 以 MaFaulDa 数据集替代 UP 数据集，从而保证测试输入与训练数据之间具有较高语义相似性。场景 3 的复合测试集同时包含领域特定子集、UP 数据集和 MaFaulDa数据集，用于构建混合领域评估设置。
 
 \begin{table}[htbp]
   \centering
-  \caption{DA-TMLLM~模型实验超参数设置}
+  \caption{DA-TMLLM 模型实验超参数设置}
   \label{tab:Hyperparameter}
   \begin{tabular}{lll}
   \toprule
-  Symbol & Description & Value \\
+  符号 & 含义 & 取值 \\
   \midrule
-  $L_{f}$ & Length of sample & $2400$ \\
-  $\rho$ & Scaling factor of $\operatorname{SNorm}(\cdot)$ & $0.01$ \\
-  $S$ & Number of diffusion steps & $10$ \\
-  $\zeta$ & Noise scheduler of diffusion model & $Linear$ \\
-  $N_{h}$ & Number of attention heads & $4$ \\
-  $N_{c}$ & Number of sample categories & $10$ \\
-  $\lambda$ & Transition threshold of $\operatorname{Huber}(\cdot)$ & $1$ \\
-  $N_{t}$ & Maximum length of output token & $2048$ \\
-  $\mathcal{M}_{tune}$ & Target module of fine-tuning & $all\_linear$ \\
-  $r_{LoRA}$ & Rank of LoRA fine-tuning & 4 \\
-  $L_{\mathrm{win}}$ & Length of token window & $\pm 3$ \\
-  $\omega$ & Calibration coefficient for the key token & $50$ \\
-  $n_{diff}$ & Batch size of diffusion & $32$ \\
-  $n_{tune}$ & Batch size of fine-tuning & $1$ pre GPU \\
-  ${N_\mathrm{dm}}$ & Number of training epochs for CGCDM & $100$ \\
-  ${N_\mathrm{llm}}$ & Number of training epochs for TMLLM & $50$ \\
-  ${n_{lr}}$ & Learning rate & $1 \times 10^{-4}$ \\
-  ${n_{dr}}$ & Dropout rate & $0.1$ \\
+  $L_{f}$ & 样本长度 & $2400$ \\
+  $\rho$ & $\operatorname{SNorm}(\cdot)$ 的缩放系数 & $0.01$ \\
+  $S$ & 扩散步数 & $10$ \\
+  $\zeta$ & 扩散模型的噪声调度器 & 线性 \\
+  $N_{h}$ & 注意力头数量 & $4$ \\
+  $N_{c}$ & 样本类别数 & $10$ \\
+  $\lambda$ & $\operatorname{Huber}(\cdot)$ 函数的转折阈值 & $1$ \\
+  $N_{t}$ & LLM 输出 token 的最大长度 & $2048$ \\
+  $\mathcal{M}_{tune}$ & 微调目标模块 & $all\_linear$ \\
+  $r_{LoRA}$ & LoRA 微调的秩 & $4$ \\
+  $L_{\mathrm{win}}$ & token 窗口长度 & $\pm 3$ \\
+  $\omega$ & 关键 token 的校准系数 & $50$ \\
+  $n_{diff}$ & 扩散模型的批量大小 & $32$ \\
+  $n_{tune}$ & LLM 微调的批量大小 & 每个 GPU 为 $1$ \\
+  ${N_\mathrm{dm}}$ & CGCDM 的训练轮数 & $100$ \\
+  ${N_\mathrm{llm}}$ & TMLLM 的训练轮数 & $50$ \\
+  ${n_{lr}}$ & 学习率 & $1 \times 10^{-4}$ \\
+  ${n_{dr}}$ & Dropout 率 & $0.1$ \\
   \bottomrule
   \end{tabular}
 \end{table}
 
-All evaluations are performed using PyTorch on a workstation equipped with an NVIDIA RTX 4090 GPU.
-The 1.5-billion-parameter Qwen2 \cite{QWEN} model serves as the base LLM, and the LoRA technique \cite{20231213775448} is employed to fine-tune the TMLLM.
-Hyperparameters for DA-TMLLM are summarized in Table~\ref{tab:Hyperparameter}.
-Additionally, the dataset-specific sampling rate $\nu$ is provided in the corresponding dataset documentation.
+
 Eight metrics are utilized for comprehensive evaluation of DA-TMLLM and comparative models, with $\uparrow$ signifying that larger values denote superior performance and $\downarrow$ signifying that lower values are preferred.
 
-\textit{Domain-Specific Accuracy} (DS-ACC, $\uparrow$) compute the ratio of correctly diagnosed fault types to the total number of samples that originate from domain-specific test subset.
+所有评估均基于 PyTorch，在配备 NVIDIA RTX 4090 GPU 的服务器上完成。参数规模为 15 亿的 Qwen2 \cite{QWEN} 被用作基座 LLM。
+采用 LoRA技术 \cite{20231213775448} 对 TMLLM 进行微调。
+DA-TMLLM 的超参数设置如表 \ref{tab:Hyperparameter} 所示。此外，各数据集对应的采样率 $\nu$ 见相应数据集的说明文档。
 
-\textit{General Accuracy} (G-ACC, $\uparrow$) presents the overall diagnostic accuracy on the mixed test set that combines domain-specific and undesired samples.
+为全面评估 DA-TMLLM 及对比模型，实验采用 8 项指标。
+其中 $\uparrow$ 表示数值越大性能越优，$\downarrow$ 表示数值越小性能越优。
+设领域特定测试子集为 $\mathcal{D}_{\mathrm{ds}}=\{(x_i,y_i)\}_{i=1}^{N_{\mathrm{ds}}}$，非预期测试子集为 $\mathcal{D}_{\mathrm{un}}=\{\tilde{x}_j\}_{j=1}^{N_{\mathrm{un}}}$，复合测试集为 $\mathcal{D}_{\mathrm{mix}}=\mathcal{D}_{\mathrm{ds}}\cup\mathcal{D}_{\mathrm{un}}$。
+$x_i$ 表示领域特定样本，$y_i\in\{1,\dots,N_c\}$ 表示其真实故障类别，$\hat{z}(\cdot)$ 表示模型在复合测试集上的最终判定结果，其取值为具体故障类别或非预期类标记 $\varnothing$。同时，定义 $c(\cdot)\in\mathbb{R}$ 为领域特定置信分数，其数值越大表示样本越可能属于领域特定分布。
 
-\textit{Area under Receiver Operating Characteristic Curve} (AUROC, $\uparrow$) measures separability between domain-specific and undesired samples, higher values showing stronger separation.
+基于上述说明和定义，所使用的 8 项评估指标包括：
 
-\textit{False Alarm Rate at 95\% Recall} (FAR@95, $\downarrow$) is the proportion of domain-specific samples misclassified as undesired samples when the detector achieves 95\% undesired recall.
+（1）领域特定准确率（Domain-Specific Accuracy, DS-ACC, $\uparrow$），用于衡量模型在领域特定测试子集上的故障诊断能力，其定义为
+\begin{equation}
+\mathrm{DS\mbox{-}ACC}
+=
+\frac{1}{N_{\mathrm{ds}}}
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(\hat{z}(x_i)=y_i\bigr),
+\end{equation}
+其中，$\mathbb{I}(\cdot)$ 为示性函数。
 
-\textit{Area under the Precision-Recall Curve} (AUPR, $\uparrow$) emphasizes domain-specific accuracy, and higher values indicate cleaner rejection of undesired samples.
+（2）总体准确率（General Accuracy, G-ACC, $\uparrow$）用于衡量模型在复合测试集上的整体判别性能，其定义为
+\begin{equation}
+\mathrm{G\mbox{-}ACC}
+=
+\frac{1}{N_{\mathrm{ds}}+N_{\mathrm{un}}}
+\left[
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(\hat{z}(x_i)=y_i\bigr)
++
+\sum_{j=1}^{N_{\mathrm{un}}}
+\mathbb{I}\bigl(\hat{z}(\tilde{x}_j)=\varnothing\bigr)
+\right].
+\end{equation}
 
-\textit{Root Mean Square Error} (RMSE, $\downarrow$) presents generation quality by measuring the quadratic mean of the point-wise differences between the synthesized and actual signal.
+（3）受试者工作特征曲线下面积（Area under Receiver Operating Characteristic Curve, AUROC, $\uparrow$）用于衡量领域特定样本与非预期样本之间的可分性。对于任意阈值 $\tau$，定义真阳性率与假阳性率分别为
+\begin{equation}
+\mathrm{TPR}(\tau)
+=
+\frac{1}{N_{\mathrm{ds}}}
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(c(x_i)\ge \tau\bigr),
+\end{equation}
+\begin{equation}
+\mathrm{FPR}(\tau)
+=
+\frac{1}{N_{\mathrm{un}}}
+\sum_{j=1}^{N_{\mathrm{un}}}
+\mathbb{I}\bigl(c(\tilde{x}_j)\ge \tau\bigr).
+\end{equation}
+AUROC 定义为受试者工作特征曲线在 $\mathrm{FPR}$ 与 $\mathrm{TPR}$ 平面下的面积，即
+\begin{equation}
+\mathrm{AUROC}
+=
+\int_{0}^{1}
+\mathrm{TPR}\bigl(\mathrm{FPR}^{-1}(u)\bigr)\, \mathrm{d}u.
+\end{equation}
 
-\textit{Peak Signal-to-Noise Ratio} (PSNR, $\uparrow$) quantifies reconstruction quality by measuring the ratio between the maximum signal power and the power of the corrupting noise.
+（4）95\% 召回率下的误报率（False Alarm Rate at 95\% Recall, FAR@95, $\downarrow$）用于衡量在达到既定非预期样本召回水平时，领域特定样本被误判为非预期的比例。设阈值 $\tau_{95}$ 使得非预期样本召回率达到或最接近 $95\%$，即
+\begin{equation}
+\frac{1}{N_{\mathrm{un}}}
+\sum_{j=1}^{N_{\mathrm{un}}}
+\mathbb{I}\bigl(c(\tilde{x}_j)<\tau_{95}\bigr)
+\approx 0.95.
+\end{equation}
+则 FAR@95 定义为
+\begin{equation}
+\mathrm{FAR@95}
+=
+\frac{1}{N_{\mathrm{ds}}}
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(c(x_i)<\tau_{95}\bigr).
+\end{equation}
 
-\textit{Frequency Spectrum Cosine Similarity} (FSCS, $\uparrow$) expresses generation quality between the synthesized and actual signal by computing the similarity of magnitude spectrum.
+（5）精确率-召回率曲线下面积（Area under the Precision-Recall Curve, AUPR, $\uparrow$）用于衡量模型在保留领域特定样本与排除非预期样本之间的综合表现。将领域特定样本视为正类时，对于任意阈值 $\tau$，精确率与召回率分别定义为
+\begin{equation}
+\mathrm{Precision}(\tau)
+=
+\frac{
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(c(x_i)\ge \tau\bigr)
+}{
+\sum_{i=1}^{N_{\mathrm{ds}}}
+\mathbb{I}\bigl(c(x_i)\ge \tau\bigr)
++
+\sum_{j=1}^{N_{\mathrm{un}}}
+\mathbb{I}\bigl(c(\tilde{x}_j)\ge \tau\bigr)
+},
+\end{equation}
+\begin{equation}
+\mathrm{Recall}(\tau)=\mathrm{TPR}(\tau).
+\end{equation}
+AUPR 定义为精确率-召回率曲线下的面积，即
+\begin{equation}
+\mathrm{AUPR}
+=
+\int_{0}^{1}
+\mathrm{Precision}\bigl(\mathrm{Recall}^{-1}(u)\bigr)\, \mathrm{d}u.
+\end{equation}
+
+对于生成质量评估，设真实故障信号与生成故障信号分别为 $\mathbf{s}=(s_t)_{t=1}^{L_f}$ 与 $\hat{\mathbf{s}}=(\hat{s}_t)_{t=1}^{L_f}$。
+
+（6）RMSE （$\downarrow$）用于衡量生成信号与真实信号在时域上的点对点偏差，其定义已在前文给出，从略。
+
+（7）峰值信噪比（Peak Signal-to-Noise Ratio, PSNR, $\uparrow$）用于衡量生成信号的重建质量，其定义为
+\begin{equation}
+\mathrm{PSNR}
+=
+10\log_{10}
+\left(
+\frac{s_{\max}^{2}}{\mathrm{MSE}}
+\right),
+\end{equation}
+其中，
+\begin{equation}
+s_{\max}=\max_{1\le t\le L_f}|s_t|,
+\qquad
+\mathrm{MSE}
+=
+\frac{1}{L_f}
+\sum_{t=1}^{L_f}
+(\hat{s}_t-s_t)^2.
+\end{equation}
+
+（8）频谱余弦相似度（Frequency Spectrum Cosine Similarity, FSCS, $\uparrow$）用于衡量生成信号与真实信号在频域结构上的一致性。记 $\mathcal{F}(\cdot)$ 表示离散傅里叶变换，$\mathbf{a}=|\mathcal{F}(\mathbf{s})|$ 与 $\hat{\mathbf{a}}=|\mathcal{F}(\hat{\mathbf{s}})|$ 分别表示真实信号与生成信号的幅值谱，则 FSCS 定义为
+\begin{equation}
+\mathrm{FSCS}
+=
+\frac{
+\mathbf{a}^{\top}\hat{\mathbf{a}}
+}{
+\|\mathbf{a}\|_2\, \|\hat{\mathbf{a}}\|_2
+}.
+\end{equation}
 
 \subsection{性能对比试验}\label{subsec:DA-TMLLM_comparison_experiment}
 
