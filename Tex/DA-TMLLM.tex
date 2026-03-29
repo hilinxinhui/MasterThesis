@@ -12,7 +12,7 @@
 
 （3）序列级幻觉具有隐蔽性。对于回答序列中的每个词元，其后验概率主要受模型内部先验、语料库词频以及局部句法模式的影响，而非取决于该词元与训练数据的匹配程度。因此，当检测器仅基于词元级别的后验概率进行判断时，幻觉现象有较大概率逃避检测。此外，在评估整个回答序列时，诸多形式正确但缺乏实质语义的短语，如“\textit{从提供的列表中最合适的轴承状态类型是（the most suitable bearing state type from the provided list is）}”。这样的语言冗余的存在将稀释幻觉内容。最终，即使回答序列中存在幻觉，幻觉量化指标仍可能输出正常值。
 
-针对上述问题，本章提出一种扩散增强的可信多模态大型语言模型（Diffusion-Augmented Trustworthy Multimodal Large Language Model, DA-TMLLM）。
+针对上述问题，本文提出一种扩散增强的可信多模态大型语言模型（Diffusion-Augmented Trustworthy Multimodal Large Language Model, DA-TMLLM）。
 首先，设计一个 ControlNet 引导的跨数据集条件扩散模型（ControlNet-Guided Cross-Dataset Conditional Diffusion Model, CGCDM），缓解由统计偏差引发的幻觉。
 其次，通过在多个轴承数据集的文本-信号对上对预训练 LLMs 进行微调，开发可信多模态大型语言模型（Trustworthy Multimodal Large Language Model, TMLLM）。基于所构建的 TMLLM，识别出一个关键词元，设计一种关键词元驱动的不确定性重加权策略，以有效检测序列级幻觉。
 最后，设计一种用于检测和缓解幻觉的抗幻觉机制，将 CGCDM 和 TMLLM 整合为统一框架，阐述拒绝非预期输入的流程。DA-TMLLM 的主要贡献如下：
@@ -27,6 +27,11 @@
 
 \section{基于扩散增强可信多模态大语言模型抗幻觉诊断方法}\label{sec:DA-TMLLM_methodology}
 
+所提出的 DA-TMLLM 整体框架如图 \ref{fig:da-tmllm_framework} 所示。
+首先，提出 ControlNet 引导跨数据集条件扩散模型，以缓解由统计偏差诱发的幻觉问题。
+其次，提出可信多模态大语言模型，包括微调过程、关键词元定位，以及关键词元驱动的不确定性重加权策略，基于此不确定性应对非预期输入引发的幻觉，实现序列级幻觉检测。
+最后，提出基于 DA-TMLLM 的抗幻觉故障诊断过程。
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=1\textwidth]{Img/DA-TMLLM_figures/trans/whole_framework.eps}
@@ -34,18 +39,14 @@
     \label{fig:da-tmllm_framework}
 \end{figure}
 
-The overall framework of the proposed DA-TMLLM is shown in Fig. \ref{fig:da-tmllm_framework}.
-First, we introduce the designed ControlNet-guided cross-dataset conditional diffusion model (CGCDM) to alleviate hallucinations induced by statistical bias.
-Second, we introduce the trustworthy multimodal LLM, including details of fine-tuning, key token targeting, and a key token-driven uncertainty reweighting strategy.
-Third, we introduce the hallucination-resilient scheme based on DA-TMLLM.
-
-\subsection{}
+\subsection{ControlNet 引导的跨数据集条件扩散模型}
 
 To mitigate inter-dataset discrepancies, we propose a cross-dataset standardization method by applying fixed-duration segmentation, length alignment, and scale normalization.
 Then, we develop the architecture of the conditional diffusion model (CDM) to synthesize vibration signals.
 Finally, we design a ControlNet to inject controllable semantic guidance into the reverse diffusion phase.
 
-（）{Cross-Dataset Standardization Method for Data Preprocessing}
+（1）跨数据集信号预处理标准化方法
+
 Since sensor sampling rates, collection conditions, and bearing types vary substantially across different bearing datasets, collected signals exhibit differences on characteristic fault frequency and amplitude.
 When these heterogeneous signals are fed directly to a diffusion model, the model tends to treat the inter-dataset discrepancies as random noise, hindering its ability to learn an effective joint distribution.
 To address this issue, we propose a cross-dataset standardization method.
@@ -78,7 +79,7 @@ where $\ell$ is the actual number of spectral bins, and $\operatorname{SNorm}(\c
 \end{equation}
 where $g=\rho\sqrt{L_{f}}$, and $\rho$ is a predefined scaling factor.
 
-（）{ControlNet-Guided Conditional Diffusion}
+（2）ControlNet 引导的条件扩散生成
 
 We employ a diffusion-based augmentation model that simultaneously promotes training stability and sample diversity, which is composed of a forward diffusion phase and a reverse diffusion phase.
 To enhance semantic consistency during generation, we design a ControlNet that injects high-level semantic features into the latent features at every reverse diffusion step.
@@ -167,7 +168,7 @@ Huber loss attenuates the influence of large point-wise residuals and is therefo
 where $\lambda$ is the transition threshold of $\operatorname{Huber}(\cdot)$.
 
 
-\subsection{}\label{subsec:DA-TMLLM_TMLLM}
+\subsection{可信多模态大语言模型}\label{subsec:DA-TMLLM_TMLLM}
 
 % \begin{figure}[!htbp]
 %     \centering
@@ -190,7 +191,7 @@ In TMLLM, a multimodal LLM is developed by fine-tuning a pre-trained LLM on text
 To derive trustworthy answers, we target a key token of which energy decreases abnormally by computing point-biserial correlation coefficient and conducting a significance test.
 Furthermore, we design a key token-driven uncertainty reweighting strategy to quantify the uncertainty in LLM answer.
 
-（）{Fine-Tuning LLM on Text-Signal Pairs}
+（1）基于文本-信号对的大语言模型微调
 Since recent pre-trained LLMs are optimized for discrete textual tokens and cannot natively process vibration signals, we introduce a dual-branch tokenizer-encoder block, which converts vibration signal samples and corresponding textual descriptions into signal-specific and token-specific features.
 The modality-specific features are subsequently aligned by a text-signal alignment block, and the whole model is fine-tuned to maximize cross-modal alignment.
 
@@ -215,7 +216,8 @@ Finally, the text-signal alignment block embeds the language tokens into a prede
 The weight of text-signal alignment block is denoted as $\boldsymbol{\theta}_\mathrm{ts}=\{\bm{\theta}_\mathrm{l_{1}}, \bm{\theta}_\mathrm{l_{2}}, \bm{\theta}_\mathrm{l_{3}}\}$, and the weight of the pre-trained LLM is denoted as $\boldsymbol{\theta}_\mathrm{llm}$.
 To fine-tune the weights of text-signal alignment block and LLM on downstream tasks, we adopt a parameter-efficient approach using low-rank adaptation (LoRA) \cite{20231213775448}.
 
-（）{Key Token Targeting}
+（2）关键词元定位
+
 To solve the issue of hiddenness of sequence-level hallucinations, we jointly consider the autoregressive generation rule and diagnosis-specific characteristics.
 % We hypothesize that key tokens exist that act as sentinel positions that expose imminent uncertainty.
 We hypothesize that certain key tokens act as sentinels, signaling imminent uncertainty.
@@ -297,7 +299,8 @@ Accordingly, we adopt $\mathit{Token}_{\delta-1}$ as our key token for undesired
 
 
 
-（）{Key Token-Driven Uncertainty Reweighting Strategy}
+（3）关键词元驱动的不确定性重加权策略
+
 To quantify the uncertainty in LLM outputs and to construct a TMLLM, we propose a key token-driven uncertainty reweighting strategy (KTURS).
 The proposed strategy employs token-level energy as an uncertainty quantification metric and assigns greater weights to tokens that exhibit stronger correlation with the designated key token.
 
@@ -343,8 +346,9 @@ $\tilde{\operatorname{NLL}}(\mathit{Token}_k)$, then the uncertainty of the key 
 
 % \subsection{}\label{subsec:DA-TMLLM_inference}
 
-\subsection{Hallucination-resilient scheme based on DA-TMLLM}
+\subsection{基于 DA-TMLLM 的抗幻觉方案}
 \label{sec:scheme}
+
 To alleviate and detect LLM hallucinations, the proposed hallucination-resilient scheme integrates the diffusion-based augmentation and the trustworthy multimodal LLM into a unified pipeline.
 
 To alleviate statistical bias-induced hallucinations, the ControlNet-guided cross-dataset conditional diffusion model is designed to produce balanced and semantically aligned synthetic data.
