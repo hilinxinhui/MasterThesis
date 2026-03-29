@@ -625,6 +625,12 @@ MAE、MSE 与 RMSE 的取值越低，说明模型在未知分布上的预测误�
 
 \subsection{性能对比试验}\label{subsec:RODTNet_comparison_experiment}
 
+为系统评估所提出的 RODTNet 及其长尾优化变体 RODTNet-LT 的 OOD 泛化能力，开展广泛的对比实验。
+实验在基于 MATR、Tongji、HUST 与 XJTU 这 4 个数据集构建的 11 项泛化任务展开，将所提模型与 14 种基线方法及其 20 种变体进行系统比较，采用 MAE 和 MSE 作为泛化性能的主要评估指标。
+
+RUL 预测任务的定量结果见表~\ref{tab:rul_results}。RODTNet 在 9 项任务中取得最优结果，在其余 2 项任务中排名第 2，仅次于直接在目标域上训练的参考变体 RODTNet+。
+SOH 估计任务的结果见表~\ref{tab:soh_results}。RODTNet-LT 同样在 9 项任务中优于全部对比方法，在其余任务中的性能仅略低于目标域训练变体 RODTNet-LT+ 或 MAGNet。
+
 % \clearpage
 \renewcommand{\arraystretch}{1.3} % 适度增加行高，提升数据阅读的清晰度
 % 定义列宽：1列名称 (22%) + 6列数据 (每列 13%) = 100% textwidth
@@ -912,6 +918,12 @@ MAE、MSE 与 RMSE 的取值越低，说明模型在未知分布上的预测误�
     RODTNet-LT & \underline{5.0415} & \underline{0.3875} & 4.3266 & \textbf{0.3424} & --- & --- \\
 \end{longtable}
 
+为进一步量化泛化性能增益，采用误差下降百分比进行统计分析。具体地，当 RODTNet 或 RODTNet-LT 在某一任务中取得最优结果时，计算其相对于次优基线模型的误差降幅；当其未取得最优结果时，则计算其相对于最优基线模型的性能差值，其中负值表示该模型劣于最优结果。
+随后，对 11 项泛化任务上的相对差异取平均值，以量化整体性能增益。
+基于该统计准则，在 OOD 的 RUL 预测任务中，RODTNet 的 MAE 与 MSE 分别下降 40.76\% 和 28.65\%；在 OOD 的 SOH 估计任务中，RODTNet-LT 的 MAE 与 MSE 分别下降 5.03\% 和 22.22\%。
+
+上述 11 项泛化任务覆盖多种由异质退化因素引发的域偏移情形，实验结果表明，所提方法对复杂域偏移具有稳定的鲁棒性。相比之下，现有基线模型难以从多个源域中充分提取域不变退化模式，因此即使在允许访问部分目标域数据的条件下实施微调或域适应，其建模精度仍然受限。进一步观察可知，实施域泛化的 RODTNet 与 RODTNet-LT 均优于各自在目标域上直接训练的参考变体。该结果表明，多源域数据的联合利用有助于扩展样本覆盖范围，增强退化模式表征的完整性，并提高模型训练的充分性，从而提升 OOD 泛化能力。
+
 % 4行2列展示包含RODTNet在内的方法的实验结果
 % 4行2列展示部分对比实验结果
 % 2行2列展示剩下的部分对比实验结果：iTransformer+、PatchTST+、TSMixer+和PINN+，这里视情况加入RODTNet直接在目标域上训练的结果
@@ -1007,12 +1019,16 @@ MAE、MSE 与 RMSE 的取值越低，说明模型在未知分布上的预测误�
     \label{fig:rodtnet_RUL_Comparison_Part3}
 \end{figure*}
 
+为提供更直观的证据，采用真实寿命与预测寿命的散点图以及预测误差分布直方图，对 RODTNet 与各基线方法的泛化性能进行可视化比较。各子图左上角同时给出决定系数 $R^2$，以量化模型拟合优度。考虑到对比模型数量较多，为保证排版清晰性，相关结果分组展示。图~\ref{fig:rodtnet_RUL_Comparison_Part1_A} 与图~\ref{fig:rodtnet_RUL_Comparison_Part1_B} 展示 RODTNet 与基于域适应或预训练范式方法的对比结果，相关基线包括 ConvMMD、DRNet、DDAN、DKTL、LSTM-DA、MAGNet 与 CRNN。图~\ref{fig:rodtnet_RUL_Comparison_Part2_A} 与图~\ref{fig:rodtnet_RUL_Comparison_Part2_B} 展示标准时间序列预测方法与集成学习基线的结果，其中前者包括 iTransformer、PatchTST、TSMixer、MambaLithium 与 PINN，后者包括 DeNN-bagging、DeNN-fusion 与 DeNN-voting。图~\ref{fig:rodtnet_RUL_Comparison_Part3} 进一步补充部分目标域微调模型的结果，包括 iTransformer+、PatchTST+、TSMixer+ 与 PINN+。综合上述图表可见，RODTNet 的结果，见图~\ref{fig:rodtnet_rul_ours}，在理想参考线附近呈现出更高的聚集性，其误差分布范围也窄于所有对比模型。该现象直观表明，所提模型能够更有效地捕获并建模 OOD 条件下的退化模式。
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{Img/RODTNet_figures/trans/fig5_soh_radar_chart.eps}
     \caption{Radar chart comparing the generalization performance of the proposed RODTNet-LT and baseline models across 11 different SOH estimation tasks.}
     \label{fig:RODTNet_SOH_Radar_Comparison}
 \end{figure}
+
+对于 SOH 估计任务，进一步采用性能雷达图展示 RODTNet-LT 与各基线模型的泛化差异。图~\ref{fig:RODTNet_SOH_Radar_Comparison} 表明，RODTNet-LT 对应的性能多边形在多数指标轴上更接近图表外缘，这说明该模型在 9 项泛化任务中取得最佳结果，并在其余 2 项任务中保持较强竞争力，体现出更优且更全面的综合性能。
 
 \begin{figure}[htbp]
     \centering
@@ -1021,167 +1037,7 @@ MAE、MSE 与 RMSE 的取值越低，说明模型在未知分布上的预测误�
     \label{fig:RODTNet_SOH_Efficiency_Comparison}
 \end{figure}
 
-% % RUL对比实验
-% \begin{table*}[htbp]
-%     \footnotesize
-%     \centering
-%     \caption{Comparison experimental results for the OOD RUL prediction tasks on the MATR, Tongji, HUST, and XJTU datasets.}
-%     % \resizebox{\linewidth}{!}{
-%     \scalebox{0.8}{
-%     \small
-%     \begin{adjustbox}{center}{
-%     \begin{threeparttable}
-%         \begin{tabular}{lccccccccccc}
-%         \toprule
-%         Task  & \multicolumn{2}{c}{Task1} & \multicolumn{2}{c}{Task2} & \multicolumn{2}{c}{Task3} & \multicolumn{2}{c}{Task4} & \multicolumn{2}{c}{Task5} & Task6 \\
-%     \cmidrule{2-12}    Metric & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
-%         \midrule
-%         iTransformer \cite{liu2024itransformer} & 99.78  & 15290.60  & 78.56  & 12430.67  & 153.83  & 34106.78  & 94.88  & 15629.50  & 93.21  & 16692.93  & 46.35  \\
-%         iTransformer+\tnote{a} \cite{liu2024itransformer} & 12.16  & 290.75  & 44.35  & 5100.32  & 40.20  & 4450.44  & 29.83  & 3284.53  & 40.36  & 5311.12  & 9.80  \\
-%         PatchTST \cite{nie2023a} & 30.86  & 2147.96  & 141.59  & 40006.27  & 89.28  & 13432.70  & 149.46  & 36100.57  & 75.57  & 12738.93  & 29.58  \\
-%         PatchTST+ \cite{nie2023a} & 12.82  & 393.49  & 42.24  & 4470.77  & 51.99  & 6520.95  & 38.72  & 3993.89  & 49.47  & 6372.25  & 30.24  \\
-%         TSMixer \cite{chen2023tsmixer} & 261.39  & 95673.01  & 95.70  & 17312.12  & 159.98  & 42316.82  & 125.36  & 27480.27  & 92.97  & 17272.87  & 115.18  \\
-%         TSMixer+ \cite{chen2023tsmixer} & 16.77  & 584.11  & 52.31  & 5986.63  & 80.59  & 12311.22  & 75.14  & 12132.82  & 66.54  & 9945.74  & 19.64  \\
-%         PINN \cite{wang2024physics}  & 27.07  & 1345.26  & 29.33  & 1948.74  & 46.42  & 5144.30  & 46.24  & 4323.02  & 48.57  & 3539.95  & 43.84  \\
-%         PINN+ \cite{wang2024physics} & 6.04  & 77.55  & 8.38  & 213.91  & 12.02  & 266.98  & 12.27  & 408.44  & 9.74  & 195.91  & 9.74  \\
-%         DR-Net \cite{WANG2023108897} & 11.61  & 284.32  & 42.50  & 5231.99  & 49.33  & 5978.47  & 42.87  & 5410.01  & 45.92  & 8061.80  & 8.91  \\
-%         CRNN \cite{D2EE01676A}  & 13.66  & 378.74  & 18.16  & 708.65  & 14.40  & 535.36  & 13.86  & 579.07  & 12.73  & 365.98  & 8.34  \\
-%         MAGNet \cite{TAN2024103725} & 13.51  & 347.84  & 15.08  & 492.65  & 16.03  & \underline{455.34}  & \underline{14.75}  & \underline{394.57}  & 13.37  & \underline{313.13}  & 8.98  \\
-%         DeNN-bagging \cite{10102497} & 23.40  & 1014.55  & 46.38  & 4144.07  & 68.88  & 8058.54  & 93.65  & 14047.69  & 57.23  & 5960.93  & 16.73  \\
-%         DeNN-fusion \cite{10102497} & 24.34  & 1010.97  & 49.15  & 4672.25  & 74.74  & 9549.55  & 95.93  & 16148.70  & 76.95  & 10290.79  & 16.80  \\
-%         DeNN-voting \cite{10102497} & 22.90  & 939.58  & 45.83  & 4074.09  & 71.58  & 8787.72  & 93.89  & 13623.54  & 57.07  & 6028.56  & 16.38  \\
-%         MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 13.19  & 368.84  & 20.32  & 818.35  & 19.99  & 923.46  & 17.47  & 672.48  & 13.55  & 385.23  & 7.28  \\
-%         LSTM-DA \cite{HAN2022230823} & 20.36  & 713.70  & 30.14  & 1484.85  & 30.15  & 1701.16  & 31.45  & 1644.90  & 20.28  & 769.22  & 18.70  \\
-%         ConvMMD \cite{9788003} & 23.95  & 989.20  & 36.96  & 2619.11  & 46.70  & 4542.61  & 57.68  & 6594.72  & 28.70  & 1960.54  & 17.03  \\
-%         DKTL \cite{10029904}  & 23.77  & 1005.67  & 38.93  & 3220.22  & 51.40  & 5403.52  & 62.88  & 7711.63  & 30.94  & 2252.70  & 15.71  \\
-%         DDAN \cite{9560040}  & 19.35  & 622.24  & 26.90  & 1206.61  & 25.29  & 1267.76  & 26.25  & 1252.40  & 17.79  & 541.77  & 14.07  \\
-%         RODTNet++\tnote{b} {(ours)} & \underline{2.13}  & \underline{20.29}  & \underline{12.01}  & \underline{380.16}  & \underline{10.49}  & 577.50  & 25.63  & 3137.51  & \underline{12.83}  & 481.95  & \underline{4.06}  \\
-%         RODTNet (ours) & \textbf{0.53} & \textbf{1.36} & \textbf{2.38} & \textbf{25.62} & \textbf{1.94} & \textbf{31.62} & \textbf{1.95} & \textbf{97.98} & \textbf{3.90} & \textbf{85.62} & \textbf{0.55} \\
-%     \midrule
-%         \multicolumn{12}{c}{} \\
-%     \midrule
-%             & Task6 & \multicolumn{2}{c}{Task7} & \multicolumn{2}{c}{Task8} & \multicolumn{2}{c}{Task9} & \multicolumn{2}{c}{Task10} & \multicolumn{2}{c}{Task11} \\
-%     \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
-%         \midrule
-%         iTransformer \cite{liu2024itransformer} & 3348.46  & 79.31  & 11828.38  & 285.14  & 134288.68  & 97.72  & 12857.57  & 115.28  & 16008.10  & 86.33  & 9092.28  \\
-%         iTransformer+ \cite{liu2024itransformer} & 451.88  & 19.96  & 690.05  & 25.39  & 1232.29  & 12.37  & 255.54  & 5.93  & 50.74  & 21.45  & 746.27  \\
-%         PatchTST \cite{nie2023a} & 1881.96  & 156.53  & 55065.22  & 171.01  & 70146.16  & 80.18  & 8273.63  & 78.84  & 8451.20  & 108.02  & 16314.58  \\
-%         PatchTST+ \cite{nie2023a} & 2642.04  & 21.09  & 803.19  & 107.18  & 20704.56  & 13.70  & 298.71  & 7.34  & 81.72  & 25.52  & 1018.20  \\
-%         TSMixer \cite{chen2023tsmixer} & 21255.96  & 102.14  & 18803.24  & 363.95  & 183759.79  & 343.38  & 119826.16  & 97.57  & 12165.74  & 356.55  & 134948.97  \\
-%         TSMixer+ \cite{chen2023tsmixer} & 844.83  & 20.28  & 700.89  & 45.71  & 3708.16  & 17.68  & 530.08  & 7.90  & 105.46  & 35.20  & 2180.88  \\
-%         PINN \cite{wang2024physics}  & 4496.71  & 81.96  & 18077.43  & 126.97  & 25586.95  & 53.12  & 5147.91  & 55.81  & 4744.68  & 111.30  & 22690.40  \\
-%         PINN+ \cite{wang2024physics} & 195.91  & 16.70  & 610.41  & 24.96  & 1203.36  & 10.54  & 251.13  & 9.83  & 261.32  & 9.83  & 177.17  \\
-%         DR-Net \cite{WANG2023108897} & 180.23  & 15.77  & 482.02  & 30.98  & 1763.16  & 17.30  & 532.24  & 17.40  & 669.82  & 24.64  & 1306.43  \\
-%         CRNN \cite{D2EE01676A}  & 138.99  & 13.79  & 365.50  & 39.02  & 3541.77  & 29.13  & 1250.78  & 26.57  & 1346.65  & 35.58  & 3191.76  \\
-%         MAGNet \cite{TAN2024103725} & 146.94  & 15.79  & 428.60  & 44.58  & 4499.43  & 27.53  & 1183.21  & 24.84  & 1321.13  & 38.51  & 2961.67  \\
-%         DeNN-bagging \cite{10102497} & 607.03  & 28.97  & 1520.12  & 85.31  & 15854.20  & 40.39  & 2688.63  & 36.51  & 2682.08  & 61.02  & 7199.04  \\
-%         DeNN-fusion \cite{10102497} & 625.23  & 31.39  & 1769.45  & 92.75  & 17801.56  & 41.68  & 2863.98  & 36.61  & 2652.09  & 62.20  & 7491.24  \\
-%         DeNN-voting \cite{10102497} & 586.70  & 30.15  & 1646.72  & 86.36  & 16175.97  & 40.83  & 2692.80  & 36.85  & 2739.17  & 61.56  & 7397.65  \\
-%         MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 105.15  & 21.18  & 752.52  & 71.95  & 12473.49  & 45.07  & 3804.16  & 28.68  & 1469.89  & 41.50  & 3260.10  \\
-%         LSTM-DA \cite{HAN2022230823} & 639.52  & 32.55  & 1741.70  & 121.14  & 24930.62  & 31.85  & 1526.07  & 24.87  & 1151.76  & 44.07  & 3391.50  \\
-%         ConvMMD \cite{9788003} & 544.12  & 37.69  & 2722.93  & 108.81  & 21251.08  & 20.64  & 668.67  & 28.49  & 1531.89  & 50.73  & 5750.57  \\
-%         DKTL \cite{10029904}  & 465.40  & 36.85  & 2282.25  & 104.67  & 19313.69  & 28.27  & 1281.96  & 27.02  & 1456.52  & 54.55  & 6445.32  \\
-%         DDAN \cite{9560040}  & 357.74  & 29.73  & 1478.19  & 117.50  & 24882.38  & 34.05  & 1859.57  & 24.13  & 1211.62  & 42.90  & 3599.68  \\
-%         RODTNet++ {(ours)} & \underline{36.10}  & \textbf{0.40} & \textbf{0.30} & \underline{1.51}  & \underline{6.89}  & \underline{7.62}  & \underline{127.05}  & \underline{3.86}  & \textbf{36.87} & \textbf{8.39} & \underline{419.11}  \\
-%         RODTNet (ours) & \textbf{0.68} & \underline{0.78}  & \underline{1.18}  & \textbf{0.32} & \textbf{0.29} & \textbf{4.34} & \textbf{46.06} & \textbf{3.50} & \underline{70.76}  & \underline{14.03}  & \textbf{395.27} \\
-%         \bottomrule
-%         \end{tabular}%}
-%     \begin{tablenotes}
-%     \item[a] + indicates finetuning on the target domain.
-%     \item[b] ++ indicates training directly on the target domain.
-%     \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best.
-%     \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
-%     \item[e] Notation and experimental settings described here also apply to Table~\ref{tab:soh_results}.
-% \end{tablenotes}
-% \end{threeparttable}}
-% \end{adjustbox}
-% }
-% \label{tab:rul_results}%
-% \end{table*}%
-
-% % SOH对比实验
-% \begin{table*}[htbp]
-%     \centering
-%     \caption{Comparison experimental results for the OOD SOH estimation tasks on the MATR, Tongji, HUST, and XJTU datasets.}
-%     % \resizebox{\linewidth}{!}{
-%     \scalebox{0.6}{
-%     \small
-%     \begin{threeparttable}
-%     \begin{tabular}{lccccccccccc}
-%     \toprule
-%     任务  & \multicolumn{2}{c}{任务1} & \multicolumn{2}{c}{任务2} & \multicolumn{2}{c}{任务3} & \multicolumn{2}{c}{任务4} & \multicolumn{2}{c}{任务5} & \multicolumn{1}{l}{任务6} \\
-% \cmidrule{2-12}    性能指标 & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE \\
-%     \midrule
-%     iTransformer \cite{liu2024itransformer} & 5.9093  & 0.5257  & 1.1315  & 0.0350  & 1.3424  & 0.0317  & 1.0941  & 0.0218  & 2.7314  & 0.1079  & 21.3182  \\
-%     iTransformer+ \cite{liu2024itransformer} & 0.7803  & 0.0134  & 0.7618  & 0.0167  & 0.4686  & 0.0067  & 0.4534  & 0.0051  & 0.7615  & 0.0183  & 2.1108  \\
-%     PatchTST \cite{nie2023a} & \underline{1.1228}  & 0.0311  & 4.1024  & \underline{0.3776}  & 0.7981  & 0.0145  & 4.2731  & 0.4299  & 2.8899  & 0.1764  & 9.5076  \\
-%     PatchTST+ \cite{nie2023a} & 0.6310  & 0.0098  & 0.6937  & 0.0136  & 0.4426  & 0.0071  & 0.4094  & 0.0046  & 0.8018  & 0.0183  & 3.6897  \\
-%     TSMixer \cite{chen2023tsmixer} & 16.2029  & 3.4749  & 2.5634  & 0.1033  & 5.1793  & 0.3115  & 2.9573  & 0.0980  & 3.1299  & 0.1231  & 35.9175  \\
-%     TSMixer+ \cite{chen2023tsmixer} & 0.8600  & 0.0172  & 0.7558  & 0.0160  & 0.5797  & 0.0082  & 0.4818  & 0.0046  & 0.8081  & 0.0184  & 2.9360  \\
-%     PINN \cite{wang2024physics}  & 1.3596  & 0.0403  & 2.2216  & 0.0844  & 1.4187  & 0.0511  & 1.1438  & 0.0227  & 1.7547  & 0.0556  & 20.7705  \\
-%     PINN+ \cite{wang2024physics} & 0.5748  & 0.0061  & 1.3991  & 0.0361  & 1.3524  & 0.0269  & 0.7226  & 0.0107  & 1.0708  & 0.0207  & 8.9555  \\
-%     DR-Net \cite{WANG2023108897} & 4.2229  & 0.3324  & 2.6507  & 0.1112  & 3.4879  & 0.1749  & 3.6984  & 0.2049  & 3.4467  & 0.1925  & 16.0808  \\
-%     CRNN \cite{D2EE01676A}  & 0.8260  & 0.0168  & 0.5589  & 0.0058  & 0.5295  & 0.0060  & 0.5508  & 0.0082  & 0.8301  & 0.0184  & 7.6085  \\
-%     MAGNet \cite{TAN2024103725} & 1.2410  & \underline{0.0244}  & 0.9305  & 0.0146  & 1.1954  & 0.0233  & 0.9216  & 0.0196  & 1.8908  & 0.0526  & 6.9453  \\
-%     DeNN-bagging \cite{10102497} & 1.7015  & 0.0658  & 2.1448  & 0.1194  & 2.1157  & 0.1141  & 2.1386  & 0.1330  & 2.8398  & 0.1719  & 10.3293  \\
-%     DeNN-fusion \cite{10102497} & 1.5901  & 0.0542  & 2.2918  & 0.1403  & 2.1127  & 0.1162  & 2.3360  & 0.1544  & 4.0800  & 0.2782  & 10.3575  \\
-%     DeNN-voting \cite{10102497} & 1.6199  & 0.0577  & 2.1824  & 0.1217  & 2.0499  & 0.1055  & 2.1529  & 0.1109  & 2.8789  & 0.1806  & 10.1680  \\
-%     MambaLithium \cite{shi2024mambalithiumselectivestatespace} & 1.2177  & 0.0338  & \underline{0.4801}  & 0.0038  & \underline{0.4002}  & \underline{0.0031}  & \underline{0.4162}  & \underline{0.0035}  & \underline{0.9160}  & \underline{0.0258}  & \underline{5.5906}  \\
-%     LSTM-DA \cite{HAN2022230823} & 3.0477  & 0.1140  & 2.8469  & 0.0945  & 3.1725  & 0.1164  & 3.4704  & 0.1360  & 3.4921  & 0.1370  & 12.8066  \\
-%     ConvMMD \cite{9788003} & 2.2734  & 0.0891  & 2.2941  & 0.0809  & 2.4317  & 0.0862  & 2.6367  & 0.0943  & 2.5047  & 0.0807  & 10.7025  \\
-%     DKTL \cite{10029904}  & 2.2029  & 0.0889  & 2.4482  & 0.1134  & 2.6035  & 0.1153  & 2.8678  & 0.1272  & 2.7184  & 0.1135  & 10.5311  \\
-%     DDAN \cite{9560040}  & 2.2708  & 0.0667  & 1.7973  & 0.0378  & 2.0361  & 0.0485  & 2.3470  & 0.0611  & 2.4232  & 0.0648  & 12.1931  \\
-%     RODTNet-LT++ {(ours)} & 1.1934  & 0.0484  & 0.9942  & 0.0367  & 0.9038  & 0.0330  & 2.4697  & 0.3593  & 3.1390  & 0.4989  & 9.6180  \\
-%     RODTNet-LT (ours) & \textbf{1.0384} & \textbf{0.0208} & \textbf{0.4476} & \textbf{0.0030} & \textbf{0.3630} & \textbf{0.0020} & \textbf{0.2885} & \textbf{0.0014} & \textbf{0.4435} & \textbf{0.0032} & \textbf{4.0520} \\
-%     \midrule
-%     \multicolumn{12}{c}{} \\
-%     \midrule
-%             & \multicolumn{1}{l}{任务6} & \multicolumn{2}{c}{任务7} & \multicolumn{2}{c}{任务8} & \multicolumn{2}{c}{任务9} & \multicolumn{2}{c}{任务10} & \multicolumn{2}{c}{任务11} \\
-% \cmidrule{2-12}          & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE   & MAE   & MSE \\
-%     \midrule
-%     iTransformer \cite{liu2024itransformer} & 8.5517  & 10.6146  & 1.6506  & 9.1256  & 1.5742  & 21.2702  & 8.0010  & 40.3827  & 20.7572  & 19.2927  & 4.6340  \\
-%     iTransformer+ \cite{liu2024itransformer} & 0.1204  & 8.8424  & 1.4328  & 1.3233  & 0.0277  & 2.9985  & 0.1737  & 2.8956  & 0.1635  & 2.8476  & 0.1570  \\
-%     PatchTST \cite{nie2023a} & 1.8668  & 16.9823  & 5.4530  & 9.2243  & 1.6822  & 14.7543  & 4.8261  & 48.1532  & 28.1815  & 15.8620  & 4.5693  \\
-%     PatchTST+ \cite{nie2023a} & 0.5973  & 10.1355  & 1.8044  & 6.8517  & 0.9185  & 3.3279  & 0.1986  & 4.6602  & 0.3933  & 5.0112  & 0.4733  \\
-%     TSMixer \cite{chen2023tsmixer} & 15.7721  & 8.1766  & 1.0106  & 14.3296  & 2.9821  & 51.0444  & 26.6658  & 44.3269  & 22.9838  & 58.9715  & 35.8934  \\
-%     TSMixer+ \cite{chen2023tsmixer} & 0.1595  & 9.3981  & 1.4881  & 1.6831  & 0.0443  & 2.7117  & 0.1365  & 4.0151  & 0.2957  & 3.7528  & 0.2954  \\
-%     PINN \cite{wang2024physics}  & 6.2435  & 25.2663  & 9.1038  & 5.9623  & 0.7837  & 7.9811  & 1.9312  & 22.6493  & 7.5184  & 13.4784  & 3.3358  \\
-%     PINN+ \cite{wang2024physics} & 2.2297  & 8.1476  & 1.3071  & 1.3870  & 0.0357  & 3.9588  & 0.4028  & 5.6329  & 0.9141  & 3.6541  & 0.3709  \\
-%     DR-Net \cite{WANG2023108897} & 3.9837  & 19.8591  & 5.6675  & 40.7034  & 21.2569  & 13.3021  & 3.0780  & 10.6609  & 2.0293  & 10.4743  & 1.7780  \\
-%     CRNN \cite{D2EE01676A}  & 1.6485  & 4.5716  & 0.4770  & 3.3587  & 0.3612  & 5.8487  & 0.8072  & 11.0377  & 3.0051  & 6.9622  & 1.2084  \\
-%     MAGNet \cite{TAN2024103725} & 1.2605  & \underline{3.6287}  & \textbf{0.2369} & 3.2225  & 0.2692  & \underline{3.4654}  & \underline{0.2234}  & 7.5763  & 1.7185  & \underline{4.1481}  & \underline{0.4131}  \\
-%     DeNN-bagging \cite{10102497} & 1.9811  & 7.1896  & 0.8327  & 5.6580  & 0.7403  & 7.6599  & 1.1013  & 12.8670  & 3.4043  & 8.8430  & 1.6496  \\
-%     DeNN-fusion \cite{10102497} & 1.9799  & 8.5083  & 1.0813  & 5.9468  & 0.7503  & 8.3443  & 1.3646  & 12.5343  & 3.2910  & 8.9251  & 1.7611  \\
-%     DeNN-voting \cite{10102497} & 1.9101  & 7.4300  & 0.8838  & 5.5938  & 0.7390  & 7.7196  & 1.1244  & 12.7772  & 3.4203  & 8.9074  & 1.6948  \\
-%     MambaLithium \cite{shi2024mambalithiumselectivestatespace} & \underline{0.7132}  & 6.7626  & 0.8283  & 4.8486  & 0.6418  & 7.0512  & 1.2408  & 8.7161  & 2.1239  & 5.8056  & 0.8398  \\
-%     LSTM-DA \cite{HAN2022230823} & 2.8925  & 8.3498  & 1.0564  & 7.9172  & 1.3040  & 6.0889  & 0.6520  & 10.2645  & 2.3890  & 7.8039  & 1.1160  \\
-%     ConvMMD \cite{9788003} & 2.0985  & 7.8693  & 0.9537  & 6.7908  & 0.9026  & 5.9231  & 0.6199  & 11.1645  & 2.6587  & 7.6832  & 1.2462  \\
-%     DKTL \cite{10029904}  & 2.1718  & 7.5353  & 0.8587  & 6.7470  & 0.9272  & 4.9570  & 0.5125  & 10.8147  & 2.5730  & 6.9723  & 1.1317  \\
-%     DDAN \cite{9560040}  & 2.7491  & 8.1399  & 1.1031  & 7.3573  & 1.1792  & 5.9360  & 0.8296  & 9.0353  & 2.1172  & 5.9290  & 0.8442  \\
-%     RODTNet-LT++ {(ours)} & 2.0079  & 4.2455  & 0.4090  & \underline{1.7140}  & \underline{0.0635}  & \textbf{3.0794} & \textbf{0.2118} & \textbf{3.3261} & \textbf{0.2229} & \textbf{3.6471} & 0.8305  \\
-%     RODTNet-LT (ours) & \textbf{0.3946} & \textbf{3.5394} & \underline{0.3020}  & \textbf{1.0781} & \textbf{0.0195} & 4.5385  & 0.3831  & \underline{5.0415}  & \underline{0.3875}  & 4.3266  & \textbf{0.3424} \\
-%     \bottomrule
-%     \end{tabular}%}
-%       \begin{tablenotes}
-%         \item[a] + indicates finetuning on the target domain.
-%         \item[b] ++ indicates training directly on the target domain.
-%         \item[c] \textbf{Bold}/\underline{underline} indicates the \textbf{best}/\underline{second} best
-%         \item[d] Models utilizing pretraining-finetuning are excluded from comparison for fairness.
-%     \end{tablenotes}
-% \end{threeparttable}
-% }
-%     \label{tab:soh_results}%
-% \end{table*}%
-
-To evaluate the OOD generalization capability of our proposed RODTNet and RODTNet-LT, we conduct comprehensive experiments across 11 tasks using MAE and MSE as evaluation metrics. For RUL prediction tasks, Table~\ref{tab:rul_results} demonstrates that RODTNet achieves state-of-the-art performance in 9 tasks and ranks second in the remaining 2 tasks, surpassed only by its target-domain-adapted variant. In SOH estimation tasks, RODTNet-LT attains optimal performance in 9 scenarios as shown in Table~\ref{tab:soh_results}, while exhibiting marginal performance gaps against its target-domain counterpart and MAGNet in 2 cases.
-% 
-Quantitatively, in OOD RUL prediction tasks, RODTNet reduces prediction errors by 40.76\% MAE and 28.65\% MSE compared to suboptimal baselines. Similarly, in OOD SOH estimation tasks, RODTNet-LT achieves 5.03\% MAE and 22.22\% MSE improvements over existing benchmarks. These average percentage improvements are calculated by comparing our method's performance against the second-best baseline when it is optimal for a given task, or against the best-performing baseline otherwise (with negative values denoting underperformance relative to the best), and then averaging these relative differences across all 11 generalization tasks. These enhancements validate the proposed method's robustness against domain shifts induced by heterogeneous degradation mechanisms.
-% 
-% In contrast, existing baselines demonstrate limited capability in extracting domain-invariant degradation patterns, even under target domain finetuning/adaptation with partial data access. Notably, both RODTNet and RODTNet-LT outperform their target-domain-trained variants, which can be attributed to the enhanced pattern comprehensiveness achieved through multi-source domain integration.
-% 
-% Visual evidence further corroborates these findings.
-% Fig.~\ref{fig:rul} assesses RODTNet's generalization against baselines using scatter plots (actual vs. predicted life) and error distributions histograms. Each subplot also presents the $R^{2}$ score in the top-left corner, further quantifying the goodness of fit. RODTNet's predictions cluster densely around the ideal line with a significantly narrower error distribution, demonstrating its effectiveness in capturing OOD degradation patterns. Furthermore, as shown by the radar charts in Fig.~\ref{fig:soh_efficiency}(a) for SOH estimation, the performance polygon for RODTNet-LT consistently extends closer to the outer edges of the chart across multiple metrics, reflecting its superior and more comprehensive generalization performance.
-Visual evidence, as demonstrated by the tightly clustered RUL prediction scatter plots in Fig.\ref{fig:rul} and the superior SOH generalization performance polygon in the radar charts of Fig.\ref{fig:soh_efficiency}(a), further corroborates these findings.
+此外，从泛化精度、推理时间开销与可训练参数规模 3 个维度，对各模型的时空效率进行综合比较。图~\ref{fig:RODTNet_SOH_Efficiency_Comparison} 采用气泡图展示比较结果，其中横轴表示推理时间，纵轴表示泛化精度，气泡大小表示模型参数规模。结果显示，RODTNet-LT 对应数据点更接近坐标原点，且气泡半径较小，说明该模型在保持较高泛化精度的同时，具备较低的时间开销与空间开销。进一步比较发现，与 RODTNet-LT 具有相近泛化精度的模型，如 MambaLithium 与 MAGNet，通常需要更大的参数规模或更长的推理时间；而在时空效率方面更具优势的模型，如 PINN、ConvMMD 与 TSMixer，则往往难以达到相同水平的泛化性能。上述结果表明，所提模型在预测性能与计算效率之间实现了更优平衡。
 
 \subsection{消融实验}\label{subsec:RODTNet_ablation_study}
 
@@ -1327,6 +1183,8 @@ We observe RODTNet is generally insensitive to hyperparameters, except for the c
 
 \subsection{退化流形可视化分析}\label{subsec:RODTNet_manifold_analysis}
 
+除了泛化能力的对比，我们进一步探究退化表征的拓扑结构及其在特征空间中的分布。
+
 %
 \begin{figure*}[htbp]
     \centering
@@ -1391,7 +1249,7 @@ We observe RODTNet is generally insensitive to hyperparameters, except for the c
     \label{fig:RODTNet_PCA_1D_Comparison}
 \end{figure*}
 
-To investigate the topology of degradation representations, we apply PCA for dimensionality reduction to three, two, and one dimensions to visualize feature maps from the RODTNet encoder, coloring points by labels. As depicted in Fig.~\ref{fig:Performance_Comparison_2}, the manifold obtained with the MCRDR strategy on the left exhibits a continuous distribution, well-preserved across dimensions, facilitating high-precision generalization. Conversely, the manifold without MCRDR, shown on the right, displays discontinuities appearing as holes and suffers from significant feature overlap between degradation stages upon dimensionality reduction, hindering such generalization.
+我们分别提取RODTNet的编码器输出特征图和以降采样的充放电循环信号为输入的Mamba编码器输出的特征图，通过主成分分析分别绘制其降维到三维，二维和一维的流形并依据标签值着色。在这里我们关注流形在高维空间中的拓扑结构和退化模式在流形中的分布。如图xx所示，左侧是使用MCRDR策略后得到的流形，右侧是不使用MCRDR策略得到的流形结构。前者在高维映射中具有连续的分布，且随着维度的降低退化模式的连续性保持良好，基于这样的退化表征模型可以实现高精度泛化。后者在高维空间中分布不连续，流形结构中有很多孔洞，随着映射维度的降低，不同退化阶段的特征出现很高程度的重叠，基于这样的退化表征难以实现高精度的泛化。
 
 \section{本章小结}\label{sec:RODTNet_conclusion}
 
