@@ -48,79 +48,88 @@
 
 （1）跨数据集信号预处理标准化方法
 
-Since sensor sampling rates, collection conditions, and bearing types vary substantially across different bearing datasets, collected signals exhibit differences on characteristic fault frequency and amplitude.
-When these heterogeneous signals are fed directly to a diffusion model, the model tends to treat the inter-dataset discrepancies as random noise, hindering its ability to learn an effective joint distribution.
-To address this issue, we propose a cross-dataset standardization method.
+鉴于不同轴承数据集在传感器采样率、采集条件和轴承类型方面存在较大差异，所采集信号在特征故障频率与幅值上表现出明显异质性。若将这些异构信号直接输入扩散模型，模型易将跨数据集差异视为随机噪声，从而削弱对有效联合分布的学习能力。为此，提出一种跨数据集标准化方法。
 
-In conventional data preprocessing methods, the raw time-domain signal is typically partitioned into fixed-length samples containing an identical number of data points.
-Because vibration signals are collected at different sampling rates, the fixed-length partition method shifts the characteristic fault frequencies and thus enlarges inter-dataset discrepancies.
-To mitigate this problem, we introduce a fixed-duration segmentation method, and the $m$-th segment is formulated as
+在传统数据预处理中，原始时域信号通常被划分为包含相同采样点数的固定长度样本。由于振动信号的采样率并不一致，固定长度分段会导致特征故障频率发生偏移，并进一步放大跨数据集差异。为缓解该问题，采用固定时长分段策略。设单段持续时间为 1 s，则第 $m$ 段信号可表示为
 \begin{equation}
-\bm{x}_o = \bigl\{\, \bm{x}_r[i] \bigm| i = m\nu,\, m\nu+1,\, \dots,\; (m+1)\nu - 1 \bigr\},
+\bm{x}_o^{(m)}=
+\bigl[
+x_r[m\nu], x_r[m\nu+1], \dots, x_r[(m+1)\nu-1]
+\bigr]^{\top},
 \end{equation}
-where $\nu$ is the dataset-specific sampling rate, and $\bm{x}_r$ is the raw signal.
-After the fixed-duration segmentation, the resulting segments from different datasets should be further aligned in length and amplitude to serve as suitable network inputs.
-This is accomplished by successively applying the discrete Fourier cosine transform and scale normalization, denoted as $\operatorname{DFCT}(\cdot)$ and $\operatorname{SNorm}(\cdot)$, respectively.
-The $\operatorname{DFCT}(\cdot)$ transforms the time-domain segment into its frequency spectrum, after which only the first $L_{f}$ spectral bins are retained, where $L_{f}$ is a predefined length. To accommodate variations in sampling rate, spectra containing fewer than $L_{f}$ bins are zero-padded, whereas those containing more are truncated.
-The amplitude of the resulting spectrum is then mapped to the interval $\left[-1,1\right]$ by $\operatorname{SNorm}(\cdot)$.
-% The successive preprocessing process is expressed as
-This preprocessing process is expressed as
+其中，$\nu$ 表示数据集对应的采样率，$\bm{x}_r$ 表示原始信号。
+
+% \begin{equation}
+% 	\label{eq:scalenorm}
+% 	\operatorname{SNorm}(\bm{x})=g\,\frac{\bm{x}}{\lVert \bm{x}\rVert_{2}},
+% \end{equation}
+% where $g=\rho\sqrt{L_{f}}$, and $\rho$ is a predefined scaling factor.
+
+在固定时长分段之后，为使不同数据集得到的信号片段能够作为统一的网络输入，还需进一步完成长度与幅值对齐。具体而言，依次施加离散傅里叶余弦变换（Discrete Fourier Cosine Transform, DFCT）与尺度归一化（Scale Normalization, SNorm），这两个操作分别定义为 $\operatorname{DFCT}(\cdot)$ 和 $\operatorname{SNorm}(\cdot)$。$\operatorname{DFCT}(\cdot)$ 将时域信号片段变换到频域，并仅保留前 $L_f$ 个谱系数，其中 $L_f$ 为预设长度。对于谱系数长度不足 $L_f$ 的信号，采用零填充；对于谱系数长度超过 $L_f$ 的信号，则进行截断。预处理过程可表示为
+% 
 \begin{equation}
 	\label{eq:dcn}
 	\bm{x}_v =
 	\begin{cases}
-		\operatorname{SNorm}\bigl(\operatorname{DFCT}(\bm{x}_o)[0:L_{f}]\bigr),      & \ell \ge L_{f},\\[4pt]
+		\operatorname{SNorm}\bigl(\operatorname{DFCT}(\bm{x}_o)[0:L_{f} - 1]\bigr),      & \ell \ge L_{f},\\[4pt]
 		\operatorname{SNorm}\bigl(\operatorname{Concat}(\operatorname{DFCT}(\bm{x}_o),\bm{0}_{\,L_{f}-\ell})\bigr), & \ell < L_{f},
 	\end{cases}
 \end{equation}
-where $\ell$ is the actual number of spectral bins, and $\operatorname{SNorm}(\cdot)$ is formulated as
+% 
+其中，$\ell$ 表示实际谱系数长度。$\operatorname{SNorm}(\cdot)$ 定义为
+% 
 \begin{equation}
-	\label{eq:scalenorm}
-	\operatorname{SNorm}(\bm{x})=g\,\frac{\bm{x}}{\lVert \bm{x}\rVert_{2}},
+\label{eq:scalenorm}
+\operatorname{SNorm}(\bm{x})=
+g\frac{\bm{x}}{\lVert \bm{x}\rVert{2} + \varepsilon},
 \end{equation}
-where $g=\rho\sqrt{L_{f}}$, and $\rho$ is a predefined scaling factor.
+% 
+其中，$g=\rho\sqrt{L_f}$，$\rho$ 表示预设缩放系数， $\varepsilon$ 为足够小的正常数，避免上式分母为 0。
 
 （2）ControlNet 引导的条件扩散生成
 
-We employ a diffusion-based augmentation model that simultaneously promotes training stability and sample diversity, which is composed of a forward diffusion phase and a reverse diffusion phase.
-To enhance semantic consistency during generation, we design a ControlNet that injects high-level semantic features into the latent features at every reverse diffusion step.
+为同时提升训练稳定性与样本多样性，采用基于扩散模型的数据增强框架。
+该框架由前向扩散阶段与反向扩散阶段组成。
+为增强生成过程中语义信息的一致性，设计 ControlNet，在每一个反向扩散步中将高层语义特征作为外部条件注入潜在表示。
 
-During the forward diffusion, the preprocessed $\bm{x}_v$ is progressively added with noise through a length-$S$ Markov chain, where isotropic Gaussian noise is incrementally added at each step $s \in \{1,\dots ,S\}$.
-The adding noise process at step $s$ is expressed as
+在前向扩散阶段，通过长度为 $S$ 的马尔可夫链对预处理后的 $\bm{x}_v$ 逐步添加噪声，具体地，在每一个步骤 $s \in {1,\dots ,S}$ 中均增量式加入各向同性 Gaussian 噪声。第 $s$ 步的加噪过程表示为
+% 
 \begin{equation}
 q(\bm{x}_v^{(s)} \mid \bm{x}_v^{(s-1)}) = \mathcal{N}\!\bigl(\sqrt{\alpha^{(s)}}\,\bm{x}_v^{(s-1)},\, (1-\alpha^{(s)})\bm{I}\bigr),
 \end{equation}
-where $\bm{I}$ is the identity matrix, $\alpha^{(s)}$ is a noise scaling factor, $\alpha^{(s)} = 1 - \beta^{(s)}$, and  $\beta^{(s)}$ is specified by a predefined variance schedule $\zeta$.
-After $S$ steps, $\bm{x}_v^{(S)}$ approaches a pure Gaussian sample distribution.
-Using the closed-form accumulation, the whole forward diffusion process can be expressed as
+% 
+其中，$\bm{I}$ 表示单位矩阵，$\alpha^{(s)}$ 表示噪声缩放因子，且 $\alpha^{(s)} = 1 - \beta^{(s)}$，$\beta^{(s)}$ 由预定义的方差调度器 $\zeta$ 给定。
+经过 $S$ 个步骤后，$\bm{x}_v^{(S)}$ 逐渐逼近纯 Gaussian 样本分布。
+利用闭式累积形式，完整的前向扩散过程可表示为
+% 
 \begin{equation}
 q(\bm{x}_v^{(S)} \mid \bm{x}_v^{(0)}) = \mathcal{N}\!\bigl(\sqrt{\hat{\alpha}^{(S)}}\,\bm{x}_v^{(0)},\,(1-\hat{\alpha}^{(S)})\bm{I}\bigr),
 \end{equation}
-where $\hat{\alpha}^{(S)} = \prod_{s=1}^{S} {\alpha}^{(s)}$.
-$\bm{x}_v^{(S)}$ serves as the input for the subsequent reverse diffusion phase.
+% 
+其中，$\hat{\alpha}^{(S)} = \prod_{s=1}^{S} {\alpha}^{(s)}$。$\bm{x}_v^{(S)}$ 作为后续反向扩散阶段的输入。
 
-During the reverse diffusion phase, the initial latent
-$\bm{x}_v^{(S)} \sim \mathcal{N}(0,\bm{I})$ is iteratively refined by a step-aware denoiser $\epsilon_{\bm{\theta}_\mathrm{d}}(\cdot)$.
-At each diffusion step $s$, the UNet-based noise prediction network receives the triplet
-$(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c})$, estimates the added Gaussian perturbation, and computes the posterior mean
+在反向扩散阶段，初始隐变量 $\bm{x}_v^{(S)} \sim \mathcal{N}(0,\bm{I})$ 在扩散步骤感知的去噪器 $\epsilon_{\bm{\theta}_\mathrm{d}}(\cdot)$ 的作用下迭代优化。
+在每一个扩散步骤 $s$ 中，基于 UNet 的噪声预测网络接收三元组 $(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c})$，估计所加入的 Gaussian 扰动，并计算后验均值
+% 
 \begin{equation}
 	\mu_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c}\bigr)
 	= \frac{\bar{\bm{x}}_v^{(s)} - \sigma^{(s)} \epsilon_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)}, s, \bm{c}\bigr)}
 	{\sqrt{\bar{\alpha}^{(s)}}},
 \end{equation}
-where $\bar{\alpha}^{(s)} = 1-\bar{\beta}^{(s)}$, $\sigma^{(s)} = \sqrt{1-\bar{\alpha}^{(s)}}$, and $\bm{c}$ is an external condition vector.
-$\bm{c}$ supplies a controllable guidance throughout the entire reverse diffusion phase by injecting auxiliary information into the noise prediction network.
-A new latent $\bar{\bm{x}}_v^{(s-1)}$ is then sampled from $\mathcal{N} \bigl(
-\mu_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c}\bigr), \bigl(\sigma^{(s)}\bigr)^{2}\bm{I}\bigr).$
-Repeating this stochastic reconstruction for all
-$s = S,\ldots,1$ progressively suppresses the injected noise, and the final output $\bar{\bm{x}}_v^{(0)}$ converges to the learned data distribution, thereby yielding a genuinely synthesized sample.
+% 
+其中，$\bar{\alpha}^{(s)} = 1-\bar{\beta}^{(s)}$，$\sigma^{(s)} = \sqrt{1-\bar{\alpha}^{(s)}}$，$\bm{c}$ 表示外部条件向量。
+$\bm{c}$ 通过向噪声预测网络注入辅助信息，在整个反向扩散阶段提供可控引导。随后，从分布 $\mathcal{N} \bigl(\mu_{{\theta}_\mathrm{d}} \bigl(\bar{\bm{x}}_v^{(s)},\,s,\,\bm{c}\bigr), \bigl(\sigma^{(s)}\bigr)^{2}\bm{I}\bigr)$ 中采样得到新的隐变量 $\bar{\bm{x}}_v^{(s-1)}$。
 
-To inject controllable semantic guidance into the reverse diffusion phase, we design a ControlNet that embeds auxiliary knowledge as a low-dimensional external condition vector $\bm{c}$.
-Specifically, the designed ControlNet is first pre-trained on labeled vibration signals and optimized to map each raw signal to a class-discriminative latent representation.
-To build an external condition vector robust to inter-dataset discrepancies, we adopt a triplet input $\bm{H}_{v} = \bigl[\bm{x}_{v},\;\tilde{\bm{x}}_{v},\;\bm{x}_{vr}\bigr]\in\mathbb{R}^{3 \times L_{f}}$, where $\bm{x}_{v}$ is a query sample generated, $\tilde{\bm{x}}_{v}$ is a fault-free signal sample, $\bm{x}_{vr}=\bm{x}_{v}-\tilde{\bm{x}}_{v}$ is a residual sample that amplifies fault-related deviations.
-As shown in Fig.~\ref{fig_controlnet}, the encoder of ControlNet consists of three large-kernel convolutional channels followed by three cross-channel attention blocks (CCAB) that fuse features across scales.
-Then, the output of encoder is fed into a two-layer fully connected classifier, and the ControlNet is trained by categorical cross-entropy loss.
-During diffusion model training, the ControlNet's encoder and classifier weights, denoted as $\bm{\theta}_\mathrm{enc}$ and $\bm{\theta}_\mathrm{cla}$, are kept frozen.
+对所有 $s = S,\ldots,1$ 重复执行上述随机重构过程，能够逐步抑制所注入的噪声，最终使输出 $\bar{\bm{x}}_v^{(0)}$ 收敛至所学习的数据分布，从而生成真实的合成样本。
+
+为在反向扩散阶段注入可控语义引导，设计 ControlNet，将辅助知识嵌入为低维外部条件向量 $\bm{c}$。
+% 
+具体地，首先在带标签振动信号上对所设计的 ControlNet 进行预训练，使其能够将每个原始信号映射为具有类别判别性的潜在表示。
+% 
+为构建对跨数据集差异具有鲁棒性的外部条件向量，采用三元组输入 $\bm{H}_{v} = \bigl[\bm{x}_{v},\;\tilde{\bm{x}}_{v},\;\bm{x}_{vr}\bigr]\in\mathbb{R}^{3 \times L_{f}}$，其中，$\bm{x}_{v}$ 表示生成的查询样本，$\tilde{\bm{x}}{v}$ 表示无故障信号样本，$\bm{x}_{vr}=\bm{x}_{v}-\tilde{\bm{x}}_{v}$ 表示用于放大故障相关偏差的残差信号。
+% 
+如图~\ref{fig_controlnet} 所示，ControlNet 的编码器由 3 个大核卷积分支构成，其后连接 3 个跨通道注意力模块（Cross-Channel Attention Block, CCAB），用于实现跨尺度特征融合。
+随后，将编码器输出输入两层全连接分类器，并采用类别交叉熵损失对 ControlNet 进行训练。在扩散模型训练阶段，ControlNet 的编码器权重和分类器权重分别记为 $\bm{\theta}_\mathrm{enc}$ 和 $\bm{\theta}_\mathrm{cla}$，并保持冻结。
 
 \begin{figure}[!t]
 	\centering
@@ -167,7 +176,6 @@ Huber loss attenuates the influence of large point-wise residuals and is therefo
 	\label{eq:huber}
 \end{equation}
 where $\lambda$ is the transition threshold of $\operatorname{Huber}(\cdot)$.
-
 
 \subsection{可信多模态大语言模型}\label{subsec:DA-TMLLM_TMLLM}
 
@@ -329,8 +337,6 @@ $\tilde{\operatorname{NLL}}(\mathit{Token}_k)$, then the uncertainty of the key 
 	\caption{}{Illustration of the key token-driven uncertainty reweighting strategy.}
 	\label{fig_strategy}
 \end{figure}
-
-% \subsection{}\label{subsec:DA-TMLLM_inference}
 
 \subsection{基于 DA-TMLLM 的抗幻觉方案}
 \label{sec:scheme}
