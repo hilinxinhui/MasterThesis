@@ -438,20 +438,20 @@ The pipeline in the inference stage is summarized in Algorithm~\ref{alg:inferenc
 在此基础上，进一步将领域特定测试子集与非预期测试子集合并，构建复合测试集，以统一评估模型在抗幻觉场景下的整体性能。
 
 领域特定数据集包括 9 个轴承数据集，即 PU 数据集 \cite{PU}、JNU 数据集 \cite{s130608013}、CWRU 数据集 \cite{15467457}、JUST 数据集 \cite{JUST}、DIRG 数据集 \cite{DAGA2019252}、HIT 数据集 \cite{HIT}、IMS 数据集 \cite{IMS}、MFPT 数据集 \cite{MFPT} 和 XJTU 数据集 \cite{XJTU}。
-上述数据集均收录于 MBHM 仓库中 \cite{Peng_Liu_Du_Gao_Wang_2025}。表 \ref{tab:Detailed datasets} 汇总了本研究采用的 9 个领域特定轴承数据集，给出各数据集对应的故障位置类别及样本数量。非预期数据集包括 UP 数据集 \cite{UP_dataset} 和 MaFaulDa 数据集 \cite{MaFaulDa_dataset}。
+上述数据集均收录于 MBHM 仓库中 \cite{Peng_Liu_Du_Gao_Wang_2025}。表 \ref{tab:da-tmllm_Detailed_datasets_transposed} 汇总了本研究采用的 9 个领域特定轴承数据集，给出各数据集对应的故障位置类别及样本数量。非预期数据集包括 UP 数据集 \cite{UP_dataset} 和 MaFaulDa 数据集 \cite{MaFaulDa_dataset}。
 
 \setlength{\tabcolsep}{3.5pt}
 \renewcommand{\arraystretch}{1.2}
 \begin{table*}[htbp]
     \centering
     \caption{实验数据集详细概况统计}
-    \label{tab:Detailed_datasets_transposed}
+    \label{tab:da-tmllm_Detailed_datasets_transposed}
     
     \begin{tabular}{l c ccc ccc ccc}
         \toprule
-        & & \multicolumn{3}{c}{内圈故障 (-IR)} & \multicolumn{3}{c}{滚珠故障 (B)} & \multicolumn{3}{c}{外圈故障 (OR)} \\
+        & & \multicolumn{3}{c}{内圈故障} & \multicolumn{3}{c}{滚珠故障} & \multicolumn{3}{c}{外圈故障} \\
         \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11}
-        数据集 & 正常 (FF) & 轻微(Mi-) & 中度(Mo-) & 严重(S-) & 轻微() & 中度() & 严重() & 轻微() & 中度() & 严重() \\
+        数据集 & 正常 & 轻微 & 中度 & 严重 & 轻微 & 中度 & 严重& 轻微 & 中度 & 严重 \\
         \midrule
         PU \cite{PU} & 1918 & 954 & 633 & -- & -- & -- & -- & 2223 & 1588 & -- \\
         JNU \cite{s130608013} & 900 & -- & 900 & -- & -- & 900 & -- & -- & 900 & -- \\
@@ -505,14 +505,11 @@ MaFaulDa 数据集包含轴承振动信号，其语义特征与领域特定数�
   \end{tabular}
 \end{table}
 
-
-Eight metrics are utilized for comprehensive evaluation of DA-TMLLM and comparative models, with $\uparrow$ signifying that larger values denote superior performance and $\downarrow$ signifying that lower values are preferred.
-
 所有评估均基于 PyTorch，在配备 NVIDIA RTX 4090 GPU 的服务器上完成。参数规模为 15 亿的 Qwen2 \cite{QWEN} 被用作基座 LLM。
 采用 LoRA技术 \cite{20231213775448} 对 TMLLM 进行微调。
 DA-TMLLM 的超参数设置如表 \ref{tab:Hyperparameter} 所示。此外，各数据集对应的采样率 $\nu$ 见相应数据集的说明文档。
 
-为全面评估 DA-TMLLM 及对比模型，实验采用 8 项指标。
+为全面评估 DA-TMLLM 及对比模型，实验采用 8 项评估指标。
 其中 $\uparrow$ 表示数值越大性能越优，$\downarrow$ 表示数值越小性能越优。
 设领域特定测试子集为 $\mathcal{D}_{\mathrm{ds}}=\{(x_i,y_i)\}_{i=1}^{N_{\mathrm{ds}}}$，非预期测试子集为 $\mathcal{D}_{\mathrm{un}}=\{\tilde{x}_j\}_{j=1}^{N_{\mathrm{un}}}$，复合测试集为 $\mathcal{D}_{\mathrm{mix}}=\mathcal{D}_{\mathrm{ds}}\cup\mathcal{D}_{\mathrm{un}}$。
 $x_i$ 表示领域特定样本，$y_i\in\{1,\dots,N_c\}$ 表示其真实故障类别，$\hat{z}(\cdot)$ 表示模型在复合测试集上的最终判定结果，其取值为具体故障类别或非预期类标记 $\varnothing$。同时，定义 $c(\cdot)\in\mathbb{R}$ 为领域特定置信分数，其数值越大表示样本越可能属于领域特定分布。
@@ -731,9 +728,13 @@ s_{\max}=\max_{1\le t\le L_f}|s_t|,
     DA-TMLLM & \textbf{92.78\%} & \textbf{93.57\%} & \textbf{0.9942} & \textbf{0.0000} & \textbf{1.0000} \\
 \end{longtable}
 
-We evaluate the hallucination-resilient fault diagnosis performance of DA-TMLLM and the eleven baseline models on the MBHM, MaFaulDa, and UP dataset. Table~\ref{tab:comparison result1} demonstrates the results for scenario 1, 2, and 3 using five metrics, including DS-ACC, G-ACC, AUROC, FAR@95, and AUPR. The experimental results underscore the superiority of DA-TMLLM, which substantially and consistently outperforms all baseline models. In Scenario 1, our model improves DS-ACC and G-ACC by 4.05\% and 5.51\% over the second-best model while achieving ideal detection performance. This dominance is maintained in the complex mixed-domain setting of Scenario 3, where it again secures state-of-the-art results across all metrics. The single exception is in Scenario 2, where DA-TMLLM is marginally second to WDSN on the AUPR metric. Nevertheless, it still leads in G-ACC and delivers a 98.95\% FAR@95 reduction from the closest baseline. Averaging a 6.85\% improvement in G-ACC and a 99.65\% reduction in FAR@95 against the strongest competitors, DA-TMLLM effectively demonstrates its capacity for concurrently performing high-accuracy fault diagnosis and robust hallucination detection. In contrast, baseline models exhibit limitations. VQVAE, DCGAN, QSCGAN, and BearLLM, lacking explicit hallucination detection capability, cannot reliably distinguish between domain-specific and undesired inputs, evidenced by a sharp degradation from DS-ACC to G-ACC and poor AUROC and AUPR scores. Among baselines with detection capabilities, a performance trade-off can be observed. The CDLMs, including MLMM, WDSN, and MDCC, generally prove more adept at hallucination detection. Conversely, LLM-based approaches, including LLMCheck, MIND, SHalluDetect, and LLM-OOD, demonstrate superior in-distribution classification. Both categories tend to misclassify valid domain-specific samples as undesired while being overly conservative in processing inputs flagged as hallucinations.
+在 MBHM 数据集、MaFaulDa 数据集和 UP 数据集上，对 DA-TMLLM 与 11 种基线模型的抗幻觉故障诊断性能进行评估。表 \ref{tab:full_hallucination_results} 给出场景 1、场景 2 和场景 3 下 5 项指标的比较结果，包括 DS-ACC、G-ACC、AUROC、FAR@95 和 AUPR。实验结果表明，DA-TMLLM 相较于全部基线模型均表现出更优性能，且优势具有一致性。
 
-To illustrate hallucination-resilient diagnosis performance across varying decision thresholds, we plot the receiver operating characteristic (ROC) and precision-recall (PR) curves, as depicted in Fig.~\ref{ig:DA-TMLLM_Performance_Comparison}. These visualizations graphically corroborate the quantitative findings in Table~\ref{tab:comparison result1}. The ROC curve for DA-TMLLM consistently occupies the ideal top-left corner across all scenarios, signifying superior separability, which aligns with its AUROC and FAR@95 scores. Similarly, the PR curves show our model positioned closest to the top-right corner, maintaining exceptionally high precision across the recall spectrum and confirming its AUPR values. In stark contrast, the curves for baseline models are substantially inferior, reinforcing the conclusion that DA-TMLLM achieves more robust and reliable hallucination detection.
+在场景 1 中，DA-TMLLM 的 DS-ACC 和 G-ACC 分别较次优模型提升 4.05\% 和 5.51\%，同时达到理想的检测性能。在更复杂的混合领域场景 3 中，DA-TMLLM 仍在全部指标上取得最优结果。场景 2 是唯一的例外，在该场景下，DA-TMLLM 在 AUPR 指标上略低于 WDSN，但其 G-ACC 仍保持最高，且 FAR@95 相较于最接近的基线模型降低 98.95\%。综合 3 个场景的结果，DA-TMLLM 相较于最强竞争模型的 G-ACC 平均提升 6.85\%，FAR@95 平均降低 99.65\%。上述结果表明，DA-TMLLM 能够同时实现高精度故障诊断与稳健的幻觉检测。
+
+相比之下，各基线模型表现出不同程度的局限性。VQVAE、DCGAN、QSCGAN 和 BearLLM 由于缺乏显式幻觉检测能力，难以可靠地区分领域特定输入与非预期输入，其性能退化表现为 DS-ACC 与 G-ACC 之间存在明显差距，且 AUROC 与 AUPR 得分较低。在具备检测能力的基线模型中，可以观察到较为明显的性能权衡。属于 CDLMs 范畴的 MLMM、WDSN 和 MDCC 通常在幻觉检测方面表现更优；相对而言，基于 LLM 的方法，包括 LLMCheck、MIND、SHalluDetect 和 LLM-OOD，在分布内分类任务中表现更好。然而，这两类方法均倾向于将有效的领域特定样本误判为非预期输入，并在处理被判定为幻觉的输入时表现出较强保守性。
+
+为展示不同判定阈值下的抗幻觉诊断性能，进一步绘制接收者操作特征曲线（Receiver Operating Characteristic, ROC）与精确率-召回率曲线（Precision-Recall, PR），如图~\ref{fig:DA-TMLLM_ROC_comparison} 和图~\ref{fig:DA-TMLLM_PR_comparison} 所示。定性分析结果与表~\ref{tab:comparison result1} 中的定量结论保持一致。DA-TMLLM 的 ROC 曲线在 3 个场景中均更接近左上角区域，表明其具有更强的可分性，这与 AUROC 和 FAR@95 的结果一致。与此同时，PR 曲线显示，DA-TMLLM 在整个召回率范围内均保持较高精确率，其曲线整体更接近右上角区域，从而进一步验证其 AUPR 表现。相比之下，各基线模型对应曲线整体明显偏离理想区域，这进一步说明 DA-TMLLM 在幻觉检测任务中具有更强的稳健性与可靠性。
 
 \begin{figure*}[htbp]
     \centering
@@ -771,44 +772,9 @@ To illustrate hallucination-resilient diagnosis performance across varying decis
     \label{fig:DA-TMLLM_PR_comparison}
 \end{figure*}
 
-As shown in Fig.~\ref{fig:Performance_Comparison_3}, we further utilize the expanded confusion matrices of DA-TMLLM and the baseline models to quantify the two critical error types in hallucination‐resilient diagnosis, namely erroneous acceptance of undesired inputs and erroneous rejection of domain‐specific samples.
-The expanded confusion matrices jointly present hallucination‐detection outcomes and domain‐specific classification results for scenario 3. The confusion matrix for DA-TMLLM is exceptionally clean, characterized by a dominant diagonal and minimal off-diagonal values. It correctly rejects 98\% of undesired inputs and rejecting none of the domain-specific samples. The baseline models, however, display deficiencies. BearLLM, DCGAN, QSCGAN, and VQVAE suffer from extensive erroneous acceptance, scattering undesired inputs across various fault classes. In contrast, detection-enabled models such as WDSN and SHalluDetect exhibit a high degree of erroneous rejection, misclassifying valid diagnostic signals as undesired inputs. This analysis visually confirms that DA-TMLLM effectively navigates the trade-off between accurate in-distribution classification and the precise rejection of undesired inputs, thereby achieving truly hallucination-resilient diagnosis.
-
-% "As a baseline, we evaluated a model with no specific capability for undesired sample detection. As expected, its FAR@95 score was extremely high, approaching 1. This is because to achieve the 95% recall target, the model's decision threshold must be lowered to a point where it misclassifies nearly all domain-specific samples. This result serves as a sanity check and highlights the challenging nature of the task. In contrast, our proposed model achieves a significantly lower FAR@95 of X.XX, demonstrating its superior ability to distinguish undesired samples with minimal false alarms."
-
-% \begin{figure*}[htbp]
-% 	\centering
-% 	% --- 第一行 ---
-% 	\subfloat[BearLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/1_BearLLM.eps} \label{fig:sub1}}
-% 	\hfil
-% 	\subfloat[DCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/2_DCGAN.eps} \label{fig:sub2}}
-% 	\hfil
-% 	\subfloat[QSCGAN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/3_QSCGAN.eps} \label{fig:sub3}}
-	
-% 	% --- 第二行 ---
-% 	\subfloat[VQVAE]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/4_VQVAE.eps} \label{fig:sub4}}
-% 	\hfil
-% 	\subfloat[MLMM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/5_MLMM.eps} \label{fig:sub5}}
-% 	\hfil
-% 	\subfloat[WDSN]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/6_WDSN.eps} \label{fig:sub6}}
-	
-% 	% --- 第三行 ---
-% 	\subfloat[MDCC]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/7_MDCC.eps} \label{fig:sub7}}
-% 	\hfil
-% 	\subfloat[LLM-Check]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/8_LLM-Check.eps} \label{fig:sub8}}
-% 	\hfil
-% 	\subfloat[MIND]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/9_MIND.eps} \label{fig:sub9}}
-	
-% 	% --- 第四行 ---
-% 	\subfloat[SHalluDetect]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/10_SHalluDetect.eps} \label{fig:sub10}}
-% 	\hfil
-% 	\subfloat[LLM-OOD]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/11_LLM-OOD.eps} \label{fig:sub11}}
-% 	\hfil
-% 	\subfloat[DA-TMLLM]{\includegraphics[width=2.3in]{Img/DA-TMLLM_figures/trans/12_DA-TMLLM.eps} \label{fig:sub12}}
-
-% 	\caption{Expanded confusion matrices comparing DA-TMLLM with the baseline models for hallucination-resilient diagnosis in the scenario 3.}
-% 	\label{fig:Performance_Comparison_3}
-% \end{figure*}
+如图~\ref{fig:DA-TMLLM_Performance_Comparison_3_Part1} 和图~\ref{fig:DA-TMLLM_Performance_Comparison_3_Part2} 所示，进一步采用 DA-TMLLM 与各基线模型的扩展混淆矩阵，对抗幻觉诊断中的两类关键错误进行量化，即对非预期输入的误接受和对领域特定样本的误拒识。针对场景 3，扩展混淆矩阵同时展示幻觉检测结果与领域特定分类结果。
+% 
+DA-TMLLM 的混淆矩阵表现出较高的清晰度，主对角线占优，非对角元素极少。该模型能够正确拒识 98\% 的非预期输入，且不误拒任何领域特定样本。相比之下，各基线模型均表现出不同程度的缺陷。BearLLM、DCGAN、QSCGAN 和 VQVAE 存在较为严重的误接受问题，导致非预期输入被分散误判至多个故障类别。与之相对，具备检测能力的模型，例如 WDSN 和 SHalluDetect，则表现出较高的误拒识比例，即将有效的诊断信号误判为非预期输入。
 
 \begin{figure*}[htbp]
     \centering
@@ -858,58 +824,23 @@ The expanded confusion matrices jointly present hallucination‐detection outcom
 
 \subsection{消融实验}\label{subsec:DA-TMLLM_ablation_study}
 
-We conduct ablation studies to quantify the contribution of each principal component of DA-TMLLM.
-As presented in Table \ref{tab:ablation_study}, experimental results of the ablation study across the three scenarios in terms of DS-ACC, G-ACC, AUROC, FAR@95, and AUPR are reported.
+为量化 DA-TMLLM 各主要组成部分的贡献，开展消融实验。表 \ref{tab:ablation_study} 给出 3 个场景下基于 DS-ACC、G-ACC、AUROC、FAR@95 和 AUPR 的消融实验结果。
 
-（）{w/o ControlNet} We substitute the ControlNet module with a Wide-Kernel Deep Convolutional Neural Network, thereby removing the conditional guidance and reverting the model to a conventional denoising diffusion probabilistic model. This variant exhibits a decrease in performance across all three scenarios, indicating that the ControlNet is essential for extracting discriminative features from vibration signals under various fault types and working conditions.
+（1）w/o ControlNet
 
-（）{w/o CGCDM} We remove the proposed data ControlNet-guided cross-dataset conditional diffusion module and train the diagnostic model exclusively on the original, imbalanced fault signals. This results in a degradation in diagnostic accuracy. This finding underscores the efficacy of our diffusion-based fault mode augmentation, highlighting its effectiveness in mitigating statistical bias and rectifying the distorted decision boundaries caused by data imbalance.
+以宽核深度卷积神经网络替代 ControlNet 模块，从而移除条件引导机制，并使模型退化为常规去噪扩散概率模型（Denoising Diffusion Probabilistic Model, DDPM）。该变体在 3 个场景中的性能均出现下降，说明 ControlNet 对于在不同故障类型和工况条件下从振动信号中提取判别性特征具有关键作用。
 
-（）{w/o KTURS} We replace the proposed token-level uncertainty, as defined in Eq.~\eqref{equa:token_level_uncertainty}, with the normalized energy score in Eq.~\eqref{equa:normalized_energy_score}. We observe a decline in the performance of undesired input identification, as measured by AUROC, FAR@95, and AUPR. This outcome demonstrates that the designed key-token uncertainty reweighting strategy is effective for detecting sequence-level hallucination.
+（2）w/o CGCDM
 
-（）{w/o TMLLM} We remove the trustworthy multimodal large language module and thus eliminate the framework's hallucination detection capability, leading to a decline in the performance of undesired input identification. This outcome confirms that the proposed approach effectively quantifies uncertainties and provides trustworthy diagnostic answers.
+移除所提出的 CGCDM，仅基于原始的类别不平衡故障信号训练诊断模型。该设置导致诊断准确率下降。该结果说明，所提出的基于扩散模型的故障模式增强方法能够有效缓解统计偏置，并修正由数据不平衡引起的决策边界偏移。
 
-% \setlength{\tabcolsep}{1pt}
-% \begin{table*}[t!]
-% 	\footnotesize
-% 	% table caption is above the table
-% 	\caption{Experimental Results of the Ablation Study across the Three Scenarios\textsuperscript{1}}
-% 	\renewcommand{\arraystretch}{1.5}
-% 	\centering
-% 	\label{tab:ablation_study}       % Give a unique label
-% 	% For LaTeX tables use
-% 	\begin{tabular}{c|ccccc|ccccc|ccccc}
-% 		\toprule[1pt]\noalign{\vspace{0.5pt}}
-% 		Scenario&\multicolumn{5}{c|}{Scenario 1 }&\multicolumn{5}{c|}{Scenario 2 }&\multicolumn{5}{c}{Scenario 3 }
-% 		\\\cmidrule(lr){2-6}\cmidrule(lr){7-11}\cmidrule(lr){12-16}
-% 		Metric&DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR &DS-ACC &G-ACC &AUROC &FAR@95 &AUPR \\\midrule[1pt] 
-% 		w/o ControlNet\textsuperscript{2}
-% 		& \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 89.74\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \underline{89.17\%} & 90.48\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
-% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-% 		w/o CGCDM\textsuperscript{4}
-% 		& 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 88.21\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & 87.50\% & 89.05\% & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} \\
-% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-% 		w/o KTURS\textsuperscript{3}
-% 		& \textbf{92.78\%} & \underline{92.05\%} & \underline{0.9284} & \underline{0.5222} & \underline{0.6579} & \textbf{92.78\%} & \underline{91.54\%} & 0.9251 & 0.2861 & 0.7205 & \textbf{92.78\%} & \underline{91.19\%} & 0.9268 & \underline{0.2861} & 0.7773 \\
-% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-% 		w/o TMLLM\textsuperscript{5}
-% 		& \textbf{92.78\%} & 85.64\% & 0.7073 & 1.0000 & 0.1895 & \textbf{92.78\%} & 85.64\% & 0.8625 & 0.6306 & 0.3898 & \textbf{92.78\%} & 79.52\% & 0.7851 & 1.0000 & 0.4210 \\
-% 		\noalign{\vspace{2.8pt}}\hline\noalign{\smallskip}
-% 		DA-TMLLM
-% 		& \textbf{92.78\%} & \textbf{93.33\%} & \textbf{1.0000} & \textbf{0.0000} & \textbf{1.0000} & \textbf{92.78\%} & \textbf{92.82\%} & \underline{0.9860} & \underline{0.0028} & \underline{0.9092} & \textbf{92.78\%} & \textbf{93.57\%} & \underline{0.9942} & \textbf{0.0000} & \underline{0.9887} \\
-% 		%			
-% 		\noalign{\vspace{0.5pt}}
-% 		\bottomrule[1pt]
-% 		\multicolumn{13}{l}{\textsuperscript{1} Best results: \textbf{bold}; second best: \underline{underlined}.}\\	[-5pt]
-% 		\multicolumn{13}{l}{\textsuperscript{2} w/o ControlNet denotes that the ControlNet is removed in the ablation study.}\\	[-5pt]
-% 		\multicolumn{13}{l}{\textsuperscript{3} w/o KTURS denotes that the KTURS is removed in the ablation study.}\\	[-5pt]
-% 		\multicolumn{16}{l}{\textsuperscript{4} w/o CGCDM denotes that the CGCDM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
-% 		\multicolumn{16}{l}{\textsuperscript{5} w/o TMLLM denotes that the TMLLM within the hallucination-resilient scheme is removed in the ablation study.}\\	[-5pt]
-% 	\end{tabular}
-% \end{table*}
-% \setlength{\tabcolsep}{6pt}
+（3）w/o KTURS
 
-% --- 确保导言区包含：\usepackage{longtable, array, booktabs, caption} ---
+以式~\eqref{equa:normalized_energy_score} 所定义的归一化能量分数替代式~\eqref{equa:token_level_uncertainty} 所定义的 token 级不确定性，从而移除所提出的 KTURS。结果显示，以 AUROC、FAR@95 和 AUPR 衡量的非预期输入识别性能出现下降。这表明，所设计的 KTURS 对序列级幻觉检测具有实际作用。
+
+（4）w/o TMLLM
+
+移除 TMLLM 后，框架的幻觉检测能力随之消失，非预期输入识别性能因此下降。该结果说明，所提出的方法能够有效量化不确定性，并提供可信的诊断结果。
 
 \clearpage
 \renewcommand{\arraystretch}{1.3} 
@@ -920,14 +851,14 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
     *{5}{>{\centering\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep}}
 }
     % === 第一页表头 ===
-    \caption{DA-TMLLM 在三个场景下的消融实验结果} \label{tab:ablation_study_wider} \\
+    \caption{DA-TMLLM 在三个场景下的消融实验结果} \label{tab:ablation_study} \\
     \toprule
     模型变体 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
     \midrule
     \endfirsthead
 
     % === 续页表头 ===
-    \caption*{表 \ref{tab:ablation_study_wider}（续）：DA-TMLLM 在三个场景下的消融实验结果} \\
+    \caption*{表 \ref{tab:ablation_study}（续）：DA-TMLLM 在三个场景下的消融实验结果} \\
     \toprule
     模型变体 / 指标 & DS-ACC & G-ACC & AUROC & FAR@95 & AUPR \\
     \midrule
@@ -977,12 +908,18 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
 
 \subsection{超参数敏感性分析}\label{subsec:DA-TMLLM_sensitivity_analysis}
 
+为评估 DA-TMLLM 对超参数设置的敏感性，在 MBHM 数据集、MaFaulDa 数据集和 UP 数据集上开展敏感性分析。实验考察扩散模型噪声调度器 $\zeta$、诊断信号长度 $L_{f}$、LoRA 微调秩 $r_{LoRA}$ 以及关键 token 校准系数 $\omega$ 的影响。上述参数的影响分别通过生成信号与真实信号之间的 RMSE、ControlNet 在已知类别上的诊断准确率、最终微调轮次的二元交叉熵损失（Binary Cross-Entropy, BCE）以及非预期输入检测率进行评估。
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{Img/DA-TMLLM_figures/trans/sa1.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa1}
 \end{figure}
+
+（1）$\zeta$ 的影响
+
+对线性、余弦和 Sigmoid 3 种噪声调度器进行比较。结果如图 \ref{fig:sensitivity_sa1} 所示，线性调度器在多数故障类型上均取得更优的信号重建效果。其原因在于，线性噪声注入方式与故障信号重建任务的归纳偏置更为一致，而非线性调度器可能削弱生成过程的稳定性。
 
 \begin{figure}[!htbp]
     \centering
@@ -991,12 +928,20 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
     \label{fig:sensitivity_sa2}
 \end{figure}
 
+（2）$L_{f}$ 的影响
+
+通过测试 \{960, 1200, 1600, 2400, 4800\} 不同取值，分析诊断信号长度对 DA-TMLLM 性能的影响。图 \ref{fig:sensitivity_sa2} 表明，诊断准确率随信号长度增加而提高。较短信号难以提供充分的判别信息，而过长信号会在扩散过程中带来 GPU 显存瓶颈。因此，选取 $L_{f}=2400$，以兼顾诊断性能与计算开销。
+
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{Img/DA-TMLLM_figures/trans/sa3.eps}
     \bicaption{DA-TMLLM~架构图}{Diagram of DA-TMLLM framework}
     \label{fig:sensitivity_sa3}
 \end{figure}
+
+（3）$r_{LoRA}$ 的影响
+
+考虑到 LoRA 设置会影响微调阶段文本-信号对齐效果，实验分别以值投影层、查询投影层和全部线性层作为微调目标模块，对应设置分别记为 $v\_proj$、$q\_proj$ 和 $all\_linear$。上述 3 类模块的可训练参数量分别占模型总参数量的 0.0130\%、0.0223\% 和 0.300\%。同时，令 $r_{LoRA}$ 取值于 \{1, 2, 4, 8, 16\}。图 \ref{fig:sensitivity_sa3} 显示，随着可训练参数占比和 $r_{LoRA}$ 的增加，文本-信号对齐性能持续改善。当微调目标设置为全部线性层且 $r_{LoRA}=4$ 时，BCE 损失最低，为 0.0240。这一结果与表 \ref{tab:Hyperparameter} 中的最优超参数设置一致。
 
 \begin{figure}[!htbp]
     \centering
@@ -1005,20 +950,15 @@ As presented in Table \ref{tab:ablation_study}, experimental results of the abla
     \label{fig:sensitivity_sa4}
 \end{figure}
 
-To assess the sensitivity of DA-TMLLM's performance to its hyperparameters, we conduct an analysis on the MBHM, MaFaulDa, and UP datasets. This experiment investigates the impact of the diffusion model's noise scheduler $\zeta$, the diagnostic signal length $L_{f}$, the LoRA fine-tuning rank $r_{LoRA}$, and the key-token calibration coefficient $\omega$. The influence of these parameters is evaluated by the RMSE between generated and real signals, ControlNet's diagnostic accuracy on known classes, the binary cross-entropy loss at the final tuning epoch, and the detection rate of undesired inputs, respectively.
+（4）$\omega$ 的影响
 
-（）{Impact of $\zeta$} We evaluate linear, cosine, and sigmoid noise schedulers and find a linear approach yields superior signal reconstruction across most fault types, as shown in Fig.~\ref{fig:Sensitivity_Analysis}. Its uniform noise addition aligns better with the inductive biases for fault signal reconstruction, while non-linear schedulers can impair generative stability.
-
-（）{Impact of $L_{f}$} We investigate the effect of diagnostic signal length on DA-TMLLM's performance by testing values from \{960, 1200, 1600, 2400, 4800\}. As illustrated in Fig.~\ref{fig:Sensitivity_Analysis}, diagnostic accuracy improves with signal length. Shorter signals lack sufficient discriminative information, while excessively long signals can create a GPU memory bottleneck during the diffusion process. Consequently, we select 
-$L_{f} = 2400$ to balance diagnostic efficacy against computational overhead.
-
-（）{Impact of $r_{LoRA}$} Since the settings of LoRA influences text-signal pair alignment during fine-tuning, we conduct an experiment targeting the Value Projection ($v\_proj$), Query Projection ($q\_proj$), and All Linear layers ($all\_linear$). The trainable parameters for these modules are 0.0130\%, 0.0223\%, and 0.300\% of the model's total, respectively. We select the LoRA rank $r_{LoRA}$ from \{1, 2, 4, 8, 16\}. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, text-signal alignment performance improves with both trainable parameter count and LoRA rank. The lowest loss of $0.0240$ is achieved when targeting All Linear layers with $r_{LoRA} = 4$, consistent with the optimal parameters in Table~\ref{tab:Hyperparameter}.
-
-（）{Impact of $\omega$} We assess the impact of the uncertainty calibration coefficient $\omega$ over the range \{1, 2, $\cdots$, 50\} on undesired input detection. As shown in Fig.~\ref{fig:Sensitivity_Analysis}, a larger coefficient enhances DA-TMLLM's ability to detect undesired tokens. This occurs because it more accurately quantifies unbiased token-level uncertainty, thereby amplifying the distributional divergence between domain-specific and undesired tokens.
+在 \{1, 2, $\cdots$, 50\} 取值范围内，评估不确定性校准系数 $\omega$ 对非预期输入检测性能的影响。图 \ref{fig:sensitivity_sa4} 表明，较大的系数能够提升 DA-TMLLM 对非预期 token 的识别能力。这是因为较大的 $\omega$ 能够更准确地刻画无偏的 token 级不确定性，从而放大领域特定 token 与非预期 token 之间的分布差异。
 
 \subsection{故障信号生成质量评估}\label{subsec:DA-TMLLM_signal_generation_quality_evaluation}
 
-We evaluate the quality of synthetic vibration signals generated by DA-TMLLM in comparison with three augmentation-based baselines, including VQVAE, DCGAN, and QSCGAN, for the minority classes of the domain-specific datasets. As summarized in Table \ref{tab:comparison_result2}, DA-TMLLM achieves the lowest RMSE and the highest PSNR and FSCS. Quantitatively, relative to the second-best performing model in each case, DA-TMLLM reduces the average RMSE by 86.9\% while increasing the average PSNR and FSCS by 97.1\% and 67.2\%, respectively, which validates its superiority in data augmentation. This superior performance is attributed to our conditional diffusion model, which excels at capturing complex, non-stationary signal characteristics through a guided, progressive denoising process. In contrast, DCGAN and QSCGAN are prone to training instability, resulting in an incomplete capture of the true data distribution, while VQVAE tends to generate overly smooth signals that lack critical high-frequency details.
+为评估 DA-TMLLM 在领域特定数据集少数类别上的合成振动信号生成质量，将其与 3 种基于数据增强的基线方法进行比较，包括 VQVAE、DCGAN 和 QSCGAN。表 \ref{tab:comparison_result2_refined} 汇总了相关结果。可以看出，DA-TMLLM 在 RMSE 指标上取得最低值，在 PSNR 和 FSCS 指标上取得最高值。与各项结果中的次优模型相比，DA-TMLLM 的平均 RMSE 降低 86.9\%，平均 PSNR 和 FSCS 分别提升 97.1\% 和 67.2\%。上述结果表明，DA-TMLLM 在数据增强任务中具有更优性能。
+% 
+该优势主要归因于所采用的条件扩散模型。该模型通过引导式渐进去噪过程，能够更有效地刻画复杂的非平稳信号特征。相比之下，DCGAN 和 QSCGAN 易受训练不稳定性的影响，因而难以完整表征真实数据分布；VQVAE 则倾向于生成过于平滑的信号，难以保留关键高频细节。
 
 \renewcommand{\arraystretch}{1.3} 
 \setlength{\tabcolsep}{6pt} 
@@ -1101,11 +1041,14 @@ We evaluate the quality of synthetic vibration signals generated by DA-TMLLM in 
     & FSCS & 0.0407 & \underline{0.2624} & 0.3848 & \textbf{0.6873} \\
 \end{longtable}
 
-
 \section{本章小结}\label{sec:DA-TMLLM_conclusion}
 
-In this paper, We have proposed DA-TMLLM, a novel method to detect and alleviate hallucinations of diagnostic LLMs.
-First, we have designed a ControlNet-guided cross-dataset conditional diffusion model to alleviate statistical biases by injecting controllable semantic guidance and synthesizing diverse samples.
-Second, we have designed TMLLM to enhance hallucination detection performance by targeting a key token through point-biserial correlation analysis and significance testing, as well as designing a key token-driven uncertainty reweighting strategy.
-Third, we have designed a hallucination-resilient scheme, which integrates the diffusion-based augmentation and TMLLM into a unified pipeline for hallucination detection and alleviation.
-Evaluation results obtained from eleven fault-diagnosis datasets have indicated that DA-TMLLM consistently achieves superior performance over eleven comparison models across eight metrics.
+本文提出 DA-TMLLM，一种用于检测并缓解诊断大语言模型幻觉的新方法。
+% 
+首先，构建 ControlNet 引导的跨数据集条件扩散模型，通过注入可控语义引导并合成多样化样本，以缓解统计偏置。
+% 
+其次，设计 TMLLM，通过点二列相关分析与显著性检验定位关键 token，并进一步构建关键 token 驱动的不确定性重加权策略，以提升幻觉检测性能。
+% 
+再次，提出一种抗幻觉方案，将基于扩散的数据增强机制与 TMLLM 统一集成于同一流程中，实现幻觉的联合检测与缓解。
+% 
+基于 11 个故障诊断数据集的评估结果表明，DA-TMLLM 在 8 项指标上均持续优于 11 种对比模型。
