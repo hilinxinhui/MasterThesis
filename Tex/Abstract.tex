@@ -10,28 +10,35 @@
 \zihao{-4}
 % \setlength{\baselineskip}{20pt}
 
-具体贡献如下：
+在“双碳”战略持续推进与交通运输体系加速电气化的背景下，电动汽车已进入规模化应用阶段。作为支撑整车动力输出的核心系统，动力电池与旋转机械在长期复杂工况下易发生性能退化与结构故障，直接影响车辆的安全性、可靠性与服役寿命。依托多源传感数据构建数据驱动的智能预测与健康管理方法，已成为保障电动汽车全生命周期高可靠运行的重要技术路径。然而，受观测噪声、工况变化、域分布漂移以及未知输入等因素影响，现有深度模型在实际部署中普遍存在推断偏差、泛化失效和大模型幻觉等问题，难以满足高可信决策需求。围绕上述问题，本文以无偏不确定性量化为主线，面向电动汽车关键部件开展退化建模与故障诊断研究，构建了覆盖可信状态估计、分布外鲁棒退化建模和抗幻觉故障诊断的智能预测与健康管理方法体系。
 
-（）针对
+本文的主要研究工作如下：
 
-提出一种
+（1）针对锂离子电池健康状态可信估计问题，提出一种基于层次化随机时空 Transformer 的健康状态估计方法。该方法利用 Gumbel-Softmax 重参数化构建随机自注意力机制，使特征聚合过程具备不确定性量化能力；进一步结合计及不确定性的时间步卷积、距离敏感的层次化 Transformer 编码器以及基于保序回归的不确定性校准策略，实现对时空退化特征的有效提取与无偏置信度修正。实验结果表明，所提出方法在多个锂离子电池循环老化数据集上的估计精度和不确定性量化质量均优于对比方法，并能够有效辨识分布内外退化模式。
 
-（）针对
+（2）针对锂离子电池在未知工况与未见退化模式下的泛化退化建模问题，提出一种基于拓扑约束下不确定性驱动特征调弈的分布外鲁棒退化建模方法。该方法通过启发式循环信号重构与基于 Mamba 的流形收缩特征提取策略，构建低本征维度且具有拓扑连续性的退化表征；进一步利用多元高斯统计建模与不确定性驱动特征合成策略模拟潜在分布外退化模式，并设计长尾感知的自适应重平衡优化机制，缓解样本分布不均带来的建模偏置。基于多个开源电池数据集构建的分布外泛化实验表明，所提出方法在退化建模任务上具有更强的鲁棒性和泛化能力。
 
-提出一种
+（3）针对多模态大语言模型在旋转机械故障诊断中的幻觉问题，提出一种基于扩散增强可信多模态大语言模型的抗幻觉故障诊断方法。该方法首先构建 ControlNet 引导的跨数据集条件扩散模型，生成多样化少样本故障信号以缓解类别统计偏差；随后设计文本-信号对齐的可信多模态大语言模型，并通过关键 token 定位与不确定性重加权策略实现序列级幻觉检测；进一步构建面向非预期输入的抗幻觉诊断流程，提升模型对未知输入的拒识与可靠诊断能力。实验结果表明，所提出方法在多个故障诊断数据集和多项评价指标上均优于现有对比方法。
 
-（）针对
+综上，本文围绕电动汽车关键部件在复杂工况下的高可靠运行需求，系统研究了无偏不确定性量化在可信估计、分布外泛化和抗幻觉诊断中的作用机理与实现方法。相关研究不仅提升了数据驱动模型的预测精度与可靠性，也为构建面向实际应用场景的电动汽车智能预测与健康管理系统提供了理论依据和方法支撑。
 
-提出一种
+\keywords{电动汽车; 预测与健康管理; 无偏不确定性量化; 锂离子电池; 退化建模; 旋转机械; 故障诊断; 大语言模型}% 中文关键词
 
-综上
-
-\keywords{电动汽车; 动力系统; 智能化方法; 深度学习; 锂离子电池; 旋转机械; 退化建模; 故障诊断}% 中文关键词
 %-
 %-> 英文摘要
 %-
 \chapter{Abstract}\chaptermark{Abstract}% 摘要标题
 
+Driven by the carbon-neutral transition and the rapid electrification of transportation, electric vehicles have entered a stage of large-scale deployment. As two critical subsystems that sustain vehicle power output, lithium-ion batteries and rotating machinery are prone to performance degradation and structural faults under long-term and complex operating conditions, which directly affect vehicle safety, reliability, and service life. Data-driven intelligent prognostics and health management has become an important technical paradigm for ensuring the reliable operation of electric vehicles throughout the whole life cycle. However, existing deep models still suffer from inference bias, poor generalization under distribution shifts, and hallucinations of large models when confronted with observation noise, varying operating conditions, domain shifts, and unexpected inputs in real-world deployment, which limits their applicability in safety-critical scenarios. To address these issues, this thesis takes unbiased uncertainty quantification as the main line and studies degradation modeling and fault diagnosis for key components of electric vehicles, forming a unified methodological framework for trustworthy state estimation, out-of-distribution robust degradation modeling, and hallucination-resilient fault diagnosis.
 
+The main contributions of this thesis are as follows:
 
-\englishkeywords{Electric vehicle; Powertrain system; Intelligent methods; Deep learning; Lithium-ion battery; Rotating machinery; Degradation modeling; Fault Diagnosis}
+First, for trustworthy state-of-health estimation of lithium-ion batteries, a hierarchical stochastic spatial-temporal Transformer based method is proposed. By introducing a stochastic self-attention mechanism via Gumbel-Softmax reparameterization, the proposed method equips feature aggregation with uncertainty quantification capability. Furthermore, uncertainty-aware time-step convolution, a distance-sensitive hierarchical Transformer encoder, and an isotonic-regression-based uncertainty calibration strategy are integrated to extract spatial-temporal degradation features and correct confidence bias. Experimental results on multiple battery aging datasets demonstrate that the proposed method outperforms competitive baselines in both estimation accuracy and uncertainty quantification quality, while effectively distinguishing in-distribution and out-of-distribution degradation patterns.
+
+Second, for generalized degradation modeling of lithium-ion batteries under unseen operating conditions and degradation patterns, an out-of-distribution robust degradation modeling method with topology-constrained uncertainty-driven feature manipulation is proposed. The method combines heuristic cycle-signal reconstruction and a Mamba-based manifold-contraction feature extraction strategy to build degradation representations with low intrinsic dimensionality and strong topological continuity. On this basis, multivariate Gaussian statistical modeling and an uncertainty-driven feature synthesis strategy are introduced to simulate potential out-of-distribution degradation patterns, and a long-tail-aware adaptive rebalancing mechanism is further designed to alleviate modeling bias caused by imbalanced data distributions. Extensive out-of-distribution generalization experiments on multiple public battery datasets verify the robustness and generalization capability of the proposed method in degradation modeling tasks.
+
+Third, for hallucination issues of multimodal large language models in rotating machinery fault diagnosis, a diffusion-augmented trustworthy multimodal large language model based hallucination-resilient diagnosis method is proposed. A ControlNet-guided cross-dataset conditional diffusion model is first constructed to generate diverse fault samples for minority classes, thereby mitigating statistical bias. Then, a trustworthy multimodal large language model with text-signal alignment is developed, and a sequence-level hallucination detection strategy is designed through key-token localization and uncertainty reweighting. On this basis, an anti-hallucination diagnosis workflow for unexpected inputs is further established to improve both reliable diagnosis and rejection capability. Experimental results on multiple fault diagnosis datasets show that the proposed method consistently outperforms existing baselines across multiple evaluation metrics.
+
+In summary, this thesis systematically investigates the role of unbiased uncertainty quantification in trustworthy estimation, out-of-distribution generalization, and hallucination-resilient diagnosis for key components of electric vehicles under complex operating conditions. The proposed methods improve both predictive accuracy and model reliability, and provide theoretical and methodological support for building practical intelligent prognostics and health management systems for electric vehicles.
+
+\englishkeywords{Electric vehicle; Prognostics and health management; Unbiased uncertainty quantification; Lithium-ion battery; Degradation modeling; Rotating machinery; Fault diagnosis; Large language model}
