@@ -95,7 +95,7 @@ GSR 技术通过将 Gumbel 噪声引入 logits，并对合成后的向量施加 
 % 
 MCD 等变分近似方法的核心理论基础在于通过注入高斯扰动或可渐近等效为高斯分布的随机噪声，以逼近神经网络权重的后验分布。从而，基于 GSR 的离散变量连续松弛在概率测度空间上与连续高斯扰动同构。这种同构性质从数学层面论证，采用 GSR 驱动的随机机制与基于 MCD 的连续空间近似方法具有一致的不确定性量化理论基础。
 % 
-本文在第 \ref{subsec:ablation_study} 小节呈现的实验结果进一步表明，所提方法在建模模型不确定性方面优于基于 MCD 的方法。
+本文在第 \ref{subsec:HSSTT_ablation_study} 小节呈现的实验结果进一步表明，所提方法在建模模型不确定性方面优于基于 MCD 的方法。
 
 将确定性注意力机制随机化，为阐明模型内部的决策过程提供直接可能性。随机化不仅实现不确定性量化，同时提升模型的可解释性。将注意力权重概念化为概率分布后，其在多次随机前向传播中的方差即可作为可量化指标，用于衡量模型对每个输入循环信号片段显著性的置信度。低方差表明模型对特定特征作为稳定退化指标的有效性具有高置信度；反之，高方差则意味着模型在处理含噪或模糊的数据片段时存在不确定性。这种内嵌的可解释性为生成关于输入数据的不确定性图谱提供可能，并为后续可信特征提取过程奠定基础。
 
@@ -435,7 +435,7 @@ RMSE 侧重于惩罚较大的估计误差，定义为
 
 除上述定量指标外，SOH 估计、不确定性量化以及模型校准的可视化分析为模型综合评估提供直观的定性补充。
 
-\subsection{性能对比实验}\label{subsec:HSSTT_comparison_experiment}
+\subsection{性能对比}\label{subsec:HSSTT_comparison_experiment}
 
 所提出的 HSSTT 与各基线模型在 SOH 估计、不确定性量化与校准的定量评估结果汇总于表~\ref{tab:HSSTT_main_results_MIT_TRI} 和表~\ref{tab:HSSTT_main_results_TJU_XJTU} 中，其中表~\ref{tab:HSSTT_main_results_MIT_TRI} 展示 MIT 和 TRI 数据集上的实验表现，表~\ref{tab:HSSTT_main_results_TJU_XJTU} 列出 TJU 和 XJTU 数据集上的对应结果。HSSTT 在上述 4 个数据集的 MAE、RMSE、NLL 和 ECE 指标上均取得最优性能。
 

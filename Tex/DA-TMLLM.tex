@@ -637,7 +637,7 @@ s_{\max}=\max_{1\le t\le L_f}|s_t|,
 }
 \end{equation}
 
-\subsection{性能对比试验}\label{subsec:DA-TMLLM_comparison_experiment}
+\subsection{性能对比}\label{subsec:DA-TMLLM_comparison_experiment}
 
 在 MBHM 数据集、MaFaulDa 数据集和 UP 数据集上，对 DA-TMLLM 与 11 种基线模型的抗幻觉故障诊断性能进行评估。表 \ref{tab:full_hallucination_results} 给出场景 1、场景 2 和场景 3 下 5 项指标的比较结果，包括 DS-ACC、G-ACC、AUROC、FAR@95 和 AUPR。实验结果表明，DA-TMLLM 相较于全部基线模型均表现出更优性能，且优势具有一致性。
 
@@ -729,7 +729,7 @@ s_{\max}=\max_{1\le t\le L_f}|s_t|,
 
 相比之下，各基线模型表现出不同程度的局限性。VQVAE、DCGAN、QSCGAN 和 BearLLM 由于缺乏显式幻觉检测能力，难以可靠地区分领域特定输入与非预期输入，其性能退化表现为 DS-ACC 与 G-ACC 之间存在明显差距，且 AUROC 与 AUPR 得分较低。在具备检测能力的基线模型中，可以观察到较为明显的性能权衡。属于 CDLMs 范畴的 MLMM、WDSN 和 MDCC 通常在幻觉检测方面表现更优；相对而言，基于 LLM 的方法，包括 LLMCheck、MIND、SHalluDetect 和 LLM-OOD，在分布内分类任务中表现更好。然而，这两类方法均倾向于将有效的领域特定样本误判为非预期输入，并在处理被判定为幻觉的输入时表现出较强保守性。
 
-为展示不同判定阈值下的抗幻觉诊断性能，进一步绘制接收者操作特征曲线（Receiver Operating Characteristic, ROC）与精确率-召回率曲线（Precision-Recall, PR），如图~\ref{fig:DA-TMLLM_ROC_comparison} 和图~\ref{fig:DA-TMLLM_PR_comparison} 所示。定性分析结果与表~\ref{tab:comparison result1} 中的定量结论保持一致。DA-TMLLM 的 ROC 曲线在 3 个场景中均更接近左上角区域，表明其具有更强的可分性，这与 AUROC 和 FAR@95 的结果一致。与此同时，PR 曲线显示，DA-TMLLM 在整个召回率范围内均保持较高精确率，其曲线整体更接近右上角区域，从而进一步验证其 AUPR 表现。相比之下，各基线模型对应曲线整体明显偏离理想区域，这进一步说明 DA-TMLLM 在幻觉检测任务中具有更强的稳健性与可靠性。
+为展示不同判定阈值下的抗幻觉诊断性能，进一步绘制接收者操作特征曲线（Receiver Operating Characteristic, ROC）与精确率-召回率曲线（Precision-Recall, PR），如图~\ref{fig:DA-TMLLM_ROC_comparison} 和图~\ref{fig:DA-TMLLM_PR_comparison} 所示。定性分析结果与表~\ref{tab:full_hallucination_results} 中的定量结论保持一致。DA-TMLLM 的 ROC 曲线在 3 个场景中均更接近左上角区域，表明其具有更强的可分性，这与 AUROC 和 FAR@95 的结果一致。与此同时，PR 曲线显示，DA-TMLLM 在整个召回率范围内均保持较高精确率，其曲线整体更接近右上角区域，从而进一步验证其 AUPR 表现。相比之下，各基线模型对应曲线整体明显偏离理想区域，这进一步说明 DA-TMLLM 在幻觉检测任务中具有更强的稳健性与可靠性。
 
 \begin{figure*}[htbp]
     \centering
