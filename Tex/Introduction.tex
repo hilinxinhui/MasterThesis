@@ -146,7 +146,7 @@
 
 现有面向~PHM~的泛化研究工作包含多种技术范式和应用场景，本节对已有方法进行系统性归纳和形式化表示以便后续讨论。
 
-\begin{table}[htbp]
+\begin{table}[h]
 \centering
 % \caption{PHM~典型场景划分表涉及的主要符号定义}  % 或：域适应场景符号定义
 \bicaption{PHM~典型场景划分表涉及的主要符号定义}{Definitions of the main symbols involved in the table of typical PHM scenario categorization}
@@ -220,9 +220,7 @@ $\Omega, \mathcal{L}$
 % 
 如~表~\ref{tab:generalization_framework}所示，在目标域数据有标签可用时，直接微调基于源域训练的模型参数即可；当目标域数据只有少量有标签而大部分无标签时，往往通过设计域适应正则项 $\mathcal{L}_{\text{ada}}$ 对齐数据分布；若在通常的泛化问题上添加特殊的设定，如源域数据不可访问或目标域的无标签数据随时间流式、单次地给出，即得到无源域自适应问题和测试时自适应问题，前者的研究挑战转变为设计自监督信号，例如设置一致性正则项 $\mathcal{L}_{\text{con}}$，后者的参数更新则往往采用在线的形式；当目标域数据完全不可用时，优化目标在于学习域不变表征以分别应对退化趋势外推预测与未知故障辨识的挑战。具体地，对退化建模问题，通常涉及结构正则项 $\mathcal{L}_{\text{str}}$，对故障诊断问题则通常引入不变性风险惩罚项 $\mathcal{L}_{\text{inv}}$。
 
-动力电池因工况与个体差异导致的数据分布漂移削弱了退化模型的泛化性能。为实现可靠~PHM~对可泛化性的要求，现有文献依据对目标域数据的可访问性，发展出基于三种范式的退化建模方法，包括基于{预训练-微调（Pre-training-Finetuning, PT-FT）范式}的退化建模方法，对应表中的\textbf{完全监督微调}与\textbf{半监督自适应}场景；基于{域自适应（Domain Adaptation, DA）范式}的退化建模方法，主要对应表中\textbf{标准无监督自适应}场景；以及基于{域泛化（Domain Generalization, DG）范式}的退化建模方法，对应表中的\textbf{域泛化}场景。
-
-\begin{table}[htbp]
+\begin{table}[h]
 \centering
 % \caption{按目标域数据可访问性划分的~PHM~典型场景}
 \bicaption{按目标域数据可访问性划分的~PHM~典型场景}{Typical PHM scenarios categorized according to target-domain data accessibility}
@@ -267,6 +265,8 @@ $\Omega, \mathcal{L}$
 \bottomrule
 \end{tabularx}
 \end{table}
+
+动力电池因工况与个体差异导致的数据分布漂移削弱了退化模型的泛化性能。为实现可靠~PHM~对可泛化性的要求，现有文献依据对目标域数据的可访问性，发展出基于三种范式的退化建模方法，包括基于{预训练-微调（Pre-training-Finetuning, PT-FT）范式}的退化建模方法，对应表中的\textbf{完全监督微调}与\textbf{半监督自适应}场景；基于{域自适应（Domain Adaptation, DA）范式}的退化建模方法，主要对应表中\textbf{标准无监督自适应}场景；以及基于{域泛化（Domain Generalization, DG）范式}的退化建模方法，对应表中的\textbf{域泛化}场景。
 
 （1）{基于预训练-微调范式的退化建模}
 
