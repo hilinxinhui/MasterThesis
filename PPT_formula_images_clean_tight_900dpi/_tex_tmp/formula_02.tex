@@ -1,0 +1,20 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  z = \bm e_{\operatorname{argmax}_i(g_i+\log \pi_i)} \\
+  g_i = -\log(-\log u_i), \quad u_i\sim \mathcal{U}(0,1) \\
+  \tilde{A}^{(j)}_i
+  =\frac{\exp((g_i+\log \pi_i)/\tau)}
+  {\sum_{k=1}^{T}\exp((g_k+\log \pi_k)/\tau)} 
+\end{gathered}
+\)
+\end{preview}
+\end{document}

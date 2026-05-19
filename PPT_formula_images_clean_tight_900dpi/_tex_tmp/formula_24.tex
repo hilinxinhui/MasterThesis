@@ -1,0 +1,24 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  r_{pb}
+  = \frac{\mu_{nor}-\mu_{un}}{\sigma_{total}}
+  \sqrt{\frac{N_{nor}N_{un}}{(N_{nor}+N_{un})^2}} \\
+  t
+  = r_{pb}
+  \sqrt{\frac{(N_{nor}+N_{un})-2}{1-r_{pb}^{2}}}, \quad
+  df=(N_{nor}+N_{un})-2 \\
+  p_{\text{two-sided}}
+  = 2\left[1-F_{t_{df}}(|t|)\right]
+\end{gathered}
+\)
+\end{preview}
+\end{document}

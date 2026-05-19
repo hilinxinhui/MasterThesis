@@ -1,0 +1,630 @@
+﻿\documentclass[UTF8,a4paper,10pt]{ctexart}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\geometry{landscape,margin=1.05cm}
+\linespread{0.96}
+\setlist[itemize]{leftmargin=1.8em,itemsep=0.1em,topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=0.1em,topsep=0.2em}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\mathtoolsset{showonlyrefs=true}
+\allowdisplaybreaks
+\setlength{\jot}{6pt}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayshortskip}{2pt}
+\setlength{\belowdisplayshortskip}{2pt}
+\newtcolorbox{formulabox}{
+  enhanced,
+  colback=white,
+  colframe=black!45,
+  boxrule=0.45pt,
+  arc=1.2mm,
+  left=4mm,
+  right=4mm,
+  top=1.5mm,
+  bottom=1.5mm,
+  width=0.88\linewidth,
+  before={\begin{center}},
+  after={\end{center}},
+  before skip=4pt,
+  after skip=4pt
+}
+
+\begin{document}
+
+\section{第一项研究内容（共三页）：HSSTT 可信 SOH 估计方法}
+
+\subsection{第 1 页：随机自注意力机制}
+
+\subsubsection*{注意力权重的概率化}
+将注意力 logits 参数化为 Gumbel-Softmax 分布，使片段关联由确定性权重转化为可采样概率权重，并支持不确定性表征。
+\begin{formulabox}
+\[
+  \tilde{A}^{(j)} \sim \mathcal{G}\left((K^{(j)\top}Q^{(j)})/\tau\right)
+\]
+\end{formulabox}
+
+\subsubsection*{Gumbel-Softmax 可微采样}
+通过 Gumbel-Max 采样构造离散注意力选择，并以 Gumbel-Softmax 连续松弛获得可反向传播的随机注意力权重。
+\begin{formulabox}
+\[\begin{gathered}
+  z = \bm e_{\operatorname{argmax}_i(g_i+\log \pi_i)} \\
+  g_i = -\log(-\log u_i), \quad u_i\sim \mathcal{U}(0,1) \\
+  \tilde{A}^{(j)}_i
+  =\frac{\exp((g_i+\log \pi_i)/\tau)}
+  {\sum_{k=1}^{T}\exp((g_k+\log \pi_k)/\tau)} 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{与高斯扰动的理论一致性}
+由高斯变量到 Gumbel 噪声的双射表明，该离散松弛机制与高斯扰动近似同构，从而支撑其不确定性量化合理性。
+\begin{formulabox}
+\[
+  g_i = -\log(-\log(\Phi(\epsilon))), \quad \epsilon\sim\mathcal{N}(0,1)
+\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 1 页说明：随机自注意力机制}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $Q^{(j)}$、$K^{(j)}$：第 $j$ 个注意力头的查询矩阵和键矩阵。
+  \item $\tilde A^{(j)}$：随机化后的注意力权重矩阵。
+  \item $\mathcal{G}(\cdot)$：Gumbel-Softmax 分布。
+  \item $\tau$：温度参数，控制连续松弛程度。
+  \item $\pi_i$：第 $i$ 个候选片段对应的非归一化注意力参数。
+  \item $g_i$、$u_i$、$\epsilon$：Gumbel 噪声、均匀随机变量和标准高斯随机变量。
+  \item $\bm e_{\operatorname{argmax}_i(\cdot)}$：由最大响应位置确定的独热基向量。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式把标准注意力权重改写为从 Gumbel-Softmax 分布采样的随机变量。
+  \item 第二组公式说明 Gumbel-Max 的离散选择如何通过连续松弛转化为可微注意力权重。
+  \item 第三组公式说明 Gumbel 噪声可由高斯变量映射得到，用于支撑该随机机制与常见变分不确定性建模的一致性。
+\end{itemize}
+
+\clearpage
+\subsection{第 2 页：层次化随机时空 Transformer}
+
+\subsubsection*{距离敏感注意力校正}
+将循环间距离映射为注意力重标定系数，使随机注意力同时刻画片段相关性与退化时间间隔。
+\begin{formulabox}
+\[
+  \hat{R}^{(j)}
+  = \frac{1+\exp(V^{(j)})}{1+\exp(V^{(j)}-R^{(j)})}
+\]
+\end{formulabox}
+
+\subsubsection*{可学习聚类键向量}
+在可学习质心上重构 Key 表征，压缩冗余 token 并提升稀疏退化特征的聚合效率。
+\begin{formulabox}
+\[\begin{gathered}
+  Q^{(j)},K^{(j)},V^{(j)}
+  = W_Q^{(j)}X,\;W_K^{(j)}X,\;W_V^{(j)}X \\
+  \hat{A}_{C}
+  \sim \mathcal{G}\left(({K^{(j)}}^\top C)/\tau_1\right) \\
+  \hat{K}^{(j)}
+  = \hat{A}_{C}C^\top 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{距离感知的层次化随机聚合}
+在聚类 Key 与距离矩阵共同约束下采样注意力权重，生成兼具时序结构感知与不确定性表征能力的退化特征。
+\begin{formulabox}
+\[\begin{gathered}
+  \hat{A}^{(j)}
+  \sim \mathcal{G}\left((\sigma(\hat{K}^{(j)\top}Q^{(j)}) * \hat{R}^{(j)})/\tau_2\right) \\
+  \hat{H}^{(j)}
+  = \hat{A}^{(j)}V^{(j)} \\
+  \widehat{\operatorname{MHA}}
+  = \operatorname{concat}\left(\hat{H}^{(1)}\hat{H}^{(2)}\cdots\hat{H}^{(h)}\right)W_O 
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 2 页说明：层次化随机时空 Transformer}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $R^{(j)}$、$\hat R^{(j)}$：第 $j$ 个注意力头的距离矩阵及其重标定结果。
+  \item $V^{(j)}$：距离重标定函数中的可训练参数。
+  \item $X$：输入序列特征。
+  \item $W_Q^{(j)}$、$W_K^{(j)}$、$W_V^{(j)}$：查询、键、值投影矩阵。
+  \item $C$：可学习聚类质心矩阵。
+  \item $\hat A_C$、$\hat K^{(j)}$：质心采样权重和聚类后的 Key 表征。
+  \item $\hat A^{(j)}$、$\hat H^{(j)}$：层次化随机注意力权重和对应注意力头输出。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式将循环距离映射为注意力重标定系数，用于补充传统位置编码难以表达的真实退化间隔。
+  \item 第二组公式先计算 Q/K/V，再用可学习质心对 Key 进行聚类重构。
+  \item 第三组公式把聚类 Key、距离矩阵和 Gumbel-Softmax 采样结合，得到层次化随机多头注意力输出。
+\end{itemize}
+
+\clearpage
+\subsection{第 3 页：不确定性标定}
+
+\subsubsection*{误差分解与校准动因}
+将预测误差展开为系统偏差、采样方差与噪声项，揭示精度提升并不等价于置信度无偏。
+\begin{formulabox}
+\[\begin{gathered}
+  E\left((y-\hat f(X))^2\right)
+  = \operatorname{Bias}^2(\hat f(X))+\operatorname{Var}(\hat f(X))+\sigma^2 \\
+  = \left(E(\hat f(X))-E_{y\mid X}(f(X))\right)^2
+  +E\left((E(\hat f(X))-\hat f(X))^2\right)+\sigma^2
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{分布覆盖率校准}
+以模型赋予真实 SOH 的累计概率为校准样本，学习单调映射 $g$ 修正预测分布，使置信度与经验覆盖率一致。
+\begin{formulabox}
+\[\begin{gathered}
+  s_i = F_i(y_i), \quad
+  \hat p(s_i)
+  = \frac{1}{N}\sum_{j=1}^{N}\mathbb{I}\{F_j(y_j)\leq s_i\} \\
+  g^*
+  = \arg\min_{g\in\mathcal{G}_{mono}}
+  \sum_{i=1}^{N}\left(g(s_i)-\hat p(s_i)\right)^2 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{后验预测与置信估计}
+从参数后验中采样得到一组预测结果，并用其均值与标准差分别作为 SOH 点估计和不确定性判据。
+\begin{formulabox}
+\[\begin{gathered}
+  \theta^{(b)}\sim p(\theta\mid D), \quad
+  y^{(b)}=f_{\theta^{(b)}}(X), \quad b=1\dots,B \\
+  \hat{y}
+  = \frac{1}{B}\sum_{b=1}^{B}y^{(b)}, \quad
+  \hat{\sigma}
+  = \sqrt{\frac{1}{B-1}
+  \sum_{b=1}^{B}\left(y^{(b)}-\hat y\right)^2}
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 3 页说明：不确定性标定}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $X$、$y$：输入循环信号和真实 SOH。
+  \item $\hat f(X)$：随机模型的预测函数输出。
+  \item $F_i$：第 $i$ 个样本对应的预测 CDF。
+  \item $s_i$：模型赋予真实标签 $y_i$ 的累计概率。
+  \item $\hat p(s_i)$：由校准集计算得到的经验覆盖率。
+  \item $g^*$：通过保序回归学习得到的单调校准映射。
+  \item $\theta^{(b)}$、$y^{(b)}$：第 $b$ 次后验参数采样及其对应预测值。
+  \item $\hat y$、$\hat\sigma$：SOH 点估计和预测不确定性。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式说明预测误差由偏差、方差和噪声共同决定，因此原始随机模型仍可能存在置信度偏差。
+  \item 第二组公式给出校准数据的构造方式，并用单调映射 $g^*$ 对齐预测概率和经验覆盖率。
+  \item 第三组公式给出推理阶段的 Monte Carlo 估计流程，均值用于 SOH 估计，标准差用于不确定性和 OOD 判定。
+\end{itemize}
+
+\clearpage
+\section{第二项研究内容（共三页）：RODTNet 分布外鲁棒退化建模方法}
+
+\subsection{第 1 页：基于流形收缩的退化表征提取策略}
+
+\subsubsection*{流形收缩与泛化上界}
+用信息瓶颈和本征维度约束退化表征，使其兼具标签可预测性和低复杂度流形结构。
+\begin{formulabox}
+\[\begin{gathered}
+  \min_Z \mathcal{IB}
+  = \min_Z\left[-\mathcal{I}(Z;Y)+\beta\mathcal{I}(Z;X)\right]
+  = \min_Z\left[(1-\beta)\mathcal{H}(Y\mid Z)+\beta\mathcal{H}(Z\mid Y)\right] \\
+  \Delta_{\mathcal{S}\mathcal{T}}
+  = \mathbb{E}_{\mathcal{S}}\left[\lVert f(\bm z)-y\rVert_2\right]
+  - \mathbb{E}_{\mathcal{T}}\left[\lVert f(\bm z)-y\rVert_2\right]
+  \leq 2KQ\left(\mathcal{H}(Z\mid Y)\right) \\
+  \mathcal{H}(Z\mid Y)
+  \leq \mathbb{E}_{y_i\sim\mathcal{Y}}
+  \left[-\log(\epsilon)\operatorname{IntDim}(\mathcal{M}_i)
+  +\log\frac{K'}{C(\epsilon)}\right]
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{Mamba 退化特征编码}
+用门控残差结构和状态空间递推建模重构信号的长程退化依赖，获得紧凑连续的潜在表征。
+\begin{formulabox}
+\[\begin{gathered}
+  Z^{B}_{MRB} = \operatorname{SiLU}(\operatorname{Linear}(\widetilde X_{Emb})),\quad
+  Z^{M}_{MRB} = \operatorname{SSM}(\operatorname{SiLU}(\operatorname{Conv}(\operatorname{Linear}(\widetilde X_{Emb})))),\quad
+  Z_{MRB} = \operatorname{Linear}(Z^{M}_{MRB}\odot Z^{B}_{MRB})+\widetilde X_{Emb} \\
+  h_t=\overline{A}h_{t-1}+\overline{B}\widetilde{x}_t,\quad
+  \overline{A}=DR_A(\Delta,A)=\exp(\Delta A),\quad
+  \overline{B}=DR_B(\Delta,A,B)
+  =(\Delta A)^{-1}(\exp(\Delta A)-I)\cdot\Delta B 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{无偏重构约束}
+通过信号重构削弱域变量引入的伪相关，使退化表征在给定标签条件下趋于跨域不变。
+\begin{formulabox}
+\[\begin{gathered}
+  P(Z\mid Y,D)\neq P(Z\mid Y) \\
+  Z \perp\!\!\!\perp D \mid Y
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 4 页说明：基于流形收缩的退化表征提取策略}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $Z$、$Y$、$X$：潜在退化表征、退化标签和原始输入。
+  \item $\mathcal{I}(\cdot;\cdot)$、$\mathcal{H}(\cdot\mid\cdot)$：互信息和条件熵。
+  \item $\Delta_{\mathcal{S}\mathcal{T}}$：源域与目标域之间的泛化误差差异。
+  \item $\operatorname{IntDim}(\mathcal{M}_i)$：条件退化流形的本征维度。
+  \item $Z_{MRB}$：Mamba 残差块输出的退化特征。
+  \item $h_t$、$\overline A$、$\overline B$：状态空间模型的隐藏状态和离散化参数。
+  \item $D$：域变量。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式说明低条件熵和低本征维度有助于收紧 OOD 泛化误差上界。
+  \item 第二组公式给出 Mamba 残差块与状态空间递推，负责提取长程退化特征。
+  \item 第三组公式说明原始表征存在域偏置，目标是通过重构获得给定退化标签下的域无关表征。
+\end{itemize}
+
+\clearpage
+\subsection{第 2 页：不确定性驱动的退化特征合成策略}
+
+\subsubsection*{退化特征统计建模}
+将退化特征的批次均值和标准差建模为 Gaussian 随机变量，为特征分布外推提供概率基础。
+\begin{formulabox}
+\[\begin{gathered}
+  \mu_Z \sim \mathcal{N}(\mu,\Sigma_{\mu}^{2}),
+  \quad
+  \sigma_Z \sim \mathcal{N}(\sigma,\Sigma_{\sigma}^{2}) \\
+  \mu = \frac{1}{HE}\sum_H\sum_E Z_{MRB}, \quad
+  \sigma = \sqrt{\frac{1}{HE}\sum_H\sum_E (Z_{MRB}-\mu)^2}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{域漂移不确定性量化}
+用批次内统计量变异性估计均值和标准差的不确定性，刻画潜在域漂移幅度。
+\begin{formulabox}
+\[\begin{gathered}
+  \Sigma_{\mu}^{2}
+  = \frac{1}{B}\sum_{b\in B}\left(\mu-\mathbb{E}_b(\mu)\right)^2, \quad
+  \Sigma_{\sigma}^{2}
+  = \frac{1}{B}\sum_{b\in B}\left(\sigma-\mathbb{E}_b(\sigma)\right)^2 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{重参数化特征合成}
+通过重参数化采样生成新的统计量，并据此对退化特征执行分布外扩张。
+\begin{formulabox}
+\[\begin{gathered}
+  \mu_Z' = \epsilon_{\mu}\Sigma_{\mu}+\mu, \quad
+  \epsilon_{\mu}\sim\mathcal{N}(0,1),\quad
+  \sigma_Z' = \epsilon_{\sigma}\Sigma_{\sigma}+\sigma, \quad
+  \epsilon_{\sigma}\sim\mathcal{N}(0,1) \\
+  G(Z_{MRB})
+  = \sigma_Z'\left(\frac{Z_{MRB}-\mu}{\sigma}\right)+\mu_Z' 
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 5 页说明：不确定性驱动的退化特征合成策略}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $Z_{MRB}$：Mamba 编码器输出的退化特征张量。
+  \item $\mu_Z$、$\sigma_Z$：退化特征统计量的随机变量。
+  \item $\mu$、$\sigma$：当前批次退化特征的经验均值和标准差。
+  \item $\Sigma_\mu^2$、$\Sigma_\sigma^2$：特征均值和标准差的统计不确定性。
+  \item $\epsilon_\mu$、$\epsilon_\sigma$：标准 Gaussian 采样噪声。
+  \item $G(Z_{MRB})$：UDFS 合成后的退化特征。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式将退化特征统计量建模为 Gaussian 分布。
+  \item 第二组公式用批次内变异性估计统计量不确定性，对应域漂移可能引发的分布变化。
+  \item 第三组公式通过重参数化生成新统计量，并对原始特征执行标准化-重缩放式合成。
+\end{itemize}
+
+\clearpage
+\subsection{第 3 页：感知长尾分布的自适应重平衡微调策略}
+
+\subsubsection*{分箱退化统计量估计}
+将连续 SOH 标签离散为分箱，并分别估计每个分箱内的局部退化特征统计量。
+\begin{formulabox}
+\[\begin{gathered}
+  \mu_b
+  = \frac{1}{HE}\sum_H\sum_E Z_{MRB}, \quad
+  \sigma_b
+  = \sqrt{\frac{1}{HE}\sum_H\sum_E (Z_{MRB}-\mu)^2}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{标签邻近核平滑}
+基于 SOH 标签的物理邻近度在相邻分箱间传递统计信息，校正尾部分箱的稀疏偏置。
+\begin{formulabox}
+\[\begin{gathered}
+  \widetilde{\mu}_b
+  = \sum_{1\leq b,b'\leq \mathcal{B}}
+  \exp\left(-\gamma\lVert y_b-y_{b'}\rVert_2\right)\mu_{b'}, \quad
+  \widetilde{\sigma}_b
+  = \sum_{1\leq b,b'\leq \mathcal{B}}
+  \exp\left(-\gamma\lVert y_b-y_{b'}\rVert_2\right)\sigma_{b'} 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{重平衡变换与统计更新}
+用校正统计量重构特征分布，并通过动量滑动平均稳定训练过程。
+\begin{formulabox}
+\[\begin{gathered}
+  \widetilde{G}(Z_{MRB})
+  = \widetilde{\sigma}_b
+  \left(\frac{G(Z_{MRB})-\mu_b}{\sigma_b}\right)
+  +\widetilde{\mu}_b \\
+  \mu_b^{(i)}
+  \leftarrow \alpha\mu_b^{(i-1)}+(1-\alpha)\mu_b, \quad
+  \sigma_b^{(i)}
+  \leftarrow \alpha\sigma_b^{(i-1)}+(1-\alpha)\sigma_b 
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 6 页说明：感知长尾分布的自适应重平衡微调策略}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $b$、$b'$：SOH 标签分箱索引。
+  \item $\mu_b$、$\sigma_b$：第 $b$ 个分箱内退化特征的均值和标准差。
+  \item $\widetilde\mu_b$、$\widetilde\sigma_b$：经标签邻近核平滑后的校正统计量。
+  \item $y_b$、$y_{b'}$：对应分箱的 SOH 标签代表值。
+  \item $\gamma$：Gaussian 核平滑系数。
+  \item $\widetilde G(Z_{MRB})$：LARR 校正后的退化特征。
+  \item $\alpha$：动量更新系数。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式估计每个 SOH 分箱内部的局部特征统计量。
+  \item 第二组公式利用标签邻近度聚合相邻分箱信息，缓解尾部样本稀疏导致的统计偏置。
+  \item 第三组公式将 UDFS 输出特征校正到平衡统计分布，并用动量机制稳定统计量更新。
+\end{itemize}
+
+\clearpage
+\section{第三项研究内容（共三页）：DA-TMLLM 抗幻觉故障诊断方法}
+
+\subsection{第 1 页：ControlNet 引导的跨数据集条件扩散模型}
+
+\subsubsection*{跨数据集信号标准化}
+用固定时长分段、频域长度对齐和尺度归一化，将异构振动信号转换为统一输入。
+\begin{formulabox}
+\[\begin{gathered}
+  \bm{x}_o^{(m)}
+  = [x_r[m\nu],x_r[m\nu+1],\dots,x_r[(m+1)\nu-1]]^\top \\
+  \bm{x}_v
+  =
+  \begin{cases}
+    \operatorname{SNorm}(\operatorname{DFCT}(\bm{x}_o)[0:L_f-1]), & \ell\geq L_f\\
+    \operatorname{SNorm}(\operatorname{Concat}(\operatorname{DFCT}(\bm{x}_o),\bm{0}_{L_f-\ell})), & \ell<L_f
+  \end{cases}, \quad
+  \operatorname{SNorm}(\bm{x})
+  = g\frac{\bm{x}}{\lVert\bm{x}\rVert_2+\varepsilon}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{条件扩散生成过程}
+通过前向加噪和条件反向去噪，生成服从目标故障语义分布的合成振动信号。
+\begin{formulabox}
+\[\begin{gathered}
+  q(\bm{x}_v^{(s)}\mid \bm{x}_v^{(s-1)})
+  = \mathcal{N}\left(\sqrt{\alpha^{(s)}}\bm{x}_v^{(s-1)},(1-\alpha^{(s)})\bm I\right), \quad
+  q(\bm{x}_v^{(S)}\mid \bm{x}_v^{(0)})
+  = \mathcal{N}\left(\sqrt{\hat{\alpha}^{(S)}}\bm{x}_v^{(0)},(1-\hat{\alpha}^{(S)})\bm I\right), \quad
+  \mu_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)
+  = \frac{\bar{\bm{x}}_v^{(s)}
+  -\sigma^{(s)}\epsilon_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)}
+  {\sqrt{\bar{\alpha}^{(s)}}}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{ControlNet 语义注入与鲁棒损失}
+用 ControlNet 条件向量通过多头注意力引导扩散生成，并以 Huber 损失约束去噪残差。
+\begin{formulabox}
+\[\begin{gathered}
+  \bm{H}_{v}
+  =[\bm{x}_{v},\tilde{\bm{x}}_{v},\bm{x}_{vr}]
+  \in\mathbb{R}^{3\times L_f}, \quad
+  \bm{x}_{vr}=\bm{x}_{v}-\tilde{\bm{x}}_{v} \\
+  \bm Q^{(s)} = \bm W_Q\bar{\bm{x}}_v^{(s)}, \quad
+  \bm K^{(s)} = \bm W_K\tau(\bm c), \quad
+  \bm V^{(s)} = \bm W_V\tau(\bm c) \\
+  \bm A^{(s)}
+  = \operatorname{Softmax}\left(
+  \frac{\bm Q^{(s)}(\bm K^{(s)})^\top}{\sqrt{d_k}}
+  \right)\bm V^{(s)}, \quad
+  \operatorname{MHA}(\bar{\bm{x}}_v^{(s)},\bm c)
+  = \bm W_o[\bm A_1^{(s)};\dots;\bm A_{N_h}^{(s)}] \\
+  L^{(s)}
+  =
+  \mathbb{E}_{s\sim[1,S],\bm{x}_v^{(s)},\epsilon^{(s)}}
+  \left[\operatorname{Huber}(r^{(s)})\right], \quad
+  r^{(s)}=\left\lVert
+  \epsilon^{(s)}-\epsilon_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)
+  \right\rVert_2, \quad
+  \operatorname{Huber}(r^{(s)})
+  =
+  \begin{cases}
+    \dfrac{1}{2}(r^{(s)})^2, & r^{(s)}<\lambda \\
+    \lambda(r^{(s)}-\dfrac{\lambda}{2}), & \text{otherwise}
+  \end{cases}
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 7 页说明：ControlNet 引导的跨数据集条件扩散模型}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $\bm{x}_o^{(m)}$、$\bm{x}_v$：原始分段信号和标准化后的振动信号。
+  \item $\nu$、$L_f$、$\ell$：采样率、预设频域长度和实际谱系数长度。
+  \item $q(\cdot)$：扩散前向条件分布。
+  \item $\alpha^{(s)}$、$\hat\alpha^{(S)}$：单步和累积噪声缩放系数。
+  \item $\epsilon_{\theta_d}$：噪声预测网络。
+  \item $\bm c$：ControlNet 提供的条件向量。
+  \item $\bm H_v$：ControlNet 三元组输入。
+  \item $L^{(s)}$、$r^{(s)}$、$\lambda$：Huber 去噪训练目标、噪声预测残差和分段阈值。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式完成跨数据集输入标准化，减少采样率和幅值差异。
+  \item 第二组公式描述扩散模型的前向加噪和条件反向去噪过程。
+  \item 第三组公式说明 ControlNet 条件如何注入去噪网络，并通过 Huber 损失鲁棒约束噪声预测残差。
+\end{itemize}
+
+\clearpage
+\subsection{第 2 页：可信多模态大语言模型}
+
+\subsubsection*{文本-信号对齐输入}
+将振动信号编码特征和故障文本 token 特征对齐为可输入大语言模型的多模态提示。
+\begin{formulabox}
+\[\begin{gathered}
+  \bm H_g
+  = [\bm{x}_g,\tilde{\bm{x}}_g,\bm{x}_{gr}]\in\mathbb{R}^{3\times L_f}, \quad
+  \bm{x}_{gr}
+  = \bm{x}_g-\tilde{\bm{x}}_g, \quad
+  \bm{M}_g
+  = \{\bm H_g,\bm T\}, \quad
+  \bm E
+  = \operatorname{Emb}(\operatorname{Tok}(\bm D))
+  \in \mathbb{R}^{\gamma\times N_c\times h} \\
+  \bm\theta_{l_3}
+  = \operatorname{reshape}(\bm E,(\gamma,N_ch)), \quad
+  \bm\theta_{\mathrm{ts}}
+  =\{\bm\theta_{l_1},\bm\theta_{l_2},\bm\theta_{l_3}\}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{Token 概率与能量}
+将自回归生成概率转化为 token 级 NLL 能量，用于表征回答局部不确定性。
+\begin{formulabox}
+\[\begin{gathered}
+  P(\mathit{Token}_k=w\mid \mathit{Token}_{<k})
+  =
+  \frac{\exp(\operatorname{Proj}(\bm a_k)_w)}
+  {\sum_{w'\in\mathcal{V}}\exp(\operatorname{Proj}(\bm a_k)_{w'})}, \quad
+  \operatorname{NLL}(\mathit{Token}_k=w)
+  =
+  -\log
+  \frac{\exp(\operatorname{Proj}(\bm a_k)_w)}
+  {\sum_{w'\in\mathcal{V}}\exp(\operatorname{Proj}(\bm a_k)_{w'})}
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{关键 Token 统计定位}
+用点二列相关和显著性检验识别对非预期输入最敏感的关键 token 位置。
+\begin{formulabox}
+\[\begin{gathered}
+  r_{pb}
+  = \frac{\mu_{nor}-\mu_{un}}{\sigma_{total}}
+  \sqrt{\frac{N_{nor}N_{un}}{(N_{nor}+N_{un})^2}} \\
+  t
+  = r_{pb}
+  \sqrt{\frac{(N_{nor}+N_{un})-2}{1-r_{pb}^{2}}}, \quad
+  df=(N_{nor}+N_{un})-2 \\
+  p_{\text{two-sided}}
+  = 2\left[1-F_{t_{df}}(|t|)\right]
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 8 页说明：可信多模态大语言模型}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $\bm H_g$、$\bm M_g$：信号三元组输入和多模态输入。
+  \item $\bm D$、$\bm E$：故障文本描述集合及其 token 嵌入。
+  \item $\bm\theta_{ts}$：文本-信号对齐模块参数。
+  \item $\mathit{Token}_k$：生成序列中的第 $k$ 个 token。
+  \item $\bm a_k$：第 $k$ 个生成位置的隐藏状态。
+  \item $\mathcal V$：大语言模型词表。
+  \item $r_{pb}$、$t$、$p_{\text{two-sided}}$：点二列相关系数、显著性统计量和双侧检验概率。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式描述信号特征、文本 token 特征和对齐模块参数的构造。
+  \item 第二组公式把自回归 token 概率转化为 NLL 能量，作为局部不确定性指标。
+  \item 第三组公式通过统计相关性和显著性检验选择关键 token。
+\end{itemize}
+
+\clearpage
+\subsection{第 3 页：基于 DA-TMLLM 的抗幻觉故障诊断}
+
+\subsubsection*{Token 级能量归一化}
+将生成序列中每个 token 的 NLL 归一化，形成可比较的 token 级不确定性分布。
+\begin{formulabox}
+\[\begin{gathered}
+  \hat{\bm y}_g
+  =\{\mathit{Token}_1,\mathit{Token}_2,\dots,\mathit{Token}_{N_t}\} \\
+  \operatorname{NLL}_k
+  = -\log P(\mathit{Token}_k\mid \mathit{Token}_{<k}), \quad
+  \tilde{\operatorname{NLL}}_k
+  =
+  \operatorname{NLL}_k\Big/
+  \sum_{j=1}^{N_t}\operatorname{NLL}_j, \quad
+  \widetilde{\operatorname{NLL}}(\mathit{Token}_k)
+  =
+  \frac{\operatorname{NLL}(\mathit{Token}_k)}
+  {\sum_{j=1}^{N_t}\operatorname{NLL}(\mathit{Token}_j)} 
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{关键 Token 不确定性重加权}
+对关键 token 位置赋予相关性驱动的额外权重，使局部幻觉迹象在序列级分数中被放大。
+\begin{formulabox}
+\[\begin{gathered}
+  \operatorname{UT}(\mathit{Token}_k;\omega,r_{pb})
+  =
+  \left[1+(\omega r_{pb}-1)\mathbb{I}_{\{k=\delta-1\}}\right]
+  \widetilde{\operatorname{NLL}}(\mathit{Token}_k) \\
+  \operatorname{UA}(\hat{\bm y}_g)
+  =
+  \sum_{k=1}^{N_t}
+  \left[1+(\omega r_{pb}-1)\mathbb{I}_{\{k=\delta-1\}}\right]
+  \widetilde{\operatorname{NLL}}(\mathit{Token}_k)
+\end{gathered}\]
+\end{formulabox}
+
+\subsubsection*{序列级幻觉判定}
+用正常验证集得到的置信区间作为接受域，超出区间的回答被判定为存在幻觉风险。
+\begin{formulabox}
+\[\begin{gathered}
+  \psi_{lower}=\mu_{val}-\sigma_{val}, \quad
+  \psi_{upper}=\mu_{val}+\sigma_{val}, \quad
+  \operatorname{UA}(\hat{\bm y}_{test})
+  \notin[\psi_{lower},\psi_{upper}]
+\end{gathered}\]
+\end{formulabox}
+
+\clearpage
+\subsection*{第 9 页说明：基于 DA-TMLLM 的抗幻觉故障诊断}
+\subsubsection*{符号描述}
+\begin{itemize}
+  \item $\hat{\bm y}_g$：大语言模型生成的诊断回答 token 序列。
+  \item $N_t$：生成序列长度。
+  \item $\operatorname{NLL}_k$、$\widetilde{\operatorname{NLL}}$：token 能量及其归一化结果。
+  \item $\operatorname{UT}$：关键 token 重加权后的 token 级不确定性。
+  \item $\operatorname{UA}$：序列级不确定性分数。
+  \item $\delta-1$：统计检验确定的关键 token 位置。
+  \item $\omega$：关键 token 权重放大系数。
+  \item $\psi_{lower}$、$\psi_{upper}$：正常验证集确定的不确定性接受区间。
+\end{itemize}
+\subsubsection*{公式说明}
+\begin{itemize}
+  \item 第一组公式把 token 能量归一化为序列内可比较的不确定性分布。
+  \item 第二组公式对关键 token 位置加权，并聚合得到序列级幻觉风险分数。
+  \item 第三组公式用正常样本验证集构造接受区间，超出区间则触发拒识或复核。
+\end{itemize}
+
+\end{document}
+
+
+
+
+
+
+

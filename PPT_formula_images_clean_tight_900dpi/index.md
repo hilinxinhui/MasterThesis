@@ -1,0 +1,29 @@
+﻿# PPT 公式图片索引
+
+- `formula_01.png`：第 1 页：随机自注意力机制 / 注意力权重的概率化
+- `formula_02.png`：第 1 页：随机自注意力机制 / Gumbel-Softmax 可微采样
+- `formula_03.png`：第 1 页：随机自注意力机制 / 与高斯扰动的理论一致性
+- `formula_04.png`：第 2 页：层次化随机时空 Transformer / 距离敏感注意力校正
+- `formula_05.png`：第 2 页：层次化随机时空 Transformer / 可学习聚类键向量
+- `formula_06.png`：第 2 页：层次化随机时空 Transformer / 距离感知的层次化随机聚合
+- `formula_07.png`：第 3 页：不确定性标定 / 误差分解与校准动因
+- `formula_08.png`：第 3 页：不确定性标定 / 分布覆盖率校准
+- `formula_09.png`：第 3 页：不确定性标定 / 后验预测与置信估计
+- `formula_10.png`：第 1 页：基于流形收缩的退化表征提取策略 / 流形收缩与泛化上界
+- `formula_11.png`：第 1 页：基于流形收缩的退化表征提取策略 / Mamba 退化特征编码
+- `formula_12.png`：第 1 页：基于流形收缩的退化表征提取策略 / 无偏重构约束
+- `formula_13.png`：第 2 页：不确定性驱动的退化特征合成策略 / 退化特征统计建模
+- `formula_14.png`：第 2 页：不确定性驱动的退化特征合成策略 / 域漂移不确定性量化
+- `formula_15.png`：第 2 页：不确定性驱动的退化特征合成策略 / 重参数化特征合成
+- `formula_16.png`：第 3 页：感知长尾分布的自适应重平衡微调策略 / 分箱退化统计量估计
+- `formula_17.png`：第 3 页：感知长尾分布的自适应重平衡微调策略 / 标签邻近核平滑
+- `formula_18.png`：第 3 页：感知长尾分布的自适应重平衡微调策略 / 重平衡变换与统计更新
+- `formula_19.png`：第 1 页：ControlNet 引导的跨数据集条件扩散模型 / 跨数据集信号标准化
+- `formula_20.png`：第 1 页：ControlNet 引导的跨数据集条件扩散模型 / 条件扩散生成过程
+- `formula_21.png`：第 1 页：ControlNet 引导的跨数据集条件扩散模型 / ControlNet 语义注入与鲁棒损失
+- `formula_22.png`：第 2 页：可信多模态大语言模型 / 文本-信号对齐输入
+- `formula_23.png`：第 2 页：可信多模态大语言模型 / Token 概率与能量
+- `formula_24.png`：第 2 页：可信多模态大语言模型 / 关键 Token 统计定位
+- `formula_25.png`：第 3 页：基于 DA-TMLLM 的抗幻觉故障诊断 / Token 级能量归一化
+- `formula_26.png`：第 3 页：基于 DA-TMLLM 的抗幻觉故障诊断 / 关键 Token 不确定性重加权
+- `formula_27.png`：第 3 页：基于 DA-TMLLM 的抗幻觉故障诊断 / 序列级幻觉判定

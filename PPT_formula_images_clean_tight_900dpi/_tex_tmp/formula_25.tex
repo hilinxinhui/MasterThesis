@@ -1,0 +1,27 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  \hat{\bm y}_g
+  =\{\mathit{Token}_1,\mathit{Token}_2,\dots,\mathit{Token}_{N_t}\} \\
+  \operatorname{NLL}_k
+  = -\log P(\mathit{Token}_k\mid \mathit{Token}_{<k}), \quad
+  \tilde{\operatorname{NLL}}_k
+  =
+  \operatorname{NLL}_k\Big/
+  \sum_{j=1}^{N_t}\operatorname{NLL}_j, \quad
+  \widetilde{\operatorname{NLL}}(\mathit{Token}_k)
+  =
+  \frac{\operatorname{NLL}(\mathit{Token}_k)}
+  {\sum_{j=1}^{N_t}\operatorname{NLL}(\mathit{Token}_j)} 
+\end{gathered}
+\)
+\end{preview}
+\end{document}

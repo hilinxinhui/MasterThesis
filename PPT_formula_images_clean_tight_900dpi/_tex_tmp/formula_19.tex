@@ -1,0 +1,25 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  \bm{x}_o^{(m)}
+  = [x_r[m\nu],x_r[m\nu+1],\dots,x_r[(m+1)\nu-1]]^\top \\
+  \bm{x}_v
+  =
+  \begin{cases}
+    \operatorname{SNorm}(\operatorname{DFCT}(\bm{x}_o)[0:L_f-1]), & \ell\geq L_f\\
+    \operatorname{SNorm}(\operatorname{Concat}(\operatorname{DFCT}(\bm{x}_o),\bm{0}_{L_f-\ell})), & \ell<L_f
+  \end{cases}, \quad
+  \operatorname{SNorm}(\bm{x})
+  = g\frac{\bm{x}}{\lVert\bm{x}\rVert_2+\varepsilon}
+\end{gathered}
+\)
+\end{preview}
+\end{document}

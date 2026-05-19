@@ -1,0 +1,21 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  s_i = F_i(y_i), \quad
+  \hat p(s_i)
+  = \frac{1}{N}\sum_{j=1}^{N}\mathbb{I}\{F_j(y_j)\leq s_i\} \\
+  g^*
+  = \arg\min_{g\in\mathcal{G}_{mono}}
+  \sum_{i=1}^{N}\left(g(s_i)-\hat p(s_i)\right)^2 
+\end{gathered}
+\)
+\end{preview}
+\end{document}
