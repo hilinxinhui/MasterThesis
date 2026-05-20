@@ -1,0 +1,23 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  q(\bm{x}_v^{(s)}\mid \bm{x}_v^{(s-1)})
+  = \mathcal{N}\left(\sqrt{\alpha^{(s)}}\bm{x}_v^{(s-1)},(1-\alpha^{(s)})\bm I\right), \quad
+  q(\bm{x}_v^{(S)}\mid \bm{x}_v^{(0)})
+  = \mathcal{N}\left(\sqrt{\hat{\alpha}^{(S)}}\bm{x}_v^{(0)},(1-\hat{\alpha}^{(S)})\bm I\right), \quad
+  \mu_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)
+  = \frac{\bar{\bm{x}}_v^{(s)}
+  -\sigma^{(s)}\epsilon_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)}
+  {\sqrt{\bar{\alpha}^{(s)}}}
+\end{gathered}
+\)
+\end{preview}
+\end{document}

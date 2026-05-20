@@ -1,0 +1,26 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  \min_Z \mathcal{IB}
+  = \min_Z\left[-\mathcal{I}(Z;Y)+\beta\mathcal{I}(Z;X)\right]
+  = \min_Z\left[(1-\beta)\mathcal{H}(Y\mid Z)+\beta\mathcal{H}(Z\mid Y)\right] \\
+  \Delta_{\mathcal{S}\mathcal{T}}
+  = \mathbb{E}_{\mathcal{S}}\left[\lVert f(\bm z)-y\rVert_2\right]
+  - \mathbb{E}_{\mathcal{T}}\left[\lVert f(\bm z)-y\rVert_2\right]
+  \leq 2KQ\left(\mathcal{H}(Z\mid Y)\right) \\
+  \mathcal{H}(Z\mid Y)
+  \leq \mathbb{E}_{y_i\sim\mathcal{Y}}
+  \left[-\log(\epsilon)\operatorname{IntDim}(\mathcal{M}_i)
+  +\log\frac{K'}{C(\epsilon)}\right]
+\end{gathered}
+\)
+\end{preview}
+\end{document}

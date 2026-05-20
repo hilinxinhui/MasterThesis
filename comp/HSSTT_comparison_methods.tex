@@ -1,0 +1,142 @@
+\documentclass[printcopy,fontset=windows]{../Style/neuthesis}
+\usepackage[bibtex,myhdr,table,list,geometry,math]{../Style/artratex}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{array}
+\usepackage{etoolbox}
+
+\AtBeginEnvironment{table}{\footnotesize}
+\AtBeginEnvironment{tabular}{\footnotesize}
+\AtBeginEnvironment{tabularx}{\footnotesize}
+\AtBeginEnvironment{tablenotes}{\footnotesize}
+
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{4pt}
+\newcolumntype{Z}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+\begin{table}[p]
+  \centering
+  \bicaption{HSSTT 章节对比方法总览}{Overview of comparison methods in the HSSTT chapter}
+  \label{tab:hsstt_methods}
+  \begin{threeparttable}
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth}Z}
+      \toprule
+      方法 & 方法实现说明 \\
+      \midrule
+      MRVR &
+      通过稀疏贝叶斯回归拟合输入到 SOH 的映射，并用参数后验给出预测分布 \\
+      GP-ICE &
+      通过高斯过程对输出函数建模，并借助核函数先验刻画预测不确定性 \\
+      BMNN &
+      通过 Bayes by Backprop 学习权重后验，再由参数采样形成预测分布 \\
+      SACN &
+      通过胶囊网络聚合时空特征，并借由特征响应的变化间接表征不确定性 \\
+      DeNN &
+      通过多个子模型的集成或融合统计预测分歧，以此近似不确定性 \\
+      BDAE &
+      通过随机失活下的多次前向传播形成预测集合，并用输出波动量化不确定性 \\
+      SNGP &
+      通过谱归一化稳定特征映射，并在输出端接高斯过程头近似后验分布 \\
+      \bottomrule
+    \end{tabularx}
+  \end{threeparttable}
+\end{table}
+\clearpage
+
+\begin{table}[p]
+  \centering
+  \bicaption{RODTNet 章节对比方法总览}{Overview of comparison methods in the RODTNet chapter}
+  \label{tab:rodtnet_methods}
+  \begin{threeparttable}
+    \scriptsize
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth}Z}
+      \toprule
+      方法 & 方法实现说明 \\
+      \midrule
+      iTransformer &
+      通过将变量维度作为建模对象，把多变量序列映射到反向注意力结构中 \\
+      PatchTST &
+      通过将长序列切分为 patch 并送入 Transformer，以局部片段建模全局依赖 \\
+      TSMixer &
+      通过纯 MLP 在时间维与通道维上交替混合特征，不依赖显式注意力 \\
+      PINN &
+      通过把物理约束写入损失函数，引导网络学习满足机理先验的退化映射 \\
+      MambaLithium &
+      通过状态空间选择性扫描机制建模长序列退化依赖 \\
+      DeNN-bagging &
+      通过自助采样训练多个子模型，并对输出结果做平均融合 \\
+      DeNN-fusion &
+      通过特征或预测级融合多个子模型，以提高跨样本稳定性 \\
+      DeNN-voting &
+      通过对子模型输出进行投票汇总，降低单模型偏置 \\
+      LSTM-DA &
+      通过 LSTM 提取时序特征，并配合域对齐模块缩小源域和目标域差异。 \\
+      ConvMMD &
+      通过卷积网络提取特征，并用 MMD 对齐不同域的分布。 \\
+      DKTL &
+      通过核映射增强特征可分性，并结合迁移学习实现跨域建模。 \\
+      DDAN &
+      通过域判别器对抗训练，使特征提取器学习域不变表示。 \\
+      DR-Net &
+      通过重构退化模式来增强特征表达，并抑制域间差异。 \\
+      CRNN &
+      通过卷积层提取局部模式，再用循环层建模时序依赖。 \\
+      MAGNet &
+      通过图结构传播退化关联，并在域间共享图表示。 \\
+      iTransformer+ &
+      先在源域预训练，再直接在目标域上微调 iTransformer \\
+      PatchTST+ &
+      先在源域预训练，再直接在目标域上微调 PatchTST \\
+      TSMixer+ &
+      先在源域预训练，再直接在目标域上微调 TSMixer \\
+      PINN+ &
+      先在源域预训练，再直接在目标域上微调 PINN \\
+      \bottomrule
+    \end{tabularx}
+  \end{threeparttable}
+\end{table}
+\clearpage
+
+\begin{table}[p]
+  \centering
+  \bicaption{DA-TMLLM 章节对比方法总览}{Overview of comparison methods in the DA-TMLLM chapter}
+  \label{tab:da_tmllm_methods}
+  \begin{threeparttable}
+    \scriptsize
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth}Z}
+      \toprule
+      方法 & 方法实现说明 \\
+      \midrule
+      VQVAE &
+      通过离散码本对信号进行压缩重构，以生成更平滑的少数类样本 \\
+      DCGAN &
+      通过卷积生成器与判别器对抗训练，学习原始信号分布 \\
+      QSCGAN &
+      通过条件生成与判别联合约束，按类别条件生成目标信号 \\
+      BearLLM &
+      通过大语言模型把文本先验与信号表征结合起来生成诊断结果 \\
+      MLMM &
+      通过多模态表示对齐，将文本提示与振动信号联合建模 \\
+      WDSN &
+      通过显式检测分支区分已知类别输入与非预期输入 \\
+      MDCC &
+      通过校正模块修正检测偏差，并抑制非预期输入的误判 \\
+      LLM-Check &
+      通过语言模型生成的语义一致性来判断输入是否符合预期 \\
+      MIND &
+      通过多模态融合后的判别头区分已知类别与异常输入 \\
+      SHalluDetect &
+      通过结构化规则和检测器联合识别幻觉输入 \\
+      LLM-OOD &
+      通过大语言模型估计输入是否偏离训练分布 \\
+      DA-TMLLM &
+      通过关键 token 驱动的不确定性重加权，把文本推理与信号判别联合起来 \\
+      \bottomrule
+    \end{tabularx}
+  \end{threeparttable}
+\end{table}
+
+\end{document}

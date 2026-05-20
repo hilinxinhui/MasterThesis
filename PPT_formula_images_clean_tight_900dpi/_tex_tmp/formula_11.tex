@@ -1,0 +1,22 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  Z^{B}_{MRB} = \operatorname{SiLU}(\operatorname{Linear}(\widetilde X_{Emb})),\quad
+  Z^{M}_{MRB} = \operatorname{SSM}(\operatorname{SiLU}(\operatorname{Conv}(\operatorname{Linear}(\widetilde X_{Emb})))),\quad
+  Z_{MRB} = \operatorname{Linear}(Z^{M}_{MRB}\odot Z^{B}_{MRB})+\widetilde X_{Emb} \\
+  h_t=\overline{A}h_{t-1}+\overline{B}\widetilde{x}_t,\quad
+  \overline{A}=DR_A(\Delta,A)=\exp(\Delta A),\quad
+  \overline{B}=DR_B(\Delta,A,B)
+  =(\Delta A)^{-1}(\exp(\Delta A)-I)\cdot\Delta B 
+\end{gathered}
+\)
+\end{preview}
+\end{document}

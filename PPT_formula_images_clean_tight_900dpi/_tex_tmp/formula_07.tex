@@ -1,0 +1,19 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  E\left((y-\hat f(X))^2\right)
+  = \operatorname{Bias}^2(\hat f(X))+\operatorname{Var}(\hat f(X))+\sigma^2 \\
+  = \left(E(\hat f(X))-E_{y\mid X}(f(X))\right)^2
+  +E\left((E(\hat f(X))-\hat f(X))^2\right)+\sigma^2
+\end{gathered}
+\)
+\end{preview}
+\end{document}

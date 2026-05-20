@@ -1,0 +1,41 @@
+﻿\documentclass{article}
+\usepackage[paperwidth=60cm,paperheight=20cm,margin=0cm]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage[active,tightpage]{preview}
+\PreviewBorder=2pt
+\setlength{\jot}{6pt}
+\pagestyle{empty}
+\begin{document}
+\begin{preview}
+\(\displaystyle
+\begin{gathered}
+  \bm{H}_{v}
+  =[\bm{x}_{v},\tilde{\bm{x}}_{v},\bm{x}_{vr}]
+  \in\mathbb{R}^{3\times L_f}, \quad
+  \bm{x}_{vr}=\bm{x}_{v}-\tilde{\bm{x}}_{v} \\
+  \bm Q^{(s)} = \bm W_Q\bar{\bm{x}}_v^{(s)}, \quad
+  \bm K^{(s)} = \bm W_K\tau(\bm c), \quad
+  \bm V^{(s)} = \bm W_V\tau(\bm c) \\
+  \bm A^{(s)}
+  = \operatorname{Softmax}\left(
+  \frac{\bm Q^{(s)}(\bm K^{(s)})^\top}{\sqrt{d_k}}
+  \right)\bm V^{(s)}, \quad
+  \operatorname{MHA}(\bar{\bm{x}}_v^{(s)},\bm c)
+  = \bm W_o[\bm A_1^{(s)};\dots;\bm A_{N_h}^{(s)}] \\
+  L^{(s)}
+  =
+  \mathbb{E}_{s\sim[1,S],\bm{x}_v^{(s)},\epsilon^{(s)}}
+  \left[\operatorname{Huber}(r^{(s)})\right], \quad
+  r^{(s)}=\left\lVert
+  \epsilon^{(s)}-\epsilon_{\theta_d}(\bar{\bm{x}}_v^{(s)},s,\bm c)
+  \right\rVert_2, \quad
+  \operatorname{Huber}(r^{(s)})
+  =
+  \begin{cases}
+    \dfrac{1}{2}(r^{(s)})^2, & r^{(s)}<\lambda \\
+    \lambda(r^{(s)}-\dfrac{\lambda}{2}), & \text{otherwise}
+  \end{cases}
+\end{gathered}
+\)
+\end{preview}
+\end{document}
