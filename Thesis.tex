@@ -64,6 +64,29 @@
 
 \newcommand{\review}[1]{\textcolor{red}{#1}}
 
+\makeatletter
+\newcommand{\inputabstractwithoutblankpagecount}{%
+  \begingroup
+  \renewcommand{\cleardoublepage}[1][plain]{%
+    \clearpage
+    \if@twoside
+      \ifodd\c@page
+      \else
+        \thispagestyle{empty}%
+        \hbox{}\newpage
+        \addtocounter{page}{-1}%
+        \if@twocolumn
+          \hbox{}\newpage
+          \addtocounter{page}{-1}%
+        \fi
+      \fi
+    \fi
+  }%
+  \input{Tex/Abstract}%
+  \endgroup
+}
+\makeatother
+
 \allowdisplaybreaks
 
 \begin{document}
@@ -71,20 +94,9 @@
 %-
 %-> Frontmatter: title page, abstract, content list, symbol list, preface
 %-
-\frontmatter% initialize the environment
-\input{Tex/Frontpages}% title page, abstract, dedication
-\input{Tex/Abstract} % abstract (chinese and english)
-
-{% content list region
-% \linespread{1}
-% \intotoc{\contentsname}% add link to contents table and bookmark
-% \chapter*{\contentsname}
-\linespread{1.5}% local line space
-\tableofcontents% contents catalog
-{
 \titlecontents{chapter}
     [1.55cm]        % 调整章标题左侧缩进值
-    {\vspace{-1.2ex}\bf\large}
+    {\bfseries\large}
     {\contentslabel{3em}}
     {\hspace*{-3em}} % 无编号项目格式
     % {{\titlerule*[0.3pc]{\raisebox{0.5ex}{.}}\normalfont\chapterPageNumber\contentspage}}
@@ -104,13 +116,16 @@
     {\contentslabel{2.5em}}{}
     {\titlerule*[0.3pc]{\raisebox{0.5ex}{.}}\contentspage}
 
-}
+\frontmatter% initialize the environment
+\input{Tex/Frontpages}% title page, abstract, dedication
+\inputabstractwithoutblankpagecount % abstract (chinese and english)
 
-\intotoc{\listfigurename}% add link to contents table and bookmark
-\listoffigures% figures catalog
-
-\intotoc{\listtablename}% add link to contents table and bookmark
-\listoftables% tables catalog
+{% content list region
+% \linespread{1}
+% \intotoc{\contentsname}% add link to contents table and bookmark
+% \chapter*{\contentsname}
+\linespread{1.5}% local line space
+\tableofcontents% contents catalog
 }
 % \input{Tex/Prematter}% list of symbols, preface content
 %-
@@ -136,4 +151,3 @@
 % \showthe\artxfontset
 \end{document}
 %---------------------------------------------------------------------------%
-
